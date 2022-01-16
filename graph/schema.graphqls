@@ -1,0 +1,27 @@
+directive @isAuthenticated on FIELD_DEFINITION
+
+scalar Cursor
+scalar Duration
+scalar Time
+
+enum OrderDirection {
+    ASC
+    DESC
+}
+
+type PageInfo {
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    startCursor: Cursor
+    endCursor: Cursor
+}
+
+interface Node {
+    id: ID!
+}
+
+type Query {
+    node(id: ID!): Node
+}
+
+type Mutation

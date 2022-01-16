@@ -1,0 +1,62 @@
+scalar Upload
+
+type Image implements Node {
+    id: ID!
+    channel: Channel!
+    createdAt: Time!
+    updatedAt: Time!
+    user: User!
+}
+
+input NewImage {
+    channel: Channel!
+    file: Upload!
+}
+
+enum Channel {
+    RED
+    GREEN
+    BLUE
+    RED_GREEN
+    RED_BLUE
+    GREEN_BLUE
+    RED_GREEN_BLUE
+}
+
+
+enum ImageOrderField {
+    CREATED_AT
+    UPDATED_AT
+}
+
+input ImageOrder {
+    direction: OrderDirection!
+    field: ImageOrderField
+
+}
+
+type ImageConnection {
+    totalCount: Int!
+    pageInfo: PageInfo!
+    edges: [ImageEdge]
+}
+
+type ImageEdge {
+    node: Image
+    cursor: Cursor!
+}
+
+extend type Query {
+    images(
+        after: Cursor
+        first: Int,
+        before: Cursor,
+        last: Int,
+        where: ImageWhereInput,
+        orderBy: ImageOrder,
+    ): ImageConnection @isAuthenticated
+}
+
+extend type Mutation {
+    createImage(input: NewImage!): Image! @isAuthenticated
+}

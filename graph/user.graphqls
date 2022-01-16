@@ -1,0 +1,48 @@
+type User {
+    id: ID!
+    name: String!
+    createdAt: Time!
+    updatedAt: Time!
+    imageCount: Int!
+}
+
+input NewUser {
+    username: String!
+    password: String!
+}
+
+input UpdateUser {
+    name: String
+    password: String
+}
+
+input Login {
+    username: String!
+    password: String!
+}
+
+input RefreshTokenInput {
+    token: String!
+}
+
+type Auth {
+    ok: Boolean!
+    token: String!
+    expires: Duration!
+}
+
+type AuthUser {
+    auth: Auth!
+    user: User!
+}
+
+extend type Query {
+    overview: User! @isAuthenticated
+}
+
+extend type Mutation {
+    createUser(input: NewUser!): AuthUser!
+    login(input: Login!): AuthUser!
+    refreshToken(input: RefreshTokenInput!): AuthUser!
+    updateUser(input: UpdateUser!): User! @isAuthenticated
+}
