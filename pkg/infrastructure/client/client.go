@@ -4,8 +4,7 @@ import (
 	"StegoLSB/ent"
 	"entgo.io/ent/dialect"
 	"fmt"
-	_ "github.com/lib/pq"
-	"io"
+	_ "github.com/lib/pq" // So we can use dialect.Postgres
 	"log"
 	"os"
 	"strconv"
@@ -27,15 +26,10 @@ func psqlInfo() string {
 	)
 }
 
+// New returns a new instance of ent.Client.
 func New() (*ent.Client, error) {
 	var entOptions []ent.Option
 	_ = append(entOptions, ent.Debug())
 
 	return ent.Open(dialect.Postgres, psqlInfo(), entOptions...)
-}
-
-func Close(client io.Closer) {
-	if err := client.Close(); err != nil {
-		log.Fatalf("failed closing connection to db: %v", err)
-	}
 }

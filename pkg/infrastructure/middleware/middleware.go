@@ -2,13 +2,12 @@ package middleware
 
 import (
 	"StegoLSB/ent"
+	"StegoLSB/pkg/adapter/repository"
 	"StegoLSB/pkg/entity/model"
 	"StegoLSB/pkg/util"
-	"github.com/pkg/errors"
-
-	"StegoLSB/user"
 	"context"
 	"fmt"
+	"github.com/pkg/errors"
 	"net/http"
 )
 
@@ -18,8 +17,8 @@ type contextKey struct {
 	name string
 }
 
-// JwtMiddleware handler user authorization via JWT tokens
-func JwtMiddleware() func(http.Handler) http.Handler {
+// JwtMiddleware handles user authorization via JSON Web Tokens.
+func JwtMiddleware(client *ent.Client) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			header := r.Header.Get("Authorization")
@@ -32,15 +31,11 @@ func JwtMiddleware() func(http.Handler) http.Handler {
 			}
 
 			// validate jwt token
-			username, err := util.ParseToken(header)
+			username, err := util.ParseToken(r.Context(), header)
 			if err != nil {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusUnauthorized)
-				_, err := w.Write([]byte(
-					fmt.Sprintf(
-						`{"errors":[{"message": "%v", "path": ["Authorization"]}], data: null}`,
-						err.Error(),
-					)))
+				_, err := w.Write([]byte(getAuthenticationError(err)))
 				if err != nil {
 					return
 				}
@@ -48,7 +43,7 @@ func JwtMiddleware() func(http.Handler) http.Handler {
 				return
 			}
 
-			entUser, err := user.GetUserByUsername(r.Context(), username)
+			entUser, err := repository.NewUserRepository(client).Get(r.Context(), username)
 			if err != nil {
 				next.ServeHTTP(w, r)
 
@@ -67,8 +62,16 @@ func JwtMiddleware() func(http.Handler) http.Handler {
 func ForContext(ctx context.Context) (*ent.User, error) {
 	entUser, ok := ctx.Value(userCtxKey).(*ent.User)
 	if !ok {
-		return nil, model.NewAuthorizationError(errors.Errorf("invalid token"))
+		return nil, errors.Errorf("invalid token")
 	}
 
 	return entUser, nil
+}
+
+func getAuthenticationError(e error) string {
+	return fmt.Sprintf(
+		`{"errors":[{"message": "%v", "path": ["Authorization"], "extensions": {"code": %s}}], data: null}`,
+		e.Error(),
+		model.AuthorizationError,
+	)
 }

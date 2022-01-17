@@ -5,14 +5,15 @@ package generated
 import (
 	"StegoLSB/ent"
 	"StegoLSB/ent/image"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 )
 
 type Auth struct {
-	Ok      bool   `json:"ok"`
-	Token   string `json:"token"`
-	Expires string `json:"expires"`
+	Ok      bool      `json:"ok"`
+	Token   string    `json:"token"`
+	Expires time.Time `json:"expires"`
 }
 
 type AuthUser struct {

@@ -22,8 +22,8 @@ func NewServer(client *ent.Client, controller controller.Controller) *handler.Se
 	srv.Use(entgql.Transactioner{TxOpener: client})
 	srv.Use(extension.Introspection{})
 	srv.Use(extension.FixedComplexityLimit(complexityLimit))
-	srv.SetRecoverFunc(func(_ context.Context, err interface{}) error {
-		return model.NewInternalServerError(fmt.Errorf(`%v`, err))
+	srv.SetRecoverFunc(func(ctx context.Context, err interface{}) error {
+		return model.NewInternalServerError(ctx, fmt.Sprintf(`%v`, err))
 	})
 
 	return srv

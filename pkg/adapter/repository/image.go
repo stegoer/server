@@ -3,25 +3,25 @@ package repository
 import (
 	"StegoLSB/ent"
 	"StegoLSB/ent/image"
+	"StegoLSB/pkg/adapter/controller"
 	"StegoLSB/pkg/entity/model"
-	usecaseRepository "StegoLSB/pkg/usecase/repository"
 	"context"
 )
 
-type imageRepository struct {
-	client *ent.Client
+// NewImageRepository returns a specific implementation of the controller.Image interface
+func NewImageRepository(client *ent.Client) controller.Image {
+	return &imageRepository{client: client}
 }
 
-// NewImageRepository generates new repository
-func NewImageRepository(client *ent.Client) usecaseRepository.Image {
-	return &imageRepository{client: client}
+type imageRepository struct {
+	client *ent.Client
 }
 
 func (r *imageRepository) Get(ctx context.Context, entUser model.User, id *model.ID) (*model.Image, error) {
 	entImage, err := entUser.QueryImages().Where(image.ID(*id)).Only(ctx)
 
 	if err != nil {
-		return nil, model.NewDBError(err)
+		return nil, model.NewDBError(ctx, err.Error())
 	}
 
 	return entImage, nil
@@ -43,7 +43,7 @@ func (r *imageRepository) List(ctx context.Context,
 		)
 
 	if err != nil {
-		return nil, model.NewDBError(err)
+		return nil, model.NewDBError(ctx, err.Error())
 	}
 
 	return connection, nil
@@ -62,12 +62,18 @@ func (r *imageRepository) Create(
 		Save(ctx)
 
 	if err != nil {
-		return nil, model.NewDBError(err)
+		return nil, model.NewDBError(ctx, err.Error())
 	}
 
 	return entImage, nil
 }
 
 func (r *imageRepository) Count(ctx context.Context, entUser model.User) (int, error) {
-	return entUser.QueryImages().Count(ctx)
+	count, err := entUser.QueryImages().Count(ctx)
+
+	if err != nil {
+		return 0, model.NewDBError(ctx, err.Error())
+	}
+
+	return count, nil
 }
