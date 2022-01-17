@@ -3,6 +3,7 @@ package registry
 import (
 	"StegoLSB/ent"
 	"StegoLSB/pkg/adapter/controller"
+	"StegoLSB/pkg/adapter/repository"
 )
 
 type registry struct {
@@ -24,7 +25,7 @@ func New(client *ent.Client) Registry {
 // NewController generates controllers
 func (r *registry) NewController() controller.Controller {
 	return controller.Controller{
-		User:  r.NewUserController(),
-		Image: r.NewImageController(),
+		User:  repository.NewUserRepository(r.client),
+		Image: repository.NewImageRepository(r.client),
 	}
 }

@@ -31,7 +31,7 @@ func main() {
 	ctrl := newController(entClient)
 
 	gqlSrv := graphql.NewServer(entClient, ctrl)
-	muxRouter := router.New(gqlSrv)
+	muxRouter := router.New(gqlSrv, entClient)
 
 	port, ok := os.LookupEnv("PORT")
 	if !ok || port == "" {

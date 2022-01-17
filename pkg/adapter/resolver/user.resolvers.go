@@ -19,21 +19,21 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input generated.NewUs
 		return nil, err
 	}
 
-	return util.GenerateAuthUser(*entUser)
+	return util.GenerateAuthUser(ctx, *entUser)
 }
 
 func (r *mutationResolver) Login(ctx context.Context, input generated.Login) (*generated.AuthUser, error) {
 	entUser, _ := r.controller.User.Get(ctx, input.Username)
 
 	if entUser == nil || !util.CheckPasswordHash(input.Password, entUser.Password) {
-		return nil, model.NewAuthorizationError(&model.InvalidUsernameOrPasswordError{})
+		return nil, model.NewNotFoundError(ctx, "username or password is incorrect", "user")
 	}
 
-	return util.GenerateAuthUser(*entUser)
+	return util.GenerateAuthUser(ctx, *entUser)
 }
 
 func (r *mutationResolver) RefreshToken(ctx context.Context, input generated.RefreshTokenInput) (*generated.AuthUser, error) {
-	username, err := util.ParseToken(input.Token)
+	username, err := util.ParseToken(ctx, input.Token)
 
 	if err != nil {
 		return nil, err
@@ -45,24 +45,29 @@ func (r *mutationResolver) RefreshToken(ctx context.Context, input generated.Ref
 		return nil, err
 	}
 
-	return util.GenerateAuthUser(*entUser)
+	return util.GenerateAuthUser(ctx, *entUser)
 }
 
 func (r *mutationResolver) UpdateUser(ctx context.Context, input generated.UpdateUser) (*ent.User, error) {
 	entUser, err := middleware.ForContext(ctx)
 	if err != nil {
-		return nil, model.NewAuthorizationError(err)
+		return nil, model.NewAuthorizationError(ctx, err.Error())
 	}
 
 	return r.controller.User.Update(ctx, *entUser, input)
 }
 
 func (r *queryResolver) Overview(ctx context.Context) (*ent.User, error) {
-	return middleware.ForContext(ctx)
+	entUser, err := middleware.ForContext(ctx)
+	if err != nil {
+		return nil, model.NewAuthorizationError(ctx, err.Error())
+	}
+
+	return entUser, nil
 }
 
-func (r *userResolver) ImageCount(ctx context.Context, obj *ent.User) (int, error) {
-	return r.controller.Image.Count(ctx, *obj)
+func (r *userResolver) Images(ctx context.Context, obj *ent.User, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ImageWhereInput, orderBy *ent.ImageOrder) (*ent.ImageConnection, error) {
+	return r.controller.Image.List(ctx, *obj, after, first, before, last, where, orderBy)
 }
 
 // User returns generated.UserResolver implementation.

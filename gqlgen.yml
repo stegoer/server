@@ -56,6 +56,10 @@ models:
   Node:
     model:
       - StegoLSB/pkg/entity/model.Node
+  User:
+    fields:
+      images:
+        resolver: true
   Channel:
     model:
       - StegoLSB/pkg/entity/model.Channel

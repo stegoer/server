@@ -38,7 +38,7 @@ input ImageOrder {
 type ImageConnection {
     totalCount: Int!
     pageInfo: PageInfo!
-    edges: [ImageEdge]
+    edges: [ImageEdge]!
 }
 
 type ImageEdge {

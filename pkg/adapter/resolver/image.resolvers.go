@@ -14,7 +14,7 @@ import (
 func (r *mutationResolver) CreateImage(ctx context.Context, input generated.NewImage) (*ent.Image, error) {
 	entUser, err := middleware.ForContext(ctx)
 	if err != nil {
-		return nil, model.NewAuthorizationError(err)
+		return nil, model.NewAuthorizationError(ctx, err.Error())
 	}
 
 	return r.controller.Image.Create(ctx, *entUser, input)
@@ -24,7 +24,11 @@ func (r *queryResolver) Images(ctx context.Context, after *ent.Cursor, first *in
 	entUser, err := middleware.ForContext(ctx)
 
 	if err != nil {
-		return nil, model.NewAuthorizationError(err)
+		return nil, model.NewAuthorizationError(ctx, err.Error())
+	}
+
+	if first == nil || last == nil {
+		return nil, model.NewBadRequestError(ctx, "query must specify first or last")
 	}
 
 	return r.controller.Image.List(ctx, *entUser, after, first, before, last, where, orderBy)

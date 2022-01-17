@@ -3,33 +3,30 @@ package util
 import (
 	"StegoLSB/graph/generated"
 	"StegoLSB/pkg/entity/model"
+	"context"
 	"fmt"
 	"github.com/golang-jwt/jwt"
-	"log"
 	"os"
 	"time"
 )
 
-const tokenExpiration = time.Minute * 15
+const (
+	tokenExpiration       = time.Minute * 15
+	mapClaimsErrorMessage = "failed to convert token claims to standard claims"
+)
 
-// SecretKey being used to sign tokens
+// SecretKey being used to sign tokens.
 var (
 	SecretKey = []byte(os.Getenv("SECRET_KEY")) //nolint:gochecknoglobals
 )
 
-type mapClaimsError struct{}
-
-func (m *mapClaimsError) Error() string {
-	return "failed to convert token claims to standard claims"
-}
-
 // GenerateAuthUser generates a jwt token and assigns a username to it's claims
-func GenerateAuthUser(entUser model.User) (*generated.AuthUser, error) {
+func GenerateAuthUser(ctx context.Context, entUser model.User) (*generated.AuthUser, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return nil, model.NewAuthorizationError(&mapClaimsError{})
+		return nil, model.NewInternalServerError(ctx, mapClaimsErrorMessage)
 	}
 
 	claims["username"] = entUser.Name
@@ -38,33 +35,32 @@ func GenerateAuthUser(entUser model.User) (*generated.AuthUser, error) {
 
 	tokenString, err := token.SignedString(SecretKey)
 	if err != nil {
-		log.Printf(`error generating key for user %s`, entUser.ID)
-
-		return nil, model.NewInternalServerError(err)
+		return nil, model.NewInternalServerError(ctx, err.Error())
 	}
 
 	return &generated.AuthUser{
 		Auth: &generated.Auth{
 			Ok:      true,
 			Token:   tokenString,
-			Expires: FormatDate(exp),
+			Expires: exp,
 		},
 		User: &entUser,
 	}, nil
 }
 
-// ParseToken parses a jwt token and returns the username in its claims
-func ParseToken(tokenStr string) (string, error) {
+// ParseToken parses a jwt token and returns the username in its claims.
+func ParseToken(ctx context.Context, tokenStr string) (string, error) {
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		return SecretKey, nil
 	})
 	if err != nil {
-		return "", model.NewAuthorizationError(err)
+		return "", model.NewAuthorizationError(ctx, err.Error())
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {
 		return fmt.Sprintf("%v", claims["username"]), nil
 	}
-	return "", model.NewAuthorizationError(&mapClaimsError{})
+
+	return "", model.NewAuthorizationError(ctx, mapClaimsErrorMessage)
 }

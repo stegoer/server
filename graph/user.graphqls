@@ -3,7 +3,14 @@ type User {
     name: String!
     createdAt: Time!
     updatedAt: Time!
-    imageCount: Int!
+    images(
+        after: Cursor
+        first: Int,
+        before: Cursor,
+        last: Int,
+        where: ImageWhereInput,
+        orderBy: ImageOrder,
+    ): ImageConnection!
 }
 
 input NewUser {
@@ -28,7 +35,7 @@ input RefreshTokenInput {
 type Auth {
     ok: Boolean!
     token: String!
-    expires: Duration!
+    expires: Time!
 }
 
 type AuthUser {

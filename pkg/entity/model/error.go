@@ -1,170 +1,71 @@
 package model
 
 import (
-	"github.com/pkg/errors"
+	"context"
+	"github.com/99designs/gqlgen/graphql"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 const (
-	// DBError is error code of database
+	// DBError is error code of database.
 	DBError = "DB_ERROR"
-	// GraphQLError is error code of graphql
+	// GraphQLError is error code of graphql.
 	GraphQLError = "GRAPHQL_ERROR"
-	// AuthorizationError is error code of authorization error
+	// AuthorizationError is error code of authorization error.
 	AuthorizationError = "AUTHORIZATION_ERROR"
-	// NotFoundError is error code of not found
+	// NotFoundError is error code of not found.
 	NotFoundError = "NOT_FOUND_ERROR"
-	// ValidationError is error code of validation
+	// ValidationError is error code of validation.
 	ValidationError = "VALIDATION_ERROR"
-	// BadRequestError is error code of request
+	// BadRequestError is error code of request.
 	BadRequestError = "BAD_REQUEST_ERROR"
-	// InternalServerError is error code of server error
+	// InternalServerError is error code of server error.
 	InternalServerError = "INTERNAL_SERVER_ERROR"
 )
 
-// StackTrace is used to check to see if the error has already been wrapped by errors.WithStack
-type StackTrace interface {
-	StackTrace() errors.StackTrace
+// Error represents gqlerror.Error type.
+type Error = gqlerror.Error
+
+// NewDBError returns error message related to database.
+func NewDBError(ctx context.Context, message string) *Error {
+	return newError(ctx, message, map[string]interface{}{"code": DBError})
 }
 
-// Error is the standard error type
-type Error interface {
-	Error() string
-	Code() string
-	Extensions() map[string]interface{}
-	Unwrap() error
+// NewGraphQLError returns error message related to graphql.
+func NewGraphQLError(ctx context.Context, message string) *Error {
+	return newError(ctx, message, map[string]interface{}{"code": GraphQLError})
 }
 
-// InvalidUsernameOrPasswordError indicates that the username or password is invalid
-type InvalidUsernameOrPasswordError struct{}
-
-func (m *InvalidUsernameOrPasswordError) Error() string {
-	return "username or password is invalid"
+// NewAuthorizationError returns error message related to authorization.
+func NewAuthorizationError(ctx context.Context, message string) *Error {
+	return newError(ctx, message, map[string]interface{}{"code": AuthorizationError})
 }
 
-// NewDBError returns error message related database
-func NewDBError(e error) error {
-	return newError(
-		DBError,
-		e.Error(),
-		map[string]interface{}{
-			"code": DBError,
-		},
-		e,
-	)
+// NewNotFoundError returns error message related to not found.
+func NewNotFoundError(ctx context.Context, message string, value interface{}) *Error {
+	return newError(ctx, message, map[string]interface{}{"code": NotFoundError, "value": value})
 }
 
-// NewGraphQLError returns error message related to graphql
-func NewGraphQLError(e error) error {
-	return newError(
-		GraphQLError,
-		e.Error(),
-		map[string]interface{}{
-			"code": GraphQLError,
-		},
-		e,
-	)
+// NewBadRequestError returns error message related to bad request.
+func NewBadRequestError(ctx context.Context, message string) *Error {
+	return newError(ctx, message, map[string]interface{}{"code": BadRequestError})
 }
 
-// NewAuthorizationError returns error message related to authorization
-func NewAuthorizationError(e error) error {
-	return newError(
-		AuthorizationError,
-		e.Error(),
-		map[string]interface{}{
-			"code": AuthorizationError,
-		},
-		e,
-	)
+// NewValidationError returns error message related to validation.
+func NewValidationError(ctx context.Context, message string, value interface{}) *Error {
+	return newError(ctx, message, map[string]interface{}{"code": ValidationError, "value": value})
 }
 
-// NewNotFoundError returns error message related to not found
-func NewNotFoundError(e error, value interface{}) error {
-	return newError(
-		NotFoundError,
-		e.Error(),
-		map[string]interface{}{
-			"code":  NotFoundError,
-			"value": value,
-		},
-		e,
-	)
+// NewInternalServerError returns error message related to internal server error.
+func NewInternalServerError(ctx context.Context, message string) *Error {
+	return newError(ctx, message, map[string]interface{}{"code": InternalServerError})
 }
 
-// NewInvalidParamError returns error message related param
-func NewInvalidParamError(e error, value interface{}) error {
-	return newError(
-		BadRequestError,
-		e.Error(),
-		map[string]interface{}{
-			"code":  BadRequestError,
-			"value": value,
-		},
-		e,
-	)
-}
-
-// NewValidationError returns error message related to validation
-func NewValidationError(e error) error {
-	return newError(
-		ValidationError,
-		e.Error(),
-		map[string]interface{}{
-			"code": ValidationError,
-		},
-		e,
-	)
-}
-
-// NewInternalServerError returns error message related syntax or other issues
-func NewInternalServerError(e error) error {
-	return newError(
-		InternalServerError,
-		e.Error(),
-		map[string]interface{}{
-			"code": InternalServerError,
-		},
-		e,
-	)
-}
-
-type err struct {
-	err        error
-	code       string
-	message    string
-	extensions map[string]interface{}
-}
-
-func (e *err) Error() string                      { return e.message }
-func (e *err) Code() string                       { return e.code }
-func (e *err) Extensions() map[string]interface{} { return e.extensions }
-func (e *err) Unwrap() error                      { return e.err }
-
-// IsStackTrace checks to see if the error with stack strace
-func IsStackTrace(e error) bool {
-	_, ok := e.(StackTrace)
-	return ok
-}
-
-// IsError checks to see if the error is generated by model
-func IsError(e error) bool {
-	_, ok := e.(Error)
-	return ok
-}
-
-func newError(code string, message string, extensions map[string]interface{}, e error) error {
-	newErr := &err{
-		err:        e,
-		code:       code,
-		message:    message,
-		extensions: extensions,
+// newError creates a new Error.
+func newError(ctx context.Context, message string, extensions map[string]interface{}) *Error {
+	return &gqlerror.Error{
+		Path:       graphql.GetPath(ctx),
+		Message:    message,
+		Extensions: extensions,
 	}
-	if IsStackTrace(e) {
-		return newErr
-	}
-
-	return withStackTrace(newErr)
-}
-
-func withStackTrace(e error) error {
-	return errors.WithStack(e)
 }
