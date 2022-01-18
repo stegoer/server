@@ -12,7 +12,7 @@ import (
 )
 
 func (r *mutationResolver) CreateImage(ctx context.Context, input generated.NewImage) (*ent.Image, error) {
-	entUser, err := middleware.ForContext(ctx)
+	entUser, err := middleware.JwtForContext(ctx)
 	if err != nil {
 		return nil, model.NewAuthorizationError(ctx, err.Error())
 	}
@@ -21,7 +21,7 @@ func (r *mutationResolver) CreateImage(ctx context.Context, input generated.NewI
 }
 
 func (r *queryResolver) Images(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ImageWhereInput, orderBy *ent.ImageOrder) (*ent.ImageConnection, error) {
-	entUser, err := middleware.ForContext(ctx)
+	entUser, err := middleware.JwtForContext(ctx)
 
 	if err != nil {
 		return nil, model.NewAuthorizationError(ctx, err.Error())

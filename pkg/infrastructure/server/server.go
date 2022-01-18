@@ -1,18 +1,16 @@
-//go:server go run ./app.go
-
-package main
+package server
 
 import (
 	"StegoLSB/ent"
 	"StegoLSB/ent/migrate"
 	"StegoLSB/pkg/adapter/controller"
 	"StegoLSB/pkg/infrastructure/client"
+	"StegoLSB/pkg/infrastructure/env"
 	"StegoLSB/pkg/infrastructure/graphql"
 	"StegoLSB/pkg/infrastructure/router"
 	"StegoLSB/pkg/registry"
 	"context"
 	"fmt"
-	_ "github.com/joho/godotenv/autoload"
 	"log"
 	"net/http"
 	"os"
@@ -20,39 +18,34 @@ import (
 	"time"
 )
 
-const (
-	defaultPort     = "8080"
-	timeOutDeadline = time.Second * 15
-)
+const timeOutDeadline = time.Second * 30
 
-func main() {
-	entClient := newDBClient()
+// Run runs the server with the given env.Config configuration.
+func Run(config env.Config) {
+	run(create(config))
+}
 
+func create(config env.Config) *http.Server {
+	entClient := newDBClient(config)
 	ctrl := newController(entClient)
 
 	gqlSrv := graphql.NewServer(entClient, ctrl)
-	muxRouter := router.New(gqlSrv, entClient)
+	muxRouter := router.New(config, gqlSrv, entClient)
 
-	port, ok := os.LookupEnv("PORT")
-	if !ok || port == "" {
-		port = defaultPort
-	}
-
-	srv := &http.Server{ //nolint:exhaustivestruct
-		Addr:         fmt.Sprintf(`:%s`, port),
+	return &http.Server{ //nolint:exhaustivestruct
+		Addr:         fmt.Sprintf(`:%d`, config.ServerPort),
 		WriteTimeout: timeOutDeadline,
 		ReadTimeout:  timeOutDeadline,
 		IdleTimeout:  timeOutDeadline,
 		Handler:      muxRouter,
 	}
-
-	runServer(srv)
 }
 
-func runServer(srv *http.Server) {
+func run(srv *http.Server) {
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {
 		log.Println("listening on", srv.Addr)
+
 		if err := srv.ListenAndServe(); err != nil {
 			log.Println(fmt.Sprintf("http server terminated: %v", err))
 		}
@@ -79,8 +72,8 @@ func runServer(srv *http.Server) {
 	os.Exit(0)
 }
 
-func newDBClient() *ent.Client {
-	entClient, err := client.New()
+func newDBClient(config env.Config) *ent.Client {
+	entClient, err := client.New(config)
 	if err != nil {
 		log.Fatalf("failed to open postgres client: %v", err)
 	}
@@ -91,7 +84,7 @@ func newDBClient() *ent.Client {
 		migrate.WithDropColumn(true),
 		migrate.WithForeignKeys(true),
 	); err != nil {
-		log.Fatalf("failed creating schema resources: %v", err)
+		log.Fatalf("failed to create schema resources: %v", err)
 	}
 
 	return entClient

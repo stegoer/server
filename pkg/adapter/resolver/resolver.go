@@ -19,7 +19,7 @@ type Resolver struct {
 	controller controller.Controller
 }
 
-// NewSchema creates NewExecutableSchema
+// NewSchema creates a new graphql.ExecutableSchema.
 func NewSchema(client *ent.Client, controller controller.Controller) graphql.ExecutableSchema {
 	return generated.NewExecutableSchema(generated.Config{
 		Resolvers:  getResolver(client, controller),
@@ -38,7 +38,7 @@ func getResolver(client *ent.Client, controller controller.Controller) *Resolver
 func getDirective() generated.DirectiveRoot {
 	return generated.DirectiveRoot{
 		IsAuthenticated: func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error) {
-			if _, err := middleware.ForContext(ctx); err != nil {
+			if _, err := middleware.JwtForContext(ctx); err != nil {
 				// block calling the next resolver
 				return nil, err
 			}

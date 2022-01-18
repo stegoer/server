@@ -11,14 +11,18 @@ import (
 	"net/http"
 )
 
+const (
+	errorFormatString = `{"errors":[{"message": "%v", "path": ["Authorization"], "extensions": %v}], data: null}`
+)
+
 var userCtxKey = &contextKey{"user"}
 
 type contextKey struct {
 	name string
 }
 
-// JwtMiddleware handles user authorization via JSON Web Tokens.
-func JwtMiddleware(client *ent.Client) func(http.Handler) http.Handler {
+// Jwt handles user authorization via JSON Web Tokens.
+func Jwt(client *ent.Client) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			header := r.Header.Get("Authorization")
@@ -35,7 +39,7 @@ func JwtMiddleware(client *ent.Client) func(http.Handler) http.Handler {
 			if err != nil {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusUnauthorized)
-				_, err := w.Write([]byte(getAuthenticationError(err)))
+				_, err := w.Write([]byte(getError(err)))
 				if err != nil {
 					return
 				}
@@ -58,8 +62,8 @@ func JwtMiddleware(client *ent.Client) func(http.Handler) http.Handler {
 	}
 }
 
-// ForContext finds the user id from the context. Requires Middleware to have run.
-func ForContext(ctx context.Context) (*ent.User, error) {
+// JwtForContext finds the user id from the context. Requires Jwt to have run.
+func JwtForContext(ctx context.Context) (*ent.User, error) {
 	entUser, ok := ctx.Value(userCtxKey).(*ent.User)
 	if !ok {
 		return nil, errors.Errorf("invalid token")
@@ -68,10 +72,10 @@ func ForContext(ctx context.Context) (*ent.User, error) {
 	return entUser, nil
 }
 
-func getAuthenticationError(e error) string {
+func getError(e error) string {
 	return fmt.Sprintf(
-		`{"errors":[{"message": "%v", "path": ["Authorization"], "extensions": {"code": %s}}], data: null}`,
+		errorFormatString,
 		e.Error(),
-		model.AuthorizationError,
+		model.Extensions{"code": model.AuthorizationError},
 	)
 }

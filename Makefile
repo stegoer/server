@@ -8,7 +8,7 @@ GO_FILES := $(shell \
 	find . '(' -path '*/.*' -o -path './vendor' ')' -prune \
 	-o -name '*.go' -print | cut -b3-)
 
-.PHONY: help lint tidy test cover generate dev clean
+.PHONY: help lint tidy test cover codegen dev
 
 default: help
 
@@ -19,9 +19,8 @@ help:
 	@echo "  tidy        check 'go mod tidy' of every module"
 	@echo "  test        run all tests of each module directory"
 	@echo "  cover   	 run tests with coverage report"
-	@echo "  generate    generate ent and gql code"
+	@echo "  codegen     generate ent and graphql code"
 	@echo "  dev         start development server"
-	@echo "  clean       clean object files from package source directories"
 	@echo ""
 	@echo "Check the Makefile to know exactly what each target is doing."
 
@@ -32,7 +31,7 @@ lint: $(GOLINT) $(STATICCHECK)
 	@make tidy
 
 tidy:
-	@$(foreach dir,$(MODULE_DIRS),(cd $(dir) && go mod tidy) &&) true
+	@$(foreach dir,$(MODULE_DIRS),(cd $(dir) && go mod tidy -compat=1.17) &&) true
 
 test:
 	@$(foreach dir,$(MODULE_DIRS),(cd $(dir) && go test -race ./...) &&) true
@@ -41,9 +40,11 @@ cover:
 	go test -race -coverprofile=cover.out -coverpkg=./... ./...
 	go tool cover -html=cover.out -o cover.html
 
-generate:
-	go generate
-	gqlgen
+codegen:
+	@echo "Running 'go run -mod=mod ent/entc.go'..."
+	@go generate
+	@echo "Running 'gqlgen'..."
+	@gqlgen
 
 dev:
-	@go run cmd/app.go
+	@go run app/cmd.go

@@ -2,6 +2,7 @@ package router
 
 import (
 	"StegoLSB/ent"
+	"StegoLSB/pkg/infrastructure/env"
 	"StegoLSB/pkg/infrastructure/middleware"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gorilla/mux"
@@ -15,12 +16,15 @@ const (
 )
 
 // New creates new mux router
-func New(srv http.Handler, client *ent.Client) *mux.Router {
+func New(config env.Config, srv http.Handler, client *ent.Client) *mux.Router {
 	router := mux.NewRouter()
-	router.Use(middleware.JwtMiddleware(client))
+	router.Use(middleware.Jwt(client))
 
 	router.Handle(QueryPath, srv)
-	router.HandleFunc(PlaygroundPath, playground.Handler("GQL Playground", QueryPath))
+
+	if config.Debug {
+		router.HandleFunc(PlaygroundPath, playground.Handler("GQL Playground", QueryPath))
+	}
 
 	return router
 }

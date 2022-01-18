@@ -49,7 +49,7 @@ func (r *mutationResolver) RefreshToken(ctx context.Context, input generated.Ref
 }
 
 func (r *mutationResolver) UpdateUser(ctx context.Context, input generated.UpdateUser) (*ent.User, error) {
-	entUser, err := middleware.ForContext(ctx)
+	entUser, err := middleware.JwtForContext(ctx)
 	if err != nil {
 		return nil, model.NewAuthorizationError(ctx, err.Error())
 	}
@@ -58,7 +58,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input generated.Updat
 }
 
 func (r *queryResolver) Overview(ctx context.Context) (*ent.User, error) {
-	entUser, err := middleware.ForContext(ctx)
+	entUser, err := middleware.JwtForContext(ctx)
 	if err != nil {
 		return nil, model.NewAuthorizationError(ctx, err.Error())
 	}

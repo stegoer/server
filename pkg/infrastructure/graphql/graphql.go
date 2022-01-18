@@ -16,7 +16,7 @@ import (
 
 const complexityLimit = 1000
 
-// NewServer generates graphql server
+// NewServer generates a new handler.Server.
 func NewServer(client *ent.Client, controller controller.Controller) *handler.Server {
 	srv := handler.NewDefaultServer(resolver.NewSchema(client, controller))
 	srv.Use(entgql.Transactioner{TxOpener: client})
