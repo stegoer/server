@@ -4,7 +4,7 @@
 *.dll
 *.so
 *.dylib
-StegoLSB
+stegoer
 
 # Test binary, built with `go test -c`
 *.test
@@ -19,7 +19,7 @@ StegoLSB
 go.work
 
 # Environment
-.env
+*.env
 
 # Test coverage
 cover.html
@@ -27,3 +27,6 @@ cover.out
 
 # IDE
 .idea
+
+# GraphQL
+.graphqlconfig

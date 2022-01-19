@@ -4,7 +4,16 @@ on:
   push:
     branches:
       - master
+    paths:
+      - "**.go"
+      - go.mod
+      - go.sum
+
   pull_request:
+    paths:
+      - "**.go"
+      - go.mod
+      - go.sum
 
 permissions:
   contents: read
@@ -21,3 +30,4 @@ jobs:
         uses: golangci/golangci-lint-action@v2
         with:
           version: latest
+          working-directory: server

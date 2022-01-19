@@ -3,3 +3,4 @@ repos:
     rev: v1.43.0
     hooks:
     - id: golangci-lint
+      entry: bash -c "cd server && golangci-lint run --fix"
