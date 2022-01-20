@@ -5,7 +5,6 @@ package resolver
 
 import (
 	"context"
-
 	"stegoer/ent"
 	"stegoer/graph/generated"
 	"stegoer/pkg/entity/model"
