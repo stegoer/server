@@ -3,12 +3,13 @@
 package image
 
 import (
-	"stegoer/ent/predicate"
-	"stegoer/ent/schema/ulid"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+
+	"github.com/kucera-lukas/stegoer/ent/predicate"
+	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
 )
 
 // ID filters vertices based on their ID field.

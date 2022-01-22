@@ -6,13 +6,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"stegoer/ent/image"
-	"stegoer/ent/schema/ulid"
-	"stegoer/ent/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+
+	"github.com/kucera-lukas/stegoer/ent/image"
+	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
+	"github.com/kucera-lukas/stegoer/ent/user"
 )
 
 // ImageCreate is the builder for creating a Image entity.

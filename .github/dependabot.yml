@@ -1,15 +1,21 @@
 version: 2
 updates:
 
-  # Maintain dependencies for GitHub Actions
+  # Maintain dependencies for GitHub Actions.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
 
 
-  # Maintain dependencies for Go Modules
+  # Maintain dependencies for server Go Module.
   - package-ecosystem: "gomod"
     directory: "/server"
+    schedule:
+      interval: "daily"
+
+  # Maintain dependencies for tools Go Module.
+  - package-ecosystem: "gomod"
+    directory: "/server/tools"
     schedule:
       interval: "daily"

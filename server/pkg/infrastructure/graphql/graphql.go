@@ -8,16 +8,19 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 
-	"stegoer/ent"
-	"stegoer/pkg/adapter/controller"
-	"stegoer/pkg/adapter/resolver"
-	"stegoer/pkg/entity/model"
+	"github.com/kucera-lukas/stegoer/ent"
+	"github.com/kucera-lukas/stegoer/pkg/adapter/controller"
+	"github.com/kucera-lukas/stegoer/pkg/adapter/resolver"
+	"github.com/kucera-lukas/stegoer/pkg/entity/model"
 )
 
 const complexityLimit = 1000
 
 // NewServer generates a new handler.Server.
-func NewServer(client *ent.Client, controller controller.Controller) *handler.Server {
+func NewServer(
+	client *ent.Client,
+	controller controller.Controller,
+) *handler.Server {
 	srv := handler.NewDefaultServer(resolver.NewSchema(client, controller))
 	srv.Use(entgql.Transactioner{TxOpener: client})
 	srv.Use(extension.Introspection{})

@@ -1,8 +1,8 @@
 package model
 
 import (
-	"stegoer/ent/schema/ulid"
+	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
 )
 
-// ID implements a ULID
+// ID implements a ULID.
 type ID = ulid.ID

@@ -1,6 +1,7 @@
 package env
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/spf13/viper"
@@ -16,8 +17,8 @@ type Config struct {
 	DatabaseURL string `mapstructure:"DATABASE_URL"`
 }
 
-// LoadConfig loads and returns the env.Config struct.
-func LoadConfig() Config {
+// Load loads and returns the env.Config struct.
+func Load() *Config {
 	config, err := load(configPath)
 	if err != nil {
 		log.Fatalf("failed to load config: %v", err)
@@ -26,18 +27,22 @@ func LoadConfig() Config {
 	return config
 }
 
-func load(path string) (Config, error) {
+func load(path string) (*Config, error) {
 	viper.AddConfigPath(path)
 	viper.SetConfigName(".env")
 	viper.SetConfigType("env")
 
 	viper.AutomaticEnv()
 
-	config := Config{} //nolint:exhaustivestruct
-
 	if err := viper.ReadInConfig(); err != nil {
-		return config, err
+		return nil, fmt.Errorf(`error reading configuration: %w`, err)
 	}
 
-	return config, viper.Unmarshal(&config)
+	config := Config{} //nolint:exhaustivestruct
+
+	if err := viper.Unmarshal(&config); err != nil {
+		return nil, fmt.Errorf(`error unmarshaling config: %w`, err)
+	}
+
+	return &config, nil
 }

@@ -7,6 +7,6 @@
 ### Install dependencies
 
 ```sh
-# To setup code formatting on commit
+# Setup code formatting on commit
 pre-commit install
 ```

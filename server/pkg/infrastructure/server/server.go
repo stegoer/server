@@ -9,24 +9,27 @@ import (
 	"os/signal"
 	"time"
 
-	"stegoer/ent"
-	"stegoer/ent/migrate"
-	"stegoer/pkg/adapter/controller"
-	"stegoer/pkg/infrastructure/client"
-	"stegoer/pkg/infrastructure/env"
-	"stegoer/pkg/infrastructure/graphql"
-	"stegoer/pkg/infrastructure/router"
-	"stegoer/pkg/registry"
+	"github.com/kucera-lukas/stegoer/ent"
+	"github.com/kucera-lukas/stegoer/ent/migrate"
+	"github.com/kucera-lukas/stegoer/pkg/adapter/controller"
+	"github.com/kucera-lukas/stegoer/pkg/adapter/repository"
+	"github.com/kucera-lukas/stegoer/pkg/infrastructure/client"
+	"github.com/kucera-lukas/stegoer/pkg/infrastructure/env"
+	"github.com/kucera-lukas/stegoer/pkg/infrastructure/graphql"
+	"github.com/kucera-lukas/stegoer/pkg/infrastructure/router"
 )
 
-const timeOutDeadline = time.Second * 30
+const (
+	timeOutDeadline = time.Second * 30
+	shutdownSignal  = 1
+)
 
 // Run runs the server with the given env.Config configuration.
-func Run(config env.Config) {
+func Run(config *env.Config) {
 	run(create(config))
 }
 
-func create(config env.Config) *http.Server {
+func create(config *env.Config) *http.Server {
 	entClient := newDBClient(config)
 	ctrl := newController(entClient)
 
@@ -52,7 +55,7 @@ func run(srv *http.Server) {
 		}
 	}()
 
-	channel := make(chan os.Signal, 1)
+	channel := make(chan os.Signal, shutdownSignal)
 	// We'll accept graceful shutdowns when quit via SIGINT (Ctrl+C)
 	// SIGKILL, SIGQUIT or SIGTERM (Ctrl+/) will not be caught.
 	signal.Notify(channel, os.Interrupt)
@@ -63,17 +66,17 @@ func run(srv *http.Server) {
 	// Create a deadline to wait for.
 	ctx, cancel := context.WithTimeout(context.Background(), timeOutDeadline)
 	defer cancel()
+
 	// Doesn't block if no connections, but will otherwise wait
 	// until the timeout deadline.
-	err := srv.Shutdown(ctx)
-	if err != nil {
-		log.Fatalf("error shutting down the server: %v", err)
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Panicf("error shutting down the server: %v", err)
 	}
+
 	log.Println("server shutdown")
-	os.Exit(0)
 }
 
-func newDBClient(config env.Config) *ent.Client {
+func newDBClient(config *env.Config) *ent.Client {
 	entClient, err := client.New(config)
 	if err != nil {
 		log.Fatalf("failed to open postgres client: %v", err)
@@ -92,5 +95,8 @@ func newDBClient(config env.Config) *ent.Client {
 }
 
 func newController(client *ent.Client) controller.Controller {
-	return registry.New(client).NewController()
+	return controller.Controller{
+		User:  repository.NewUserRepository(client),
+		Image: repository.NewImageRepository(client),
+	}
 }

@@ -1,20 +1,20 @@
 package mixin
 
 import (
-	"entgo.io/contrib/entgql"
 	"time"
 
+	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
 )
 
-// NewDatetime creates a Mixin that includes create_at and updated_at
+// NewDatetime creates a Mixin that includes created_at and updated_at.
 func NewDatetime() *DatetimeMixin {
 	return &DatetimeMixin{} //nolint:exhaustivestruct
 }
 
-// DatetimeMixin defines an ent Mixin
+// DatetimeMixin defines an ent Mixin.
 type DatetimeMixin struct {
 	mixin.Schema
 }

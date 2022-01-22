@@ -5,8 +5,8 @@ import (
 	"log"
 	"reflect"
 
-	"stegoer/ent/image"
-	"stegoer/ent/user"
+	"github.com/kucera-lukas/stegoer/ent/image"
+	"github.com/kucera-lukas/stegoer/ent/user"
 )
 
 type field struct {
@@ -20,8 +20,10 @@ type GlobalIDs struct {
 	Image field
 }
 
-// New generates a map object that is intended to be used as global identification for node interface query.
-// Prefix should maintain constrained to 3 characters for encoding the entity type.
+// New generates a map object.
+//
+// It is intended to be used as global identification for node interface query.
+// Prefix should have a max length of 3 characters to encode the entity type.
 func New() GlobalIDs {
 	return GlobalIDs{
 		User: field{
@@ -35,17 +37,19 @@ func New() GlobalIDs {
 	}
 }
 
-var globalIDS = New()
-var maps = structToMap(&globalIDS)
+var (
+	globalIDS = New()                   //nolint:gochecknoglobals
+	maps      = structToMap(&globalIDS) //nolint:gochecknoglobals
+)
 
 // FindTableByID returns table name by passed id.
 func (GlobalIDs) FindTableByID(id string) (string, error) {
-	v, ok := maps[id]
+	table, ok := maps[id]
 	if !ok {
 		return "", fmt.Errorf("could not map '%s' to a table name", id)
 	}
 
-	return v, nil
+	return table, nil
 }
 
 func structToMap(data *GlobalIDs) map[string]string {
@@ -55,13 +59,13 @@ func structToMap(data *GlobalIDs) map[string]string {
 
 	for i := 0; i < size; i++ {
 		value := elem.Field(i).Interface()
-		f, ok := value.(field)
+		valueField, ok := value.(field)
 
 		if !ok {
-			log.Fatalf("Cannot convert struct to map")
+			log.Fatalf("could not convert struct to map")
 		}
 
-		result[f.Prefix] = f.Table
+		result[valueField.Prefix] = valueField.Table
 	}
 
 	return result

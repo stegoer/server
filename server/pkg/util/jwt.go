@@ -7,8 +7,9 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
-	"stegoer/graph/generated"
-	"stegoer/pkg/entity/model"
+
+	"github.com/kucera-lukas/stegoer/graph/generated"
+	"github.com/kucera-lukas/stegoer/pkg/entity/model"
 )
 
 const (
@@ -21,8 +22,11 @@ var (
 	SecretKey = []byte(os.Getenv("SECRET_KEY")) //nolint:gochecknoglobals
 )
 
-// GenerateAuthUser generates a jwt token and assigns a username to it's claims
-func GenerateAuthUser(ctx context.Context, entUser model.User) (*generated.AuthUser, error) {
+// GenerateAuthUser generates a jwt token and assigns a username to its claims.
+func GenerateAuthUser(
+	ctx context.Context,
+	entUser model.User,
+) (*generated.AuthUser, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims, ok := token.Claims.(jwt.MapClaims)

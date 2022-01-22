@@ -1,46 +1,75 @@
 export GOBIN ?= $(shell pwd)/bin
 
-# Directories containing independent Go modules.
-MODULE_DIRS = .
+ENT = $(GOBIN)/ent
+GQLGEN = $(GOBIN)/gqlgen
+GOFUMPT = $(GOBIN)/gofumpt
+GOLANGCI_LINT = $(GOBIN)/golangci-lint
+GOIMPORTS = $(GOBIN)/goimports-reviser
 
-.PHONY: help lint tidy test cover codegen dev
+# Directories containing independent Go modules.
+MODULE_DIRS = . ./tools
+
+# Many Go tools take file globs or directories as arguments instead of packages.
+GO_FILES := $(shell \
+	find . '(' -path '*/.*' -o -path './vendor' ')' -prune \
+	-o -name '*.go' -print | cut -b3-)
+
+$(ENT):
+	cd tools && go install entgo.io/ent/cmd/ent
+
+$(GQLGEN):
+	cd tools && go install github.com/99designs/gqlgen
+
+$(GOFUMPT):
+	cd tools && go install mvdan.cc/gofumpt
+
+$(GOIMPORTS):
+	cd tools && go install github.com/incu6us/goimports-reviser
+
+$(GOLANGCI_LINT):
+	cd tools && go install github.com/golangci/golangci-lint/cmd/golangci-lint
+
+.PHONY: gen fmt lint tidy test cover ci server
 
 default: help
 
-help:
-	@echo "Please use 'make <target>' where <target> is one of"
-	@echo ""
-	@echo "  lint        lint all source files"
-	@echo "  tidy        check 'go mod tidy' of every module"
-	@echo "  test        run all tests of each module directory"
-	@echo "  cover   	 run tests with coverage report"
-	@echo "  codegen     generate ent and graphql code"
-	@echo "  dev         start development server"
-	@echo ""
-	@echo "Check the Makefile to know exactly what each target is doing."
+gen-go: $(ENT) $(GQLGEN)  ## Generate server files.
+	@echo "generating ent files"
+	@$(ENT) generate ./ent/schema
+	@echo "generating gqlgen files"
+	@$(GQLEN)
 
-lint:
-	@echo "Running golangci-lint..."
-	@golangci-lint run ./... 2>&1
-	@echo "Checking 'go mod tidy'..."
-	@make tidy
+fmt: $(GOFUMPT) $(GOIMPORTS) ## Format source files.
+	@echo "formatting via gofumpt and goimports-reviser"
+	@$(foreach file,$(GO_FILES),($(GOFUMPT) -e -s -w $(file) && $(GOIMPORTS) -project-name github.com/kucera-lukas/stegoer -rm-unused -file-path $(file)) &&) true
 
-tidy:
+lint: $(GOLANGCI_LINT)  ## Lint source files.
+	@echo "linting via golangci-lint"
+	@$(GOLANGCI_LINT) run --config ./.golangci-lint.yml ./...
+
+tidy:  ## Tidy module dependencies.
 	@$(foreach dir,$(MODULE_DIRS),(cd $(dir) && go mod tidy -compat=1.17) &&) true
 
-test:
+test: ## Run module tests.
+	@echo "testing each go module"
 	@$(foreach dir,$(MODULE_DIRS),(cd $(dir) && go test -race ./...) &&) true
 
-cover:
+cover:  ## Run tests with coverage.
+	@echo "running tests with coverage"
 	go test -race -coverprofile=cover.out -coverpkg=./... ./...
 	go tool cover -html=cover.out -o cover.html
 
-codegen:
-	@echo "Generating ent..."
-	@ent generate ./ent/schema
-	@echo "Generating gqlgen..."
-	@gqlgen
+ci:  ## Run continuous integration.
+	@make gen
+	@make fmt
+	@make lint
+	@make tidy
+	# @make test
+	# @make cover
 
-dev:
+server:  ## Start backend server.
 	@echo "Starting server..."
 	@go run cmd/stegoer-server/main.go
+
+help: ## Display help.
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)

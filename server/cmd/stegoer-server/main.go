@@ -1,11 +1,11 @@
 package main
 
 import (
-	"stegoer/pkg/infrastructure/env"
-	"stegoer/pkg/infrastructure/server"
+	"github.com/kucera-lukas/stegoer/pkg/infrastructure/env"
+	"github.com/kucera-lukas/stegoer/pkg/infrastructure/server"
 )
 
 func main() {
-	config := env.LoadConfig()
+	config := env.Load()
 	server.Run(config)
 }

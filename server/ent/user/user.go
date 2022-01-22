@@ -3,8 +3,9 @@
 package user
 
 import (
-	"stegoer/ent/schema/ulid"
 	"time"
+
+	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
 )
 
 const (

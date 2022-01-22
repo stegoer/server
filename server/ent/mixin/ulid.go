@@ -1,12 +1,12 @@
 package mixin
 
 import (
-	"stegoer/ent/schema/ulid"
-
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
+
+	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
 )
 
 // NewUlid creates a Mixin that encodes the provided prefix.

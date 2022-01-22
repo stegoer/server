@@ -4,12 +4,13 @@ package ent
 
 import (
 	"fmt"
-	"stegoer/ent/schema/ulid"
-	"stegoer/ent/user"
 	"strings"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+
+	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
+	"github.com/kucera-lukas/stegoer/ent/user"
 )
 
 // User is the model entity for the User schema.

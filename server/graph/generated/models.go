@@ -3,11 +3,12 @@
 package generated
 
 import (
-	"stegoer/ent"
-	"stegoer/ent/image"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
+
+	"github.com/kucera-lukas/stegoer/ent"
+	"github.com/kucera-lukas/stegoer/ent/image"
 )
 
 type Auth struct {

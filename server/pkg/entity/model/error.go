@@ -30,43 +30,98 @@ type Error = gqlerror.Error
 // Extensions represents Error extensions.
 type Extensions map[string]interface{}
 
-// NewDBError returns error message related to database.
-func NewDBError(ctx context.Context, message string) *Error {
-	return newError(ctx, message, Extensions{"code": DBError})
+// NewDBError returns error related to database.
+func NewDBError(
+	ctx context.Context,
+	message string,
+) *Error {
+	return newError(
+		ctx,
+		message,
+		Extensions{"code": DBError},
+	)
 }
 
-// NewGraphQLError returns error message related to graphql.
-func NewGraphQLError(ctx context.Context, message string) *Error {
-	return newError(ctx, message, Extensions{"code": GraphQLError})
+// NewGraphQLError returns error related to graphql.
+func NewGraphQLError(
+	ctx context.Context,
+	message string,
+) *Error {
+	return newError(
+		ctx,
+		message,
+		Extensions{"code": GraphQLError},
+	)
 }
 
-// NewAuthorizationError returns error message related to authorization.
-func NewAuthorizationError(ctx context.Context, message string) *Error {
-	return newError(ctx, message, Extensions{"code": AuthorizationError})
+// NewAuthorizationError returns error related to authorization.
+func NewAuthorizationError(
+	ctx context.Context,
+	message string,
+) *Error {
+	return newError(
+		ctx,
+		message,
+		Extensions{"code": AuthorizationError},
+	)
 }
 
-// NewNotFoundError returns error message related to not found.
-func NewNotFoundError(ctx context.Context, message string, value interface{}) *Error {
-	return newError(ctx, message, Extensions{"code": NotFoundError, "value": value})
+// NewNotFoundError returns error related to not found.
+func NewNotFoundError(
+	ctx context.Context,
+	message string,
+	value interface{},
+) *Error {
+	return newError(
+		ctx,
+		message,
+		Extensions{"code": NotFoundError, "value": value},
+	)
 }
 
-// NewBadRequestError returns error message related to bad request.
-func NewBadRequestError(ctx context.Context, message string) *Error {
-	return newError(ctx, message, Extensions{"code": BadRequestError})
+// NewBadRequestError returns error related to bad request.
+func NewBadRequestError(
+	ctx context.Context,
+	message string,
+) *Error {
+	return newError(
+		ctx,
+		message,
+		Extensions{"code": BadRequestError},
+	)
 }
 
-// NewValidationError returns error message related to validation.
-func NewValidationError(ctx context.Context, message string, value interface{}) *Error {
-	return newError(ctx, message, Extensions{"code": ValidationError, "value": value})
+// NewValidationError returns error related to validation.
+func NewValidationError(
+	ctx context.Context,
+	message string,
+	value interface{},
+) *Error {
+	return newError(
+		ctx,
+		message,
+		Extensions{"code": ValidationError, "value": value},
+	)
 }
 
-// NewInternalServerError returns error message related to internal server error.
-func NewInternalServerError(ctx context.Context, message string) *Error {
-	return newError(ctx, message, Extensions{"code": InternalServerError})
+// NewInternalServerError returns error related to internal server error.
+func NewInternalServerError(
+	ctx context.Context,
+	message string,
+) *Error {
+	return newError(
+		ctx,
+		message,
+		Extensions{"code": InternalServerError},
+	)
 }
 
 // newError creates a new Error.
-func newError(ctx context.Context, message string, extensions Extensions) *Error {
+func newError(
+	ctx context.Context,
+	message string,
+	extensions Extensions,
+) *Error {
 	return &gqlerror.Error{ //nolint:exhaustivestruct
 		Path:       graphql.GetPath(ctx),
 		Message:    message,

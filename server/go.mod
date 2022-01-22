@@ -1,4 +1,4 @@
-module stegoer
+module github.com/kucera-lukas/stegoer
 
 go 1.17
 

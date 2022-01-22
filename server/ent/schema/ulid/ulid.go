@@ -3,31 +3,30 @@ package ulid
 import (
 	"crypto/rand"
 	"database/sql/driver"
+	"errors"
 	"fmt"
-	"github.com/oklog/ulid/v2"
 	"io"
 	"strconv"
 	"time"
+
+	"github.com/oklog/ulid/v2"
 )
 
-// ID implements a ULID
+// ID implements a ULID.
 type ID string
 
-var defaultEntropySource *ulid.MonotonicEntropy //nolint:gochecknoglobals
-
-func init() {
-	// Seed the default entropy source.
-	defaultEntropySource = ulid.Monotonic(rand.Reader, 0)
-}
+var defaultEntropySource = ulid.Monotonic(rand.Reader, 0) //nolint:lll,gochecknoglobals
 
 // newULID returns a new ULID for time.Now() using the default entropy source.
 func newULID() ulid.ULID {
 	return ulid.MustNew(ulid.Timestamp(time.Now()), defaultEntropySource)
 }
 
-// MustNew returns a new ULID for time.Now() given a prefix. This uses the default entropy source.
+// MustNew returns a new ULID for time.Now() given a prefix.
+//
+// It uses the default entropy source.
 func MustNew(prefix string) ID {
-	return ID(prefix + fmt.Sprint(newULID()))
+	return ID(fmt.Sprintf(`%s%s`, prefix, newULID()))
 }
 
 // UnmarshalGQL implements the graphql.Unmarshaller interface.
@@ -43,17 +42,17 @@ func (i ID) MarshalGQL(w io.Writer) {
 // Scan implements the Scanner interface.
 func (i *ID) Scan(src interface{}) error {
 	if src == nil {
-		return fmt.Errorf("ulid: expected a value")
+		return errors.New("expected a value, got nil")
 	}
 
-	switch s := src.(type) {
+	switch srcType := src.(type) {
 	case string:
-		*i = ID(s)
+		*i = ID(srcType)
 	case []byte:
-		str := string(s)
+		str := string(srcType)
 		*i = ID(str)
 	default:
-		return fmt.Errorf("ulid: expected a string %v", s)
+		return fmt.Errorf(`expected a string or []byte, got: %v`, srcType)
 	}
 
 	return nil

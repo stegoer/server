@@ -1,6 +1,6 @@
 package model
 
-import "stegoer/ent"
+import "github.com/kucera-lukas/stegoer/ent"
 
 // Cursor of an edge type.
 type Cursor = ent.Cursor

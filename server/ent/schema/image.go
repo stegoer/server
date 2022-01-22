@@ -7,8 +7,8 @@ import (
 	"entgo.io/ent/schema/field"
 	entMixin "entgo.io/ent/schema/mixin"
 
-	"stegoer/ent/mixin"
-	"stegoer/pkg/const/globalid"
+	"github.com/kucera-lukas/stegoer/ent/mixin"
+	"github.com/kucera-lukas/stegoer/pkg/const/globalid"
 )
 
 // Image holds the schema definition for the Image entity.
@@ -16,7 +16,7 @@ type Image struct {
 	ent.Schema
 }
 
-// ImageMixin defines Fields
+// ImageMixin defines Fields.
 type ImageMixin struct {
 	entMixin.Schema
 }

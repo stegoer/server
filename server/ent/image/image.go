@@ -4,8 +4,9 @@ package image
 
 import (
 	"fmt"
-	"stegoer/ent/schema/ulid"
 	"time"
+
+	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
 )
 
 const (

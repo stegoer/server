@@ -5,8 +5,9 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	entMixin "entgo.io/ent/schema/mixin"
-	"stegoer/ent/mixin"
-	"stegoer/pkg/const/globalid"
+
+	"github.com/kucera-lukas/stegoer/ent/mixin"
+	"github.com/kucera-lukas/stegoer/pkg/const/globalid"
 )
 
 const nameMinLen = 5
@@ -16,7 +17,7 @@ type User struct {
 	ent.Schema
 }
 
-// UserMixin defines Fields
+// UserMixin defines Fields.
 type UserMixin struct {
 	entMixin.Schema
 }
