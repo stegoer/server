@@ -7,7 +7,7 @@ require (
 	github.com/99designs/gqlgen v0.15.1
 	github.com/golangci/golangci-lint v1.43.0
 	github.com/incu6us/goimports-reviser v0.1.6
-	mvdan.cc/gofumpt v0.1.1
+	mvdan.cc/gofumpt v0.2.1
 )
 
 require (
@@ -156,7 +156,7 @@ require (
 	github.com/yeya24/promlinter v0.1.0 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
 	golang.org/x/mod v0.5.1 // indirect
-	golang.org/x/sys v0.0.0-20211205182925-97ca703d548d // indirect
+	golang.org/x/sys v0.0.0-20211213223007-03aa0b5f6827 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.9-0.20211216111533-8d383106f7e7 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
