@@ -62,7 +62,7 @@ func structToMap(data *GlobalIDs) map[string]string {
 		valueField, ok := value.(field)
 
 		if !ok {
-			log.Fatalf("could not convert struct to map")
+			log.Panicf("could not convert struct to map")
 		}
 
 		result[valueField.Prefix] = valueField.Table

@@ -31,7 +31,8 @@ func (r *mutationResolver) Login(ctx context.Context, input generated.Login) (*g
 	) {
 		return nil, model.NewNotFoundError(
 			ctx,
-			"username or password is incorrect", "user",
+			"username or password is incorrect",
+			"user",
 		)
 	}
 

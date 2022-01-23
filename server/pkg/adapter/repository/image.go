@@ -40,6 +40,13 @@ func (r *imageRepository) List(ctx context.Context,
 	where *model.ImageWhereInput,
 	orderBy *model.ImageOrderInput,
 ) (*model.ImageConnection, error) {
+	if first == nil && last == nil {
+		return nil, model.NewBadRequestError(
+			ctx,
+			"query must specify first or last",
+		)
+	}
+
 	connection, err := entUser.QueryImages().
 		Paginate(ctx, after, first, before, last,
 			ent.WithImageFilter(where.Filter),

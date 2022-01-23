@@ -24,7 +24,7 @@ func main() {
 		entgql.WithSchemaPath(entGraphqlSchemaPath),
 	)
 	if err != nil {
-		log.Fatalf("failed creating entgql extension: %v", err)
+		log.Panicf("failed creating entgql extension: %v", err)
 	}
 
 	opts := []entc.Option{
@@ -32,6 +32,6 @@ func main() {
 	}
 
 	if err := entc.Generate(schemaPath, &gen.Config{}, opts...); err != nil {
-		log.Fatalf("failed running ent codegen: %v", err)
+		log.Panicf("failed running ent codegen: %v", err)
 	}
 }

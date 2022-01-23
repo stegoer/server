@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -16,6 +15,7 @@ import (
 	"github.com/kucera-lukas/stegoer/pkg/infrastructure/client"
 	"github.com/kucera-lukas/stegoer/pkg/infrastructure/env"
 	"github.com/kucera-lukas/stegoer/pkg/infrastructure/graphql"
+	"github.com/kucera-lukas/stegoer/pkg/infrastructure/log"
 	"github.com/kucera-lukas/stegoer/pkg/infrastructure/router"
 )
 
@@ -25,16 +25,17 @@ const (
 )
 
 // Run runs the server with the given env.Config configuration.
-func Run(config *env.Config) {
-	run(create(config))
+func Run(config *env.Config, logger *log.Logger) {
+	srv := create(config, logger)
+	run(logger, srv)
 }
 
-func create(config *env.Config) *http.Server {
-	entClient := newDBClient(config)
+func create(config *env.Config, logger *log.Logger) *http.Server {
+	entClient := newDBClient(config, logger)
 	ctrl := newController(entClient)
 
-	gqlSrv := graphql.NewServer(entClient, ctrl)
-	muxRouter := router.New(config, gqlSrv, entClient)
+	gqlSrv := graphql.NewServer(config, logger, entClient, ctrl)
+	muxRouter := router.New(config, logger, gqlSrv, entClient)
 
 	return &http.Server{ //nolint:exhaustivestruct
 		Addr:         fmt.Sprintf(`:%d`, config.ServerPort),
@@ -45,13 +46,13 @@ func create(config *env.Config) *http.Server {
 	}
 }
 
-func run(srv *http.Server) {
+func run(logger *log.Logger, srv *http.Server) {
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {
-		log.Println("listening on", srv.Addr)
+		logger.Infof("listening on %s", srv.Addr)
 
 		if err := srv.ListenAndServe(); err != nil {
-			log.Println(fmt.Sprintf("http server terminated: %v", err))
+			logger.Infof("http server terminated: %v", err)
 		}
 	}()
 
@@ -70,16 +71,16 @@ func run(srv *http.Server) {
 	// Doesn't block if no connections, but will otherwise wait
 	// until the timeout deadline.
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Panicf("error shutting down the server: %v", err)
+		logger.Panicf("error shutting down the server: %v", err)
 	}
 
-	log.Println("server shutdown")
+	logger.Info("server shutdown")
 }
 
-func newDBClient(config *env.Config) *ent.Client {
-	entClient, err := client.New(config)
+func newDBClient(config *env.Config, logger *log.Logger) *ent.Client {
+	entClient, err := client.New(config, logger)
 	if err != nil {
-		log.Fatalf("failed to open postgres client: %v", err)
+		logger.Panicf("failed to open postgres client: %v", err)
 	}
 
 	if err := entClient.Schema.Create(
@@ -88,7 +89,7 @@ func newDBClient(config *env.Config) *ent.Client {
 		migrate.WithDropColumn(true),
 		migrate.WithForeignKeys(true),
 	); err != nil {
-		log.Fatalf("failed to create schema resources: %v", err)
+		logger.Panicf("failed to create schema resources: %v", err)
 	}
 
 	return entClient

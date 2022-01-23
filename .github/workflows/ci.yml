@@ -35,8 +35,7 @@ jobs:
       - name: Make CI
         run: cd server && make ci
 
-      - name: Check No Git Diff
+      - name: Exit If Git Diff
         run: |
-          if [ -n "$(git diff -- . ':(exclude)*go.sum')" ]; then
-            exit 1
-          fi
+          chmod +x ./server/scripts/exit_if_diff.sh
+          ./server/scripts/exit_if_diff.sh

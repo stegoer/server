@@ -21,7 +21,7 @@ type Config struct {
 func Load() *Config {
 	config, err := load(configPath)
 	if err != nil {
-		log.Fatalf("failed to load config: %v", err)
+		log.Panicf("failed to load config: %v", err)
 	}
 
 	return config

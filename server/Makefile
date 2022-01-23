@@ -29,11 +29,11 @@ $(GOIMPORTS):
 $(GOLANGCI_LINT):
 	cd tools && go install github.com/golangci/golangci-lint/cmd/golangci-lint
 
-.PHONY: gen fmt lint tidy test cover ci server
+.PHONY: gen fmt lint tidy test cover ci server clean help
 
 default: help
 
-gen-go: $(ENT) $(GQLGEN)  ## Generate server files.
+gen: $(ENT) $(GQLGEN)  ## Generate server files.
 	@echo "generating ent files"
 	@$(ENT) generate ./ent/schema
 	@echo "generating gqlgen files"
@@ -41,18 +41,17 @@ gen-go: $(ENT) $(GQLGEN)  ## Generate server files.
 
 fmt: $(GOFUMPT) $(GOIMPORTS) ## Format source files.
 	@echo "formatting via gofumpt and goimports-reviser"
-	@$(foreach file,$(GO_FILES),($(GOFUMPT) -e -s -w $(file) && $(GOIMPORTS) -project-name github.com/kucera-lukas/stegoer -rm-unused -file-path $(file)) &&) true
+	@$(foreach file,$(GO_FILES),(echo "fmt $(file)" && $(GOFUMPT) -e -w $(file) && $(GOIMPORTS) -project-name github.com/kucera-lukas/stegoer -rm-unused -file-path $(file)) &&) true
 
 lint: $(GOLANGCI_LINT)  ## Lint source files.
 	@echo "linting via golangci-lint"
 	@$(GOLANGCI_LINT) run --config ./.golangci-lint.yml ./...
 
 tidy:  ## Tidy module dependencies.
-	@$(foreach dir,$(MODULE_DIRS),(cd $(dir) && go mod tidy -compat=1.17) &&) true
+	@$(foreach dir,$(MODULE_DIRS),(cd $(dir) && echo "tidy $(dir)" && go mod tidy -compat=1.17) &&) true
 
 test: ## Run module tests.
-	@echo "testing each go module"
-	@$(foreach dir,$(MODULE_DIRS),(cd $(dir) && go test -race ./...) &&) true
+	@$(foreach dir,$(MODULE_DIRS),(cd $(dir) && echo "test $(dir)" && go test -race ./...) &&) true
 
 cover:  ## Run tests with coverage.
 	@echo "running tests with coverage"
@@ -60,16 +59,20 @@ cover:  ## Run tests with coverage.
 	go tool cover -html=cover.out -o cover.html
 
 ci:  ## Run continuous integration.
+	@make tidy
 	@make gen
 	@make fmt
 	@make lint
-	@make tidy
 	# @make test
 	# @make cover
 
 server:  ## Start backend server.
 	@echo "Starting server..."
 	@go run cmd/stegoer-server/main.go
+
+clean: ## Cleanup files.
+	@echo "cleaning up 'bin'"
+	@rm bin/*
 
 help: ## Display help.
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)

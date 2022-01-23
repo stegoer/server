@@ -8,7 +8,6 @@ import (
 
 	"github.com/kucera-lukas/stegoer/ent"
 	"github.com/kucera-lukas/stegoer/graph/generated"
-	"github.com/kucera-lukas/stegoer/pkg/entity/model"
 	"github.com/kucera-lukas/stegoer/pkg/infrastructure/middleware"
 )
 
@@ -27,14 +26,11 @@ func (r *queryResolver) Images(ctx context.Context, after *ent.Cursor, first *in
 		return nil, err //nolint:wrapcheck
 	}
 
-	if first == nil || last == nil {
-		return nil, model.NewBadRequestError(ctx, "query must specify first or last")
-	}
-
 	return r.controller.Image.List( //nolint:wrapcheck
 		ctx,
 		*entUser,
-		after, first,
+		after,
+		first,
 		before,
 		last,
 		where,
