@@ -13,7 +13,7 @@ require (
 	github.com/lib/pq v1.10.4
 	github.com/oklog/ulid/v2 v2.0.2
 	github.com/spf13/viper v1.10.1
-	github.com/vektah/gqlparser/v2 v2.2.0
+	github.com/vektah/gqlparser/v2 v2.3.1
 	github.com/vmihailenco/msgpack/v5 v5.3.5
 	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
