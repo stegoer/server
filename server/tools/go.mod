@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	entgo.io/ent v0.9.2-0.20210821141344-368a8f7a2e9a
-	github.com/99designs/gqlgen v0.15.1
+	github.com/99designs/gqlgen v0.16.0
 	github.com/golangci/golangci-lint v1.43.0
 	github.com/incu6us/goimports-reviser v0.1.6
 	mvdan.cc/gofumpt v0.2.1
