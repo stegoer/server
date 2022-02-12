@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 
+	"github.com/kucera-lukas/stegoer/graph/generated"
 	"github.com/kucera-lukas/stegoer/pkg/entity/model"
 )
 
@@ -12,7 +13,7 @@ type Image interface {
 		ctx context.Context,
 		entUser model.User,
 		id *model.ID,
-	) (*model.Image, error)
+	) (*model.Image, *model.Error)
 	List(
 		ctx context.Context,
 		entUser model.User,
@@ -22,14 +23,14 @@ type Image interface {
 		last *int,
 		where *model.ImageWhereInput,
 		orderBy *model.ImageOrderInput,
-	) (*model.ImageConnection, error)
+	) (*model.ImageConnection, *model.Error)
 	Create(
 		ctx context.Context,
 		entUser model.User,
-		input model.NewImageInput,
-	) (*model.Image, error)
+		input generated.NewImage,
+	) (*model.Image, *model.Error)
 	Count(
 		ctx context.Context,
 		entUser model.User,
-	) (int, error)
+	) (int, *model.Error)
 }

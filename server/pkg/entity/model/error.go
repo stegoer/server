@@ -7,39 +7,34 @@ import (
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
+type ErrorCode string
+
 const (
 	// DBError is error code of database.
-	DBError = "DB_ERROR"
+	DBError ErrorCode = "DB_ERROR"
 	// GraphQLError is error code of graphql.
-	GraphQLError = "GRAPHQL_ERROR"
+	GraphQLError ErrorCode = "GRAPHQL_ERROR"
 	// AuthorizationError is error code of authorization error.
-	AuthorizationError = "AUTHORIZATION_ERROR"
+	AuthorizationError ErrorCode = "AUTHORIZATION_ERROR"
 	// NotFoundError is error code of not found.
-	NotFoundError = "NOT_FOUND_ERROR"
+	NotFoundError ErrorCode = "NOT_FOUND_ERROR"
 	// ValidationError is error code of validation.
-	ValidationError = "VALIDATION_ERROR"
+	ValidationError ErrorCode = "VALIDATION_ERROR"
 	// BadRequestError is error code of request.
-	BadRequestError = "BAD_REQUEST_ERROR"
+	BadRequestError ErrorCode = "BAD_REQUEST_ERROR"
 	// InternalServerError is error code of server error.
-	InternalServerError = "INTERNAL_SERVER_ERROR"
+	InternalServerError ErrorCode = "INTERNAL_SERVER_ERROR"
 )
 
-// Error represents gqlerror.Error type.
+// Error represents global error type.
 type Error = gqlerror.Error
-
-// Extensions represents Error extensions.
-type Extensions map[string]interface{}
 
 // NewDBError returns error related to database.
 func NewDBError(
 	ctx context.Context,
 	message string,
 ) *Error {
-	return newError(
-		ctx,
-		message,
-		Extensions{"code": DBError},
-	)
+	return newError(ctx, message, DBError)
 }
 
 // NewGraphQLError returns error related to graphql.
@@ -47,11 +42,7 @@ func NewGraphQLError(
 	ctx context.Context,
 	message string,
 ) *Error {
-	return newError(
-		ctx,
-		message,
-		Extensions{"code": GraphQLError},
-	)
+	return newError(ctx, message, GraphQLError)
 }
 
 // NewAuthorizationError returns error related to authorization.
@@ -59,24 +50,15 @@ func NewAuthorizationError(
 	ctx context.Context,
 	message string,
 ) *Error {
-	return newError(
-		ctx,
-		message,
-		Extensions{"code": AuthorizationError},
-	)
+	return newError(ctx, message, AuthorizationError)
 }
 
 // NewNotFoundError returns error related to not found.
 func NewNotFoundError(
 	ctx context.Context,
 	message string,
-	value interface{},
 ) *Error {
-	return newError(
-		ctx,
-		message,
-		Extensions{"code": NotFoundError, "value": value},
-	)
+	return newError(ctx, message, NotFoundError)
 }
 
 // NewBadRequestError returns error related to bad request.
@@ -84,24 +66,15 @@ func NewBadRequestError(
 	ctx context.Context,
 	message string,
 ) *Error {
-	return newError(
-		ctx,
-		message,
-		Extensions{"code": BadRequestError},
-	)
+	return newError(ctx, message, BadRequestError)
 }
 
 // NewValidationError returns error related to validation.
 func NewValidationError(
 	ctx context.Context,
 	message string,
-	value interface{},
 ) *Error {
-	return newError(
-		ctx,
-		message,
-		Extensions{"code": ValidationError, "value": value},
-	)
+	return newError(ctx, message, ValidationError)
 }
 
 // NewInternalServerError returns error related to internal server error.
@@ -109,22 +82,18 @@ func NewInternalServerError(
 	ctx context.Context,
 	message string,
 ) *Error {
-	return newError(
-		ctx,
-		message,
-		Extensions{"code": InternalServerError},
-	)
+	return newError(ctx, message, InternalServerError)
 }
 
 // newError creates a new Error.
 func newError(
 	ctx context.Context,
 	message string,
-	extensions Extensions,
+	code ErrorCode,
 ) *Error {
-	return &gqlerror.Error{ //nolint:exhaustivestruct
-		Path:       graphql.GetPath(ctx),
+	return &Error{ //nolint:exhaustivestruct
 		Message:    message,
-		Extensions: extensions,
+		Path:       graphql.GetPath(ctx),
+		Extensions: map[string]interface{}{"code": code},
 	}
 }

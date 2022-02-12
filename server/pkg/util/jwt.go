@@ -22,11 +22,11 @@ var (
 	SecretKey = []byte(os.Getenv("SECRET_KEY")) //nolint:gochecknoglobals
 )
 
-// GenerateAuthUser generates a jwt token and assigns a username to its claims.
-func GenerateAuthUser(
+// GenerateAuth generates a jwt token and assigns a username to its claims.
+func GenerateAuth(
 	ctx context.Context,
 	entUser model.User,
-) (*generated.AuthUser, error) {
+) (*generated.Auth, *model.Error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims, ok := token.Claims.(jwt.MapClaims)
@@ -43,18 +43,17 @@ func GenerateAuthUser(
 		return nil, model.NewInternalServerError(ctx, err.Error())
 	}
 
-	return &generated.AuthUser{
-		Auth: &generated.Auth{
-			Ok:      true,
-			Token:   tokenString,
-			Expires: exp,
-		},
-		User: &entUser,
+	return &generated.Auth{
+		Token:   tokenString,
+		Expires: exp,
 	}, nil
 }
 
 // ParseToken parses a jwt token and returns the username in its claims.
-func ParseToken(ctx context.Context, tokenStr string) (string, error) {
+func ParseToken(
+	ctx context.Context,
+	tokenStr string,
+) (string, *model.Error) {
 	token, err := jwt.Parse(tokenStr, func(_ *jwt.Token) (interface{}, error) {
 		return SecretKey, nil
 	})

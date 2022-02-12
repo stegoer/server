@@ -1,60 +1,61 @@
-scalar Upload
-
 type Image implements Node {
-    id: ID!
-    channel: Channel!
-    createdAt: Time!
-    updatedAt: Time!
-    user: User!
+  id: ID!
+  channel: Channel!
+  createdAt: Time!
+  updatedAt: Time!
 }
 
 input NewImage {
-    channel: Channel!
-    file: Upload!
+  channel: Channel!
+  file: Upload!
+}
+
+type CreateImagePayload {
+  image: Image
 }
 
 enum Channel {
-    RED
-    GREEN
-    BLUE
-    RED_GREEN
-    RED_BLUE
-    GREEN_BLUE
-    RED_GREEN_BLUE
+  RED
+  GREEN
+  BLUE
+  RED_GREEN
+  RED_BLUE
+  GREEN_BLUE
+  RED_GREEN_BLUE
 }
 
 enum ImageOrderField {
-    CREATED_AT
-    UPDATED_AT
+  CREATED_AT
+  UPDATED_AT
 }
 
 input ImageOrder {
-    direction: OrderDirection!
-    field: ImageOrderField
-}
-
-type ImageConnection {
-    totalCount: Int!
-    pageInfo: PageInfo!
-    edges: [ImageEdge]!
+  direction: OrderDirection!
+  field: ImageOrderField
 }
 
 type ImageEdge {
-    node: Image
-    cursor: Cursor!
+  node: Image!
+  cursor: Cursor!
+}
+
+type ImagesPayload {
+  totalCount: Int
+  pageInfo: PageInfo
+  edges: [ImageEdge!]!
 }
 
 extend type Query {
-    images(
-        after: Cursor
-        first: Int,
-        before: Cursor,
-        last: Int,
-        where: ImageWhereInput,
-        orderBy: ImageOrder,
-    ): ImageConnection @isAuthenticated
+  images(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    where: ImageWhereInput
+    orderBy: ImageOrder
+  ): ImagesPayload!
 }
 
 extend type Mutation {
-    createImage(input: NewImage!): Image! @isAuthenticated
+  createImage(input: NewImage!): CreateImagePayload!
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/kucera-lukas/stegoer/ent"
 	"github.com/kucera-lukas/stegoer/ent/image"
+	"github.com/kucera-lukas/stegoer/graph/generated"
 	"github.com/kucera-lukas/stegoer/pkg/adapter/controller"
 	"github.com/kucera-lukas/stegoer/pkg/entity/model"
 )
@@ -22,7 +23,7 @@ func (r *imageRepository) Get(
 	ctx context.Context,
 	entUser model.User,
 	id *model.ID,
-) (*model.Image, error) {
+) (*model.Image, *model.Error) {
 	entImage, err := entUser.QueryImages().Where(image.ID(*id)).Only(ctx)
 	if err != nil {
 		return nil, model.NewDBError(ctx, err.Error())
@@ -39,7 +40,7 @@ func (r *imageRepository) List(ctx context.Context,
 	last *int,
 	where *model.ImageWhereInput,
 	orderBy *model.ImageOrderInput,
-) (*model.ImageConnection, error) {
+) (*model.ImageConnection, *model.Error) {
 	if first == nil && last == nil {
 		return nil, model.NewBadRequestError(
 			ctx,
@@ -62,8 +63,8 @@ func (r *imageRepository) List(ctx context.Context,
 func (r *imageRepository) Create(
 	ctx context.Context,
 	entUser model.User,
-	input model.NewImageInput,
-) (*model.Image, error) {
+	input generated.NewImage,
+) (*model.Image, *model.Error) {
 	entImage, err := r.client.
 		Image.
 		Create().
@@ -80,7 +81,7 @@ func (r *imageRepository) Create(
 func (r *imageRepository) Count(
 	ctx context.Context,
 	entUser model.User,
-) (int, error) {
+) (int, *model.Error) {
 	count, err := entUser.QueryImages().Count(ctx)
 	if err != nil {
 		return 0, model.NewDBError(ctx, err.Error())

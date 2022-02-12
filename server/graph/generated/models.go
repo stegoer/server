@@ -12,19 +12,33 @@ import (
 )
 
 type Auth struct {
-	Ok      bool      `json:"ok"`
 	Token   string    `json:"token"`
 	Expires time.Time `json:"expires"`
 }
 
-type AuthUser struct {
-	Auth *Auth     `json:"auth"`
+type CreateImagePayload struct {
+	Image *ent.Image `json:"image"`
+}
+
+type CreateUserPayload struct {
 	User *ent.User `json:"user"`
+	Auth *Auth     `json:"auth"`
+}
+
+type ImagesPayload struct {
+	TotalCount *int             `json:"totalCount"`
+	PageInfo   *ent.PageInfo    `json:"pageInfo"`
+	Edges      []*ent.ImageEdge `json:"edges"`
 }
 
 type Login struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+}
+
+type LoginPayload struct {
+	User *ent.User `json:"user"`
+	Auth *Auth     `json:"auth"`
 }
 
 type NewImage struct {
@@ -37,11 +51,24 @@ type NewUser struct {
 	Password string `json:"password"`
 }
 
+type OverviewPayload struct {
+	User *ent.User `json:"user"`
+}
+
 type RefreshTokenInput struct {
 	Token string `json:"token"`
+}
+
+type RefreshTokenPayload struct {
+	User *ent.User `json:"user"`
+	Auth *Auth     `json:"auth"`
 }
 
 type UpdateUser struct {
 	Name     *string `json:"name"`
 	Password *string `json:"password"`
+}
+
+type UpdateUserPayload struct {
+	User *ent.User `json:"user"`
 }

@@ -46,7 +46,7 @@ type Edge struct {
 func (i *Image) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     i.ID,
-		Type:   "Image",
+		Type:   "DisplayImage",
 		Fields: make([]*Field, 3),
 		Edges:  make([]*Edge, 1),
 	}
@@ -129,7 +129,7 @@ func (u *User) Node(ctx context.Context) (node *Node, err error) {
 		Value: string(buf),
 	}
 	node.Edges[0] = &Edge{
-		Type: "Image",
+		Type: "DisplayImage",
 		Name: "images",
 	}
 	err = u.QueryImages().
@@ -211,7 +211,7 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 	case image.Table:
 		n, err := c.Image.Query().
 			Where(image.ID(id)).
-			CollectFields(ctx, "Image").
+			CollectFields(ctx, "DisplayImage").
 			Only(ctx)
 		if err != nil {
 			return nil, err
@@ -302,7 +302,7 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 	case image.Table:
 		nodes, err := c.Image.Query().
 			Where(image.IDIn(ids...)).
-			CollectFields(ctx, "Image").
+			CollectFields(ctx, "DisplayImage").
 			All(ctx)
 		if err != nil {
 			return nil, err

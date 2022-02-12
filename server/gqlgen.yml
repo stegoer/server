@@ -58,10 +58,6 @@ models:
   Node:
     model:
       - github.com/kucera-lukas/stegoer/pkg/entity/model.Node
-  User:
-    fields:
-      images:
-        resolver: true  # we need to parse arguments to create the connection
   Channel:
     model:
       - github.com/kucera-lukas/stegoer/pkg/entity/model.Channel

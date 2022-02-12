@@ -1,3 +1,6 @@
+// +heroku goVersion go1.17
+// +heroku install ./cmd/stegoer-server
+
 module github.com/kucera-lukas/stegoer
 
 go 1.17
@@ -10,8 +13,10 @@ require (
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/go-multierror v1.1.1
+	github.com/joho/godotenv v1.4.0
 	github.com/lib/pq v1.10.4
 	github.com/oklog/ulid/v2 v2.0.2
+	github.com/rs/cors v1.8.2
 	github.com/spf13/viper v1.10.1
 	github.com/vektah/gqlparser/v2 v2.3.1
 	github.com/vmihailenco/msgpack/v5 v5.3.5

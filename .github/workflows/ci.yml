@@ -4,19 +4,8 @@ on:
   push:
     branches:
       - master
-    paths:
-      - "**.go"
-      - go.mod
-      - go.sum
 
   pull_request:
-    paths:
-      - "**.go"
-      - go.mod
-      - go.sum
-
-permissions:
-  contents: read
 
 jobs:
   server:
@@ -30,12 +19,33 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.17.5'
+          go-version: "1.17.5"
 
       - name: Make CI
         run: cd server && make ci
 
       - name: Exit If Git Diff
         run: |
-          chmod +x ./server/scripts/exit_if_diff.sh
-          ./server/scripts/exit_if_diff.sh
+          chmod +x ./scripts/exit_if_diff.sh
+          ./scripts/exit_if_diff.sh
+  client:
+    name: client
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v2
+
+      - name: Install packages
+        run: cd client && npm ci
+
+      - name: ESLint
+        run: cd client && npm run lint:fix
+
+      - name: Prettier
+        run: cd client && npm run fmt
+
+      - name: Exit If Git Diff
+        run: |
+          chmod +x ./scripts/exit_if_diff.sh
+          ./scripts/exit_if_diff.sh

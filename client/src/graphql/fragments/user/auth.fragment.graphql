@@ -1,0 +1,4 @@
+fragment AuthFragment on Auth {
+  token
+  expires
+}

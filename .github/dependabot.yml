@@ -1,21 +1,25 @@
 version: 2
 updates:
-
   # Maintain dependencies for GitHub Actions.
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
-      interval: "daily"
-
+      interval: daily
 
   # Maintain dependencies for server Go Module.
-  - package-ecosystem: "gomod"
-    directory: "/server"
+  - package-ecosystem: gomod
+    directory: /server
     schedule:
-      interval: "daily"
+      interval: daily
 
   # Maintain dependencies for tools Go Module.
-  - package-ecosystem: "gomod"
-    directory: "/server/tools"
+  - package-ecosystem: gomod
+    directory: /server/tools
     schedule:
-      interval: "daily"
+      interval: daily
+
+  # Maintain dependencies for client.
+  - package-ecosystem: npm
+    directory: /client
+    schedule:
+      interval: daily

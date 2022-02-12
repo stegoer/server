@@ -6,8 +6,6 @@ package resolver
 // add any dependencies you require here.
 
 import (
-	"context"
-
 	"github.com/99designs/gqlgen/graphql"
 
 	"github.com/kucera-lukas/stegoer/ent"
@@ -15,7 +13,6 @@ import (
 	"github.com/kucera-lukas/stegoer/pkg/adapter/controller"
 	"github.com/kucera-lukas/stegoer/pkg/infrastructure/env"
 	"github.com/kucera-lukas/stegoer/pkg/infrastructure/log"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/middleware"
 )
 
 // Resolver is a context struct.
@@ -35,7 +32,7 @@ func NewSchema( //nolint:ireturn
 ) graphql.ExecutableSchema {
 	return generated.NewExecutableSchema(generated.Config{
 		Resolvers:  getResolver(config, logger, client, controller),
-		Directives: getDirective(logger),
+		Directives: getDirective(),
 		Complexity: getComplexity(),
 	})
 }
@@ -54,25 +51,8 @@ func getResolver(
 	}
 }
 
-func getDirective(logger *log.Logger) generated.DirectiveRoot {
-	return generated.DirectiveRoot{
-		IsAuthenticated: func(
-			ctx context.Context,
-			obj interface{},
-			next graphql.Resolver,
-		) (res interface{}, err error) {
-			entUser, err := middleware.JwtForContext(ctx)
-			if err != nil {
-				logger.Debugf("@isAuthenticated invalid request: %v", err)
-
-				return nil, err //nolint:wrapcheck
-			}
-
-			logger.Debugf("@isAuthenticated valid user: %s", entUser.Name)
-
-			return next(ctx)
-		},
-	}
+func getDirective() generated.DirectiveRoot {
+	return generated.DirectiveRoot{}
 }
 
 func getComplexity() generated.ComplexityRoot {

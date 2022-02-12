@@ -29,7 +29,7 @@ $(GOIMPORTS):
 $(GOLANGCI_LINT):
 	cd tools && go install github.com/golangci/golangci-lint/cmd/golangci-lint
 
-.PHONY: gen fmt lint tidy test cover ci server clean help
+.PHONY: gen fmt lint tidy test cover ci dev server clean help
 
 default: help
 
@@ -66,9 +66,15 @@ ci:  ## Run continuous integration.
 	# @make test
 	# @make cover
 
-server:  ## Start backend server.
-	@echo "Starting server..."
+dev:  ## Start development server.
+	@echo "starting development server..."
 	@go run cmd/stegoer-server/main.go
+
+server:  ## Build and start server.
+	@echo "building server..."
+	@go build cmd/stegoer-server/main.go
+	@echo "starting server..."
+	@./main
 
 clean: ## Cleanup files.
 	@echo "cleaning up 'bin'"

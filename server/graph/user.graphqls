@@ -1,55 +1,64 @@
 type User {
-    id: ID!
-    name: String!
-    createdAt: Time!
-    updatedAt: Time!
-    images(
-        after: Cursor
-        first: Int,
-        before: Cursor,
-        last: Int,
-        where: ImageWhereInput,
-        orderBy: ImageOrder,
-    ): ImageConnection!
+  id: ID!
+  name: String!
+  createdAt: Time!
+  updatedAt: Time!
 }
 
-input NewUser {
-    username: String!
-    password: String!
-}
-
-input UpdateUser {
-    name: String
-    password: String
-}
-
-input Login {
-    username: String!
-    password: String!
-}
-
-input RefreshTokenInput {
-    token: String!
+type OverviewPayload {
+  user: User
 }
 
 type Auth {
-    ok: Boolean!
-    token: String!
-    expires: Time!
+  token: String!
+  expires: Time!
 }
 
-type AuthUser {
-    auth: Auth!
-    user: User!
+input NewUser {
+  username: String!
+  password: String!
+}
+
+type CreateUserPayload {
+  user: User
+  auth: Auth
+}
+
+input UpdateUser {
+  name: String
+  password: String
+}
+
+type UpdateUserPayload {
+  user: User
+}
+
+input Login {
+  username: String!
+  password: String!
+}
+
+type LoginPayload {
+  user: User
+  auth: Auth
+}
+
+input RefreshTokenInput {
+  token: String!
+}
+
+type RefreshTokenPayload {
+  user: User
+  auth: Auth
 }
 
 extend type Query {
-    overview: User! @isAuthenticated
+  overview: OverviewPayload!
 }
 
 extend type Mutation {
-    createUser(input: NewUser!): AuthUser!
-    login(input: Login!): AuthUser!
-    refreshToken(input: RefreshTokenInput!): AuthUser!
-    updateUser(input: UpdateUser!): User! @isAuthenticated
+  createUser(input: NewUser!): CreateUserPayload!
+  login(input: Login!): LoginPayload!
+  refreshToken(input: RefreshTokenInput!): RefreshTokenPayload!
+  updateUser(input: UpdateUser!): UpdateUserPayload!
 }

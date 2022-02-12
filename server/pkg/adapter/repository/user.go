@@ -23,7 +23,7 @@ type userRepository struct {
 func (r *userRepository) Get(
 	ctx context.Context,
 	name string,
-) (*model.User, error) {
+) (*model.User, *model.Error) {
 	entUser, err := r.client.User.Query().Where(user.NameEQ(name)).Only(ctx)
 	if err != nil {
 		return nil, model.NewDBError(ctx, err.Error())
@@ -35,10 +35,10 @@ func (r *userRepository) Get(
 func (r *userRepository) Create(
 	ctx context.Context,
 	input generated.NewUser,
-) (*model.User, error) {
+) (*model.User, *model.Error) {
 	hashedPassword, err := util.HashPassword(input.Password)
 	if err != nil {
-		return nil, model.NewValidationError(ctx, err.Error(), "password")
+		return nil, model.NewValidationError(ctx, err.Error())
 	}
 
 	entUser, err := r.client.User.
@@ -57,7 +57,7 @@ func (r *userRepository) Update(
 	ctx context.Context,
 	entUser model.User,
 	input generated.UpdateUser,
-) (*model.User, error) {
+) (*model.User, *model.Error) {
 	update := entUser.Update()
 
 	if input.Name != nil {
@@ -67,7 +67,7 @@ func (r *userRepository) Update(
 	if input.Password != nil {
 		hashedPassword, err := util.HashPassword(*input.Password)
 		if err != nil {
-			return nil, model.NewValidationError(ctx, err.Error(), "password")
+			return nil, model.NewValidationError(ctx, err.Error())
 		}
 
 		update = update.SetPassword(hashedPassword)

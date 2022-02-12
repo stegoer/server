@@ -25,10 +25,16 @@ make migrate
 
 ## Development
 
-### To run dev server
+### Dev server
 
 ```sh
 make dev
+```
+
+### Codegen
+
+```sh
+make gen
 ```
 
 ### Tests

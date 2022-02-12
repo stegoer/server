@@ -38,7 +38,7 @@ func create(config *env.Config, logger *log.Logger) *http.Server {
 	muxRouter := router.New(config, logger, gqlSrv, entClient)
 
 	return &http.Server{ //nolint:exhaustivestruct
-		Addr:         fmt.Sprintf(`:%d`, config.ServerPort),
+		Addr:         fmt.Sprintf(`0.0.0.0:%d`, config.Port),
 		WriteTimeout: timeOutDeadline,
 		ReadTimeout:  timeOutDeadline,
 		IdleTimeout:  timeOutDeadline,

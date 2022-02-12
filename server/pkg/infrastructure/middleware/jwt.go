@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/kucera-lukas/stegoer/ent"
@@ -10,15 +9,6 @@ import (
 	"github.com/kucera-lukas/stegoer/pkg/entity/model"
 	"github.com/kucera-lukas/stegoer/pkg/infrastructure/log"
 	"github.com/kucera-lukas/stegoer/pkg/util"
-)
-
-const (
-	errorFormatString = `{
-"errors":[{"message": "%s", 
-"path": ["Authorization"], 
-"extensions": {"code": "AUTHORIZATION_ERROR"}}],
-data: null
-}`
 )
 
 var userCtxKey = &contextKey{"user"} //nolint:gochecknoglobals
@@ -55,9 +45,7 @@ func Jwt(
 				if err != nil {
 					logger.Debugf("invalid token: %v", err)
 
-					writer.Header().Set("Content-Type", "application/json")
-					writer.WriteHeader(http.StatusUnauthorized)
-					_, _ = writer.Write([]byte(getError(err)))
+					next.ServeHTTP(writer, request)
 
 					return
 				}
@@ -84,15 +72,11 @@ func Jwt(
 }
 
 // JwtForContext finds user from context. Requires Jwt to have run.
-func JwtForContext(ctx context.Context) (*ent.User, error) {
+func JwtForContext(ctx context.Context) (*ent.User, *model.Error) {
 	entUser, ok := ctx.Value(userCtxKey).(*ent.User)
 	if !ok {
 		return nil, model.NewAuthorizationError(ctx, "invalid token")
 	}
 
 	return entUser, nil
-}
-
-func getError(e error) string {
-	return fmt.Sprintf(errorFormatString, e.Error())
 }

@@ -19,10 +19,7 @@ func New(config *env.Config) *Logger {
 		log.Panicf("can't initialize logger: %v", err)
 	}
 
-	sugar := logger.Sugar()
-	sugar.Infof("logger initialized, development: %t", cfg.Development)
-
-	return sugar
+	return logger.Sugar()
 }
 
 func Sync(logger Logger) {
@@ -32,7 +29,7 @@ func Sync(logger Logger) {
 }
 
 func getConfig(config *env.Config) (cfg zap.Config) {
-	switch config.Debug {
+	switch config.IsDevelopment() {
 	case true:
 		cfg = zap.NewDevelopmentConfig()
 	case false:

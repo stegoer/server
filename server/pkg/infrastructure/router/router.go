@@ -5,6 +5,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 
 	"github.com/kucera-lukas/stegoer/ent"
 	"github.com/kucera-lukas/stegoer/pkg/infrastructure/env"
@@ -24,18 +25,30 @@ func New(
 	logger *log.Logger,
 	srv http.Handler,
 	client *ent.Client,
-) *mux.Router {
+) http.Handler {
 	router := mux.NewRouter()
 	router.Use(middleware.Logging, middleware.Jwt(logger, client))
 
 	router.Handle(QueryPath, srv)
 
-	if config.Debug {
+	var crossOrigin *cors.Cors
+
+	switch config.IsDevelopment() {
+	case true:
 		router.HandleFunc(
 			PlaygroundPath,
 			playground.Handler("GQL Playground", QueryPath),
 		)
+
+		crossOrigin = cors.AllowAll()
+	case false:
+		crossOrigin = cors.New(cors.Options{ //nolint:exhaustivestruct
+			AllowedOrigins: []string{"*"},
+			AllowedMethods: []string{"POST"},
+			AllowedHeaders: []string{"Authorization"},
+			Debug:          config.Debug,
+		})
 	}
 
-	return router
+	return crossOrigin.Handler(router)
 }

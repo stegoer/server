@@ -33,16 +33,6 @@ func NewServer(
 	srv.Use(entgql.Transactioner{TxOpener: client})
 	srv.Use(extension.Introspection{})
 	srv.Use(extension.FixedComplexityLimit(complexityLimit))
-	srv.AroundOperations(
-		func(
-			ctx context.Context,
-			next graphql.OperationHandler,
-		) graphql.ResponseHandler {
-			opCtx := graphql.GetOperationContext(ctx)
-			logger.Debugf("graphql operation name: %s", opCtx.OperationName)
-
-			return next(ctx)
-		})
 	srv.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
 		err := graphql.DefaultErrorPresenter(ctx, e)
 		logger.Debugw("graphql request failed",

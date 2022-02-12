@@ -1,0 +1,31 @@
+overwrite: true
+schema: http://localhost:8080/graphql
+documents: src/graphql/**/*.graphql
+generates:
+  src/graphql/generated/codegen.generated.ts:
+    plugins:
+      - add:
+          content: // eslint-disable-next-line import/no-named-as-default
+      - time
+      - typescript
+      - typescript-operations
+      - typescript-urql
+    config:
+      strictScalars: true
+      skipTypenames: true
+      useTypeImports: true
+      documentVariableSuffix: Document
+      fragmentVariableSuffix: FragmentDocument
+      scalars:
+        Time: Date
+        Cursor: string
+        Upload: File
+  src/graphql/generated/introspection-schema.generated.json:
+    plugins:
+      - introspection
+    config:
+      minify: true
+hooks:
+  afterAllFileWrite:
+    # we need to run both as one command because if `lint` fixes something `fmt` wouldn't be run
+    - npm run lint:fix && npm run fmt

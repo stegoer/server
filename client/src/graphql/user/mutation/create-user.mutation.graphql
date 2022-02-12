@@ -1,0 +1,10 @@
+mutation createUser($username: String!, $password: String!) {
+  createUser(input: { username: $username, password: $password }) {
+    user {
+      ...UserFragment
+    }
+    auth {
+      ...AuthFragment
+    }
+  }
+}

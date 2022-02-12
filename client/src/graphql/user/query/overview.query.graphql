@@ -1,0 +1,7 @@
+query overview {
+  overview {
+    user {
+      ...UserFragment
+    }
+  }
+}
