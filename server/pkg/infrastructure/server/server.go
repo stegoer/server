@@ -8,6 +8,8 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/go-redis/redis/v8"
+
 	"github.com/kucera-lukas/stegoer/ent"
 	"github.com/kucera-lukas/stegoer/ent/migrate"
 	"github.com/kucera-lukas/stegoer/pkg/adapter/controller"
@@ -32,9 +34,10 @@ func Run(config *env.Config, logger *log.Logger) {
 
 func create(config *env.Config, logger *log.Logger) *http.Server {
 	entClient := newDBClient(config, logger)
+	redisClient := newRedisClient(config, logger)
 	ctrl := newController(entClient)
 
-	gqlSrv := graphql.NewServer(config, logger, entClient, ctrl)
+	gqlSrv := graphql.NewServer(config, logger, entClient, redisClient, ctrl)
 	muxRouter := router.New(config, logger, gqlSrv, entClient)
 
 	return &http.Server{ //nolint:exhaustivestruct
@@ -93,6 +96,22 @@ func newDBClient(config *env.Config, logger *log.Logger) *ent.Client {
 	}
 
 	return entClient
+}
+
+func newRedisClient(config *env.Config, logger *log.Logger) *redis.Client {
+	redisOptions, err := redis.ParseURL(config.RedisURL)
+	if err != nil {
+		logger.Panicf("failed to parse %s as a redis url: %v", config.RedisURL, err)
+	}
+
+	redisClient := redis.NewClient(redisOptions)
+
+	_, err = redisClient.Ping(context.Background()).Result()
+	if err != nil {
+		logger.Panicf("failed to open redis client: %v", err)
+	}
+
+	return redisClient
 }
 
 func newController(client *ent.Client) controller.Controller {

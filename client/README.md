@@ -10,7 +10,9 @@
 npm install
 ```
 
-### Copy and fill in environment variables
+### Create the `.env.local` file
+
+Create a `.env.local` file and copy the contents of `.env.local.example` file into the `.env.local` file
 
 ```sh
 cp .env.local.example .env.local

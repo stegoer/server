@@ -25,6 +25,7 @@ type Config struct {
 	Port        int         `mapstructure:"PORT"`
 	SecretKey   string      `mapstructure:"SECRET_KEY"`
 	DatabaseURL string      `mapstructure:"DATABASE_URL"`
+	RedisURL    string      `mapstructure:"REDIS_URL"`
 }
 
 func (c *Config) IsDevelopment() bool {
@@ -82,4 +83,5 @@ func setDefault() {
 	viper.SetDefault("PORT", os.Getenv("PORT"))
 	viper.SetDefault("SECRET_KEY", os.Getenv("SECRET_KEY"))
 	viper.SetDefault("DATABASE_URL", os.Getenv("DATABASE_URL"))
+	viper.SetDefault("REDIS_URL", os.Getenv("REDIS_URL"))
 }

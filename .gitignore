@@ -69,3 +69,6 @@ client/*.tsbuildinfo
 
 # backups
 *.bak
+
+# redis
+dump.rdb

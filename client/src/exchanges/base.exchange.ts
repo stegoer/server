@@ -1,6 +1,7 @@
 import authExchange from "@exchanges/auth.exchange";
 import errorExchange from "@exchanges/error.exchange";
 import graphcacheExchange from "@exchanges/graphcache.exchange";
+import persistedFetchExchange from "@exchanges/persisted-fetch.exchange";
 import refocusExchange from "@exchanges/refocus.exchange";
 import requestPolicyExchange from "@exchanges/request-policy.exchange";
 import retryExchange from "@exchanges/retry.exchange";
@@ -20,6 +21,7 @@ const Exchanges: Exchange[] = [
   errorExchange,
   authExchange,
   retryExchange,
+  persistedFetchExchange,
   multipartFetchExchange,
 ];
 

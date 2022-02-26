@@ -44,7 +44,10 @@ const AuthProvider: FC = ({ children }) => {
       updateToken();
     }, REFRESH_INTERVAL);
 
-    return () => clearInterval(interval);
+    return () => {
+      updateToken();
+      clearInterval(interval);
+    };
   }, [updateToken]);
 
   // whenever token is changed/removed we want to fetch the latest data
