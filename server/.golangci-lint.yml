@@ -25,4 +25,4 @@ issue:
 
 linters-settings:
   lll:
-    line-length: 80
+    line-length: 79

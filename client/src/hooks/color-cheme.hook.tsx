@@ -2,6 +2,7 @@ import {
   useColorScheme as mantineUseColorScheme,
   useLocalStorageValue,
 } from "@mantine/hooks";
+import { useCallback } from "react";
 
 import type { ColorScheme } from "@mantine/core";
 
@@ -11,8 +12,12 @@ const useColorScheme = (): [ColorScheme, (value?: ColorScheme) => void] => {
     defaultValue: mantineUseColorScheme(),
   });
 
-  const toggleColorScheme = (value?: ColorScheme) =>
-    setColorScheme(value || (colorScheme === `dark` ? `light` : `dark`));
+  const toggleColorScheme = useCallback(
+    (value?: ColorScheme) => {
+      setColorScheme(value || (colorScheme === `dark` ? `light` : `dark`));
+    },
+    [colorScheme, setColorScheme],
+  );
 
   return [colorScheme, toggleColorScheme];
 };

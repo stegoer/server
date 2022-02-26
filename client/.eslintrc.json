@@ -47,7 +47,8 @@
       "error",
       {
         "replacements": {
-          "args": false
+          "args": false,
+          "props": false
         }
       }
     ],

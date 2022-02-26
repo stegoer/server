@@ -1,7 +1,0 @@
-mutation updateUser($name: String, $password: String) {
-  updateUser(input: { name: $name, password: $password }) {
-    user {
-      ...UserFragment
-    }
-  }
-}

@@ -57,6 +57,14 @@ func init() {
 	userDescName := userFields[0].Descriptor()
 	// user.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	user.NameValidator = userDescName.Validators[0].(func(string) error)
+	// userDescEmail is the schema descriptor for email field.
+	userDescEmail := userFields[1].Descriptor()
+	// user.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	user.EmailValidator = userDescEmail.Validators[0].(func(string) error)
+	// userDescLastLogin is the schema descriptor for last_login field.
+	userDescLastLogin := userFields[3].Descriptor()
+	// user.DefaultLastLogin holds the default value on creation for the last_login field.
+	user.DefaultLastLogin = userDescLastLogin.Default.(func() time.Time)
 	// userDescID is the schema descriptor for id field.
 	userDescID := userMixinFields0[0].Descriptor()
 	// user.DefaultID holds the default value on creation for the id field.

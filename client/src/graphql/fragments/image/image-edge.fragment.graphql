@@ -1,0 +1,6 @@
+fragment ImageEdgeFragment on ImageEdge {
+  node {
+    ...ImageFragment
+  }
+  cursor
+}

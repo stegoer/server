@@ -1,12 +1,14 @@
 type User {
   id: ID!
-  name: String!
+  username: String!
+  email: String!
+  lastLogin: Time!
   createdAt: Time!
   updatedAt: Time!
 }
 
 type OverviewPayload {
-  user: User
+  user: User!
 }
 
 type Auth {
@@ -16,31 +18,33 @@ type Auth {
 
 input NewUser {
   username: String!
+  email: String!
   password: String!
 }
 
 type CreateUserPayload {
-  user: User
-  auth: Auth
+  user: User!
+  auth: Auth!
 }
 
 input UpdateUser {
-  name: String
+  username: String
+  email: String
   password: String
 }
 
 type UpdateUserPayload {
-  user: User
+  user: User!
 }
 
 input Login {
-  username: String!
+  email: String!
   password: String!
 }
 
 type LoginPayload {
-  user: User
-  auth: Auth
+  user: User!
+  auth: Auth!
 }
 
 input RefreshTokenInput {
@@ -48,8 +52,8 @@ input RefreshTokenInput {
 }
 
 type RefreshTokenPayload {
-  user: User
-  auth: Auth
+  user: User!
+  auth: Auth!
 }
 
 extend type Query {

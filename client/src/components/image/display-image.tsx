@@ -1,15 +1,15 @@
-import type { Image } from "@/graphql/generated/codegen.generated";
+import type { Image } from "@graphql/generated/codegen.generated";
 import type { FC } from "react";
 
-type Properties = {
+type Props = {
   data: Image;
 };
 
-const DisplayImage: FC<Properties> = ({ data }) => {
+const DisplayImage: FC<Props> = ({ data }) => {
   return (
     <div>
       <h3>Image {data.id}</h3>
-      <h4>Created at: {data.createdAt}</h4>
+      <h4>Created at: {data.createdAt.toLocaleString()}</h4>
       <h4>Channel: {data.channel}</h4>
     </div>
   );

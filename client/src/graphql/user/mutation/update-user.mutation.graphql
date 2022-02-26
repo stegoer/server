@@ -1,0 +1,9 @@
+mutation updateUser($username: String, $password: String, $email: String) {
+  updateUser(
+    input: { username: $username, password: $password, email: $email }
+  ) {
+    user {
+      ...UserFragment
+    }
+  }
+}

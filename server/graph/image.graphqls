@@ -11,7 +11,7 @@ input NewImage {
 }
 
 type CreateImagePayload {
-  image: Image
+  image: Image!
 }
 
 enum Channel {
@@ -39,9 +39,9 @@ type ImageEdge {
   cursor: Cursor!
 }
 
-type ImagesPayload {
-  totalCount: Int
-  pageInfo: PageInfo
+type ImagesConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
   edges: [ImageEdge!]!
 }
 
@@ -53,7 +53,7 @@ extend type Query {
     last: Int
     where: ImageWhereInput
     orderBy: ImageOrder
-  ): ImagesPayload!
+  ): ImagesConnection!
 }
 
 extend type Mutation {

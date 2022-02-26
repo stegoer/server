@@ -8,6 +8,7 @@ import (
 
 	"github.com/golang-jwt/jwt"
 
+	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
 	"github.com/kucera-lukas/stegoer/graph/generated"
 	"github.com/kucera-lukas/stegoer/pkg/entity/model"
 )
@@ -34,7 +35,7 @@ func GenerateAuth(
 		return nil, model.NewInternalServerError(ctx, mapClaimsErrorMessage)
 	}
 
-	claims["username"] = entUser.Name
+	claims["id"] = entUser.ID
 	exp := time.Now().Add(tokenExpiration)
 	claims["exp"] = exp.Unix()
 
@@ -53,7 +54,7 @@ func GenerateAuth(
 func ParseToken(
 	ctx context.Context,
 	tokenStr string,
-) (string, *model.Error) {
+) (ulid.ID, *model.Error) {
 	token, err := jwt.Parse(tokenStr, func(_ *jwt.Token) (interface{}, error) {
 		return SecretKey, nil
 	})
@@ -62,7 +63,7 @@ func ParseToken(
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return fmt.Sprintf("%v", claims["username"]), nil
+		return ulid.ID(fmt.Sprintf("%v", claims["id"])), nil
 	}
 
 	return "", model.NewAuthorizationError(ctx, mapClaimsErrorMessage)

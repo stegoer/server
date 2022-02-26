@@ -19,8 +19,12 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldEmail holds the string denoting the email field in the database.
+	FieldEmail = "email"
 	// FieldPassword holds the string denoting the password field in the database.
 	FieldPassword = "password"
+	// FieldLastLogin holds the string denoting the last_login field in the database.
+	FieldLastLogin = "last_login"
 	// EdgeImages holds the string denoting the images edge name in mutations.
 	EdgeImages = "images"
 	// Table holds the table name of the user in the database.
@@ -40,7 +44,9 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldName,
+	FieldEmail,
 	FieldPassword,
+	FieldLastLogin,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -62,6 +68,10 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
+	// EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	EmailValidator func(string) error
+	// DefaultLastLogin holds the default value on creation for the "last_login" field.
+	DefaultLastLogin func() time.Time
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() ulid.ID
 )

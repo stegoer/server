@@ -3,11 +3,11 @@ import { Alert, List, Text } from "@mantine/core";
 import type { FC } from "react";
 import type { CombinedError } from "urql";
 
-type Properties = {
+type Props = {
   data: CombinedError;
 };
 
-const Errors: FC<Properties> = ({ data }) => {
+const Errors: FC<Props> = ({ data }) => {
   if (data.networkError) {
     return <Text>Network error: {data.networkError.message}</Text>;
   } else if (data.graphQLErrors.length > 0) {

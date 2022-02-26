@@ -27,5 +27,4 @@ generates:
       minify: true
 hooks:
   afterAllFileWrite:
-    # we need to run both as one command because if `lint` fixes something `fmt` wouldn't be run
-    - npm run lint:fix && npm run fmt
+    - prettier --write

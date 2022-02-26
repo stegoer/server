@@ -1,10 +1,10 @@
 import type { ChangeEvent, FC } from "react";
 
-type Properties = {
+type Props = {
   setSelectedFile: (file: File) => void;
 };
 
-const ImageFileInput: FC<Properties> = ({ setSelectedFile }) => {
+const ImageFileInput: FC<Props> = ({ setSelectedFile }) => {
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.item(0);
     if (file) {

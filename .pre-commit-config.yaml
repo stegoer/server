@@ -6,7 +6,7 @@ repos:
         entry: bash -c "cd server && make fmt"
         language: system
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.7.0
+    rev: v8.8.0
     hooks:
       - id: eslint
         name: ESLint

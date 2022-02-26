@@ -1,6 +1,10 @@
 package schema
 
 import (
+	"net/mail"
+	"time"
+
+	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -28,8 +32,20 @@ func (User) Fields() []ent.Field {
 		field.String("name").
 			Unique().
 			MinLen(nameMinLen),
+		field.String("email").
+			Unique().
+			Validate(func(email string) error {
+				_, err := mail.ParseAddress(email)
+
+				return err //nolint:wrapcheck
+			}),
 		field.String("password").
 			Sensitive(),
+		field.Time("last_login").
+			Default(time.Now).
+			Annotations(
+				entgql.OrderField("LAST_LOGIN"),
+			),
 	}
 }
 

@@ -3,15 +3,20 @@ package controller
 import (
 	"context"
 
+	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
 	"github.com/kucera-lukas/stegoer/graph/generated"
 	"github.com/kucera-lukas/stegoer/pkg/entity/model"
 )
 
 // User controller interface.
 type User interface {
-	Get(
+	GetByID(
 		ctx context.Context,
-		name string,
+		id ulid.ID,
+	) (*model.User, *model.Error)
+	GetByEmail(
+		ctx context.Context,
+		email string,
 	) (*model.User, *model.Error)
 	Create(
 		ctx context.Context,
@@ -21,5 +26,9 @@ type User interface {
 		ctx context.Context,
 		entUser model.User,
 		input generated.UpdateUser,
+	) (*model.User, *model.Error)
+	SetLoggedIn(
+		ctx context.Context,
+		entUser model.User,
 	) (*model.User, *model.Error)
 }

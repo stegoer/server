@@ -41,7 +41,7 @@ func Jwt(
 				ctx := request.Context()
 
 				// validate jwt token
-				username, err := util.ParseToken(ctx, header)
+				userID, err := util.ParseToken(ctx, header)
 				if err != nil {
 					logger.Debugf("invalid token: %v", err)
 
@@ -52,7 +52,7 @@ func Jwt(
 
 				entUser, err := repository.
 					NewUserRepository(client).
-					Get(ctx, username)
+					GetByID(ctx, userID)
 				if err != nil {
 					logger.Debugf("user not found: %v", err)
 

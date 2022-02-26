@@ -4,12 +4,12 @@ import { MoonIcon, SunIcon } from "@modulz/radix-icons";
 import type { ColorScheme } from "@mantine/styles/lib/theme/types";
 import type { FC } from "react";
 
-type Properties = {
+type Props = {
   isDark: boolean;
   toggleColorScheme(colorScheme?: ColorScheme): void;
 };
 
-const ColorSchemeIcon: FC<Properties> = ({ isDark, toggleColorScheme }) => {
+const ColorSchemeIcon: FC<Props> = ({ isDark, toggleColorScheme }) => {
   const [width, height] = [25, 25];
 
   return (
@@ -17,7 +17,6 @@ const ColorSchemeIcon: FC<Properties> = ({ isDark, toggleColorScheme }) => {
       variant="light"
       color={isDark ? `yellow` : `blue`}
       onClick={() => toggleColorScheme()}
-      title="Toggle color scheme"
       size="lg"
     >
       {isDark ? (

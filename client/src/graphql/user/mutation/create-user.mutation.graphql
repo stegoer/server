@@ -1,5 +1,7 @@
-mutation createUser($username: String!, $password: String!) {
-  createUser(input: { username: $username, password: $password }) {
+mutation createUser($username: String!, $password: String!, $email: String!) {
+  createUser(
+    input: { username: $username, password: $password, email: $email }
+  ) {
     user {
       ...UserFragment
     }

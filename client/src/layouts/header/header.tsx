@@ -1,8 +1,7 @@
-import ColorScheme from "@/components/color-scheme/color-scheme";
+import ColorScheme from "@components/color-scheme/color-scheme";
 
 import { Header as MantineHeader, Title } from "@mantine/core";
 import Link from "next/link";
-import React from "react";
 
 import type { FC } from "react";
 
@@ -11,7 +10,7 @@ const Header: FC = () => {
     <MantineHeader height={55} padding="xs">
       <div>
         <div style={{ float: `left` }}>
-          <Link href="/">
+          <Link href="/" passHref>
             <a>
               <Title>stegoer</Title>
             </a>

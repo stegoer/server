@@ -2,8 +2,10 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"github.com/kucera-lukas/stegoer/ent"
+	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
 	"github.com/kucera-lukas/stegoer/ent/user"
 	"github.com/kucera-lukas/stegoer/graph/generated"
 	"github.com/kucera-lukas/stegoer/pkg/adapter/controller"
@@ -20,11 +22,23 @@ type userRepository struct {
 	client *ent.Client
 }
 
-func (r *userRepository) Get(
+func (r *userRepository) GetByID(
 	ctx context.Context,
-	name string,
+	id ulid.ID,
 ) (*model.User, *model.Error) {
-	entUser, err := r.client.User.Query().Where(user.NameEQ(name)).Only(ctx)
+	entUser, err := r.client.User.Query().Where(user.IDEQ(id)).Only(ctx)
+	if err != nil {
+		return nil, model.NewDBError(ctx, err.Error())
+	}
+
+	return entUser, nil
+}
+
+func (r *userRepository) GetByEmail(
+	ctx context.Context,
+	email string,
+) (*model.User, *model.Error) {
+	entUser, err := r.client.User.Query().Where(user.EmailEQ(email)).Only(ctx)
 	if err != nil {
 		return nil, model.NewDBError(ctx, err.Error())
 	}
@@ -44,6 +58,7 @@ func (r *userRepository) Create(
 	entUser, err := r.client.User.
 		Create().
 		SetName(input.Username).
+		SetEmail(input.Email).
 		SetPassword(hashedPassword).
 		Save(ctx)
 	if err != nil {
@@ -60,8 +75,12 @@ func (r *userRepository) Update(
 ) (*model.User, *model.Error) {
 	update := entUser.Update()
 
-	if input.Name != nil {
-		update = update.SetName(*input.Name)
+	if input.Username != nil {
+		update = update.SetName(*input.Username)
+	}
+
+	if input.Email != nil {
+		update = update.SetEmail(*input.Email)
 	}
 
 	if input.Password != nil {
@@ -74,6 +93,18 @@ func (r *userRepository) Update(
 	}
 
 	updatedEntUser, err := update.Save(ctx)
+	if err != nil {
+		return nil, model.NewDBError(ctx, err.Error())
+	}
+
+	return updatedEntUser, nil
+}
+
+func (r *userRepository) SetLoggedIn(
+	ctx context.Context,
+	entUser model.User,
+) (*model.User, *model.Error) {
+	updatedEntUser, err := entUser.Update().SetLastLogin(time.Now()).Save(ctx)
 	if err != nil {
 		return nil, model.NewDBError(ctx, err.Error())
 	}

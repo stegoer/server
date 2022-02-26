@@ -1,0 +1,9 @@
+fragment ImagesConnectionFragment on ImagesConnection {
+  totalCount
+  edges {
+    ...ImageEdgeFragment
+  }
+  pageInfo {
+    ...PageInfoFragment
+  }
+}

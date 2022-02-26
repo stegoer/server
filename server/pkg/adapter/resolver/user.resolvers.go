@@ -6,6 +6,7 @@ package resolver
 import (
 	"context"
 
+	"github.com/kucera-lukas/stegoer/ent"
 	"github.com/kucera-lukas/stegoer/graph/generated"
 	"github.com/kucera-lukas/stegoer/pkg/entity/model"
 	"github.com/kucera-lukas/stegoer/pkg/infrastructure/middleware"
@@ -36,14 +37,22 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input generated.NewUs
 }
 
 func (r *mutationResolver) Login(ctx context.Context, input generated.Login) (*generated.LoginPayload, error) {
-	entUser, _ := r.controller.User.Get(ctx, input.Username)
+	entUser, _ := r.controller.User.GetByEmail(ctx, input.Email)
 
 	if entUser == nil || !util.CheckPasswordHash(
 		input.Password,
 		entUser.Password,
 	) {
-		err := model.NewNotFoundError(ctx, "username or password is incorrect")
+		err := model.NewNotFoundError(ctx, "email or password is incorrect")
 
+		return &generated.LoginPayload{
+			User: nil,
+			Auth: nil,
+		}, err
+	}
+
+	entUser, err := r.controller.User.SetLoggedIn(ctx, *entUser)
+	if err != nil {
 		return &generated.LoginPayload{
 			User: nil,
 			Auth: nil,
@@ -65,7 +74,7 @@ func (r *mutationResolver) Login(ctx context.Context, input generated.Login) (*g
 }
 
 func (r *mutationResolver) RefreshToken(ctx context.Context, input generated.RefreshTokenInput) (*generated.RefreshTokenPayload, error) {
-	username, err := util.ParseToken(ctx, input.Token)
+	userID, err := util.ParseToken(ctx, input.Token)
 	if err != nil {
 		return &generated.RefreshTokenPayload{
 			User: nil,
@@ -73,7 +82,7 @@ func (r *mutationResolver) RefreshToken(ctx context.Context, input generated.Ref
 		}, err
 	}
 
-	entUser, err := r.controller.User.Get(ctx, username)
+	entUser, err := r.controller.User.GetByID(ctx, userID)
 	if err != nil {
 		return &generated.RefreshTokenPayload{
 			User: nil,
@@ -117,3 +126,12 @@ func (r *queryResolver) Overview(ctx context.Context) (*generated.OverviewPayloa
 
 	return &generated.OverviewPayload{User: entUser}, nil
 }
+
+func (r *userResolver) Username(ctx context.Context, obj *ent.User) (string, error) {
+	return obj.Name, nil
+}
+
+// User returns generated.UserResolver implementation.
+func (r *Resolver) User() generated.UserResolver { return &userResolver{r} }
+
+type userResolver struct{ *Resolver }

@@ -22,16 +22,21 @@ func (r *mutationResolver) CreateImage(ctx context.Context, input generated.NewI
 		return &generated.CreateImagePayload{Image: nil}, err
 	}
 
-	return &generated.CreateImagePayload{Image: entImage}, err
+	return &generated.CreateImagePayload{Image: entImage}, nil
 }
 
-func (r *queryResolver) Images(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ImageWhereInput, orderBy *ent.ImageOrder) (*generated.ImagesPayload, error) {
+func (r *queryResolver) Images(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ImageWhereInput, orderBy *ent.ImageOrder) (*generated.ImagesConnection, error) {
 	entUser, err := middleware.JwtForContext(ctx)
 	if err != nil {
-		return &generated.ImagesPayload{
-			TotalCount: nil,
-			PageInfo:   nil,
-			Edges:      []*ent.ImageEdge{},
+		return &generated.ImagesConnection{
+			TotalCount: 0,
+			PageInfo: &ent.PageInfo{
+				HasNextPage:     false,
+				HasPreviousPage: false,
+				StartCursor:     nil,
+				EndCursor:       nil,
+			},
+			Edges: []*ent.ImageEdge{},
 		}, err
 	}
 
@@ -46,15 +51,20 @@ func (r *queryResolver) Images(ctx context.Context, after *ent.Cursor, first *in
 		orderBy,
 	)
 	if err != nil {
-		return &generated.ImagesPayload{
-			TotalCount: nil,
-			PageInfo:   nil,
-			Edges:      []*ent.ImageEdge{},
+		return &generated.ImagesConnection{
+			TotalCount: 0,
+			PageInfo: &ent.PageInfo{
+				HasNextPage:     false,
+				HasPreviousPage: false,
+				StartCursor:     nil,
+				EndCursor:       nil,
+			},
+			Edges: []*ent.ImageEdge{},
 		}, err
 	}
 
-	return &generated.ImagesPayload{
-		TotalCount: &imageList.TotalCount,
+	return &generated.ImagesConnection{
+		TotalCount: imageList.TotalCount,
 		PageInfo:   &imageList.PageInfo,
 		Edges:      imageList.Edges,
 	}, nil

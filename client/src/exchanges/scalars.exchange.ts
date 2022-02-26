@@ -1,11 +1,9 @@
-import schema from "@/graphql/generated/introspection-schema.generated.json";
+import SCHEMA from "@constants/graphql.constants";
 
 import customScalarsExchange from "urql-custom-scalars-exchange";
 
-import type { IntrospectionQuery } from "graphql";
-
 const scalarsExchange = customScalarsExchange({
-  schema: schema as unknown as IntrospectionQuery,
+  schema: SCHEMA,
   scalars: {
     Time(value: string) {
       return new Date(Date.parse(value));
