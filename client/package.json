@@ -13,7 +13,7 @@
   "dependencies": {
     "@mantine/core": "^3.6.11",
     "@mantine/hooks": "^3.6.7",
-    "@mantine/notifications": "^3.6.7",
+    "@mantine/notifications": "^3.6.11",
     "@modulz/radix-icons": "^4.0.0",
     "@urql/exchange-auth": "^0.1.7",
     "@urql/exchange-graphcache": "^4.3.6",
