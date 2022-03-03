@@ -1,11 +1,9 @@
-import LoginRequiredLink from "@components/links/login-required.link";
+import LoginRequiredLink from "@layouts/navbar/login-required.link";
 
 import { Navbar as MantineNavbar } from "@mantine/core";
 import Link from "next/link";
 
-import type { FC } from "react";
-
-const Navbar: FC = () => {
+const Navbar = (): JSX.Element => {
   return (
     <MantineNavbar padding="xs" width={{ base: 100 }}>
       <MantineNavbar.Section>

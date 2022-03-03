@@ -1,6 +1,12 @@
 import { createContext } from "react";
 
-import type { UserPayload } from "@custom-types//user.types";
+import type { User } from "@graphql/generated/codegen.generated";
+import type { Dispatch, SetStateAction } from "react";
+
+export type UserPayload = readonly [
+  User | undefined,
+  Dispatch<SetStateAction<User | undefined>>,
+];
 
 const UserContext = createContext<UserPayload | undefined>(undefined);
 

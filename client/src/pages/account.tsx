@@ -1,6 +1,7 @@
-import AccountView from "@components/account/account-view/account-view";
-import AuthView from "@components/account/auth-view/auth-view";
+import AccountComponent from "@features/account/components/account.component";
+import AuthComponent from "@features/auth/components/auth.component";
 import useUser from "@hooks/user.hook";
+import PageLayout from "@layouts/page.layout";
 
 import { Paper } from "@mantine/core";
 
@@ -10,9 +11,11 @@ const Account: NextPage = () => {
   const [user] = useUser();
 
   return (
-    <Paper style={{ width: 300, position: `relative` }}>
-      {user ? <AccountView user={user} /> : <AuthView />}
-    </Paper>
+    <PageLayout title="account">
+      <Paper style={{ width: 300, position: `relative` }}>
+        {user ? <AccountComponent user={user} /> : <AuthComponent />}
+      </Paper>
+    </PageLayout>
   );
 };
 

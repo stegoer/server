@@ -1,6 +1,6 @@
 import { SERVER_GRAPHQL_ENDPOINT } from "@config/environment";
-import Exchanges from "@exchanges/base.exchange";
-import devtoolsExchange from "@exchanges/devtools.exchange";
+import Exchanges from "@graphql/exchanges/base.exchange";
+import devtoolsExchange from "@graphql/exchanges/devtools.exchange";
 
 import { createClient as createURQLClient } from "urql";
 

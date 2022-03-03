@@ -1,11 +1,10 @@
 import type { Image } from "@graphql/generated/codegen.generated";
-import type { FC } from "react";
 
 type Props = {
   data: Image;
 };
 
-const DisplayImage: FC<Props> = ({ data }) => {
+const DisplayImage = ({ data }: Props): JSX.Element => {
   return (
     <div>
       <h3>Image {data.id}</h3>

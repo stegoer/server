@@ -1,4 +1,3 @@
-import { REFRESH_INTERVAL } from "@constants/user.constants";
 import AuthContext from "@context/auth.context";
 import {
   useOverviewQuery,
@@ -11,19 +10,18 @@ import LocalStorageService from "@services/local-storage.service";
 import { useCallback, useEffect } from "react";
 
 import type { User } from "@graphql/generated/codegen.generated";
-import type { FC } from "react";
+import type { PropsWithChildren } from "react";
 
-const AuthProvider: FC = ({ children }) => {
+export const REFRESH_INTERVAL = 600_000; // 10 minutes
+
+type Props = PropsWithChildren<Record<never, never>>;
+
+const AuthProvider = ({ children }: Props): JSX.Element => {
   const [overviewQuery, fetchOverviewQuery] = useOverviewQuery();
   const [, refreshToken] = useRefreshTokenMutation();
   const [token, setToken] = useLocalStorageValue({ key: `token` });
 
   const [, setUser] = useUser();
-
-  // whenever overview has new data we update user accordingly
-  useEffect(() => {
-    setUser(overviewQuery.data?.overview.user);
-  }, [overviewQuery.data?.overview.user, setUser]);
 
   const updateToken = useCallback(() => {
     if (token) {
@@ -38,20 +36,22 @@ const AuthProvider: FC = ({ children }) => {
     }
   }, [refreshToken, setToken, setUser, token]);
 
+  // whenever token is changed/removed we want to fetch the latest data
+  useEffect(() => fetchOverviewQuery(), [fetchOverviewQuery, token]);
+
+  // whenever overview has new data we update user accordingly
+  useEffect(() => {
+    setUser(overviewQuery.data?.overview.user);
+  }, [overviewQuery.data?.overview.user, setUser]);
+
   // every X seconds we want to refresh token
   useEffect(() => {
     const interval = setInterval(() => {
       updateToken();
     }, REFRESH_INTERVAL);
 
-    return () => {
-      updateToken();
-      clearInterval(interval);
-    };
+    return () => clearInterval(interval);
   }, [updateToken]);
-
-  // whenever token is changed/removed we want to fetch the latest data
-  useEffect(() => fetchOverviewQuery(), [fetchOverviewQuery, token]);
 
   const afterLogin = useCallback(
     (token: string, user: User) => {
@@ -68,7 +68,9 @@ const AuthProvider: FC = ({ children }) => {
   }, [setUser]);
 
   return (
-    <AuthContext.Provider value={{ afterLogin, logout }}>
+    <AuthContext.Provider
+      value={{ fetching: overviewQuery.fetching, afterLogin, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

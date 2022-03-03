@@ -1,6 +1,8 @@
-import { calculateStrength, Requirements } from "./constants";
-
 import PasswordRequirement from "@components/input/password-strength/password-requirement";
+import {
+  calculateStrength,
+  Requirements,
+} from "@components/input/password-strength/password-strength.constants";
 import PasswordInput from "@components/input/password.input";
 
 import { Popover, Progress } from "@mantine/core";
@@ -9,12 +11,15 @@ import { useState } from "react";
 import type { PasswordInputProps } from "@mantine/core/lib/components/PasswordInput/PasswordInput";
 import type { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 
-type Props<T> = {
-  form: UseForm<{ password: string } & T>;
+type Props<T extends { password: string }> = {
+  form: UseForm<T>;
   inputProps?: PasswordInputProps;
 };
 
-const PasswordStrength = <T,>({ form, inputProps }: Props<T>) => {
+const PasswordStrength = <T extends { password: string }>({
+  form,
+  inputProps,
+}: Props<T>) => {
   const [popoverOpened, setPopoverOpened] = useState(false);
   const [password, setPassword] = useState(``);
 
@@ -47,10 +52,8 @@ const PasswordStrength = <T,>({ form, inputProps }: Props<T>) => {
             description: `Password should include at least 1 lowercase letter, 1 uppercase letter, 1 number and 1 special symbol`,
             value: password,
             onChange: (event) => {
-              setPassword(event.currentTarget.value.trim());
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              form.setFieldValue(`password`, event.currentTarget.value.trim());
+              setPassword(event.currentTarget.value);
+              form.setFieldValue(`password`, event.currentTarget.value);
             },
             ...inputProps,
           }}

@@ -3,11 +3,11 @@ import { EnvelopeClosedIcon } from "@modulz/radix-icons";
 
 import type { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 
-type Props<T> = {
-  form: UseForm<{ email: string } & T>;
+type Props<T extends { email: string }> = {
+  form: UseForm<T>;
 };
 
-const EmailInput = <T,>({ form }: Props<T>) => {
+const EmailInput = <T extends { email: string }>({ form }: Props<T>) => {
   return (
     <TextInput
       label="Email"

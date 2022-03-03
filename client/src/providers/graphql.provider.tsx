@@ -1,11 +1,13 @@
-import useClient from "@hooks/graphql-client.hook";
+import useClient from "@hooks/client.hook";
 import useUser from "@hooks/user.hook";
 
 import { Provider } from "urql";
 
-import type { FC } from "react";
+import type { PropsWithChildren } from "react";
 
-const GraphqlProvider: FC = ({ children }) => {
+type Props = PropsWithChildren<Record<never, never>>;
+
+const GraphqlProvider = ({ children }: Props): JSX.Element => {
   const [user] = useUser();
   const client = useClient(!!user);
 

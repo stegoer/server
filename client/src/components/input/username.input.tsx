@@ -3,11 +3,11 @@ import { AvatarIcon } from "@modulz/radix-icons";
 
 import type { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 
-type Props<T> = {
-  form: UseForm<{ username: string } & T>;
+type Props<T extends { username: string }> = {
+  form: UseForm<T>;
 };
 
-const UsernameInput = <T,>({ form }: Props<T>) => {
+const UsernameInput = <T extends { username: string }>({ form }: Props<T>) => {
   return (
     <TextInput
       label="Username"

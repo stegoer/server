@@ -1,12 +1,12 @@
 import { Button } from "@mantine/core";
 
-import type { FC } from "react";
+import type { PropsWithChildren } from "react";
 
-type Props = {
+type Props = PropsWithChildren<{
   disabled: boolean;
-};
+}>;
 
-const SubmitButton: FC<Props> = ({ disabled, children }) => {
+const SubmitButton = ({ children, disabled }: Props): JSX.Element => {
   return (
     <Button type="submit" disabled={disabled}>
       {children}

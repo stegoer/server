@@ -1,10 +1,10 @@
-import Errors from "@components/errors/errors";
 import DisplayImage from "@components/image/display-image";
-import ImageFileInput from "@components/image/image-file-input";
+import ImageFileInput from "@components/input/image-file.input";
 import {
   Channel,
   useCreateImageMutation,
 } from "@graphql/generated/codegen.generated";
+import PageLayout from "@layouts/page.layout";
 
 import { Title } from "@mantine/core";
 import { useEffect, useState } from "react";
@@ -30,7 +30,7 @@ const Encode: NextPage = () => {
   if (createImageResult.fetching) {
     data = <div>Loading...</div>;
   } else if (createImageResult.error) {
-    data = <Errors data={createImageResult.error} />;
+    data = <span>Error {createImageResult.error}</span>;
   } else if (!file) {
     data = <ImageFileInput setSelectedFile={setFile} />;
   } else {
@@ -38,10 +38,10 @@ const Encode: NextPage = () => {
   }
 
   return (
-    <>
+    <PageLayout title="encode">
       <Title>Encode</Title>
       {data}
-    </>
+    </PageLayout>
   );
 };
 

@@ -2,7 +2,7 @@ import AuthContext from "@context/auth.context";
 
 import { useContext } from "react";
 
-import type { AuthPayload } from "@custom-types/auth.types";
+import type { AuthPayload } from "@context/auth.context";
 
 const useAuth = (): AuthPayload => {
   const context = useContext(AuthContext);

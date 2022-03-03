@@ -1,11 +1,15 @@
 import NextHead from "next/head";
 
-import type { FC } from "react";
+type Props = {
+  title?: string;
+};
 
-const Head: FC = () => {
+const BASE_TITLE = `stegoer`;
+
+const Head = ({ title }: Props): JSX.Element => {
   return (
     <NextHead>
-      <title>stegoer</title>
+      <title>{title ? `${BASE_TITLE} | ${title}` : BASE_TITLE}</title>
       <link rel="manifest" href="site.webmanifest.json" />
       <link rel="shortcut icon" href="/images/favicon.ico" />
       <link

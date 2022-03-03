@@ -2,13 +2,16 @@ import { UnstyledButton } from "@mantine/core";
 import { useNotifications } from "@mantine/notifications";
 
 import type { NotificationProps } from "@mantine/notifications";
-import type { FC } from "react";
+import type { PropsWithChildren } from "react";
 
-type Props = {
+type Props = PropsWithChildren<{
   notificationProps: NotificationProps;
-};
+}>;
 
-const NotificationButton: FC<Props> = ({ children, notificationProps }) => {
+const NotificationButton = ({
+  children,
+  notificationProps,
+}: Props): JSX.Element => {
   const notifications = useNotifications();
 
   return (
