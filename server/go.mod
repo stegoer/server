@@ -8,7 +8,7 @@ go 1.17
 require (
 	entgo.io/contrib v0.2.0
 	entgo.io/ent v0.9.2-0.20210821141344-368a8f7a2e9a
-	github.com/99designs/gqlgen v0.16.0
+	github.com/99designs/gqlgen v0.17.1
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gorilla/handlers v1.5.1
