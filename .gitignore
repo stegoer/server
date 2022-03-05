@@ -5,6 +5,7 @@
 *.so
 *.dylib
 server/bin
+server/main
 
 # Test binary, built with `go test -c`
 *.test
@@ -72,3 +73,6 @@ client/*.tsbuildinfo
 
 # redis
 dump.rdb
+
+# air
+server/tmp
