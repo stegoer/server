@@ -45,8 +45,7 @@ type ResolverRoot interface {
 	User() UserResolver
 }
 
-type DirectiveRoot struct {
-}
+type DirectiveRoot struct{}
 
 type ComplexityRoot struct {
 	Auth struct {
@@ -5155,7 +5154,6 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 
 			out.Concurrently(i, func() graphql.Marshaler {
 				return innerFunc(ctx)
-
 			})
 		case "email":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -6332,7 +6330,7 @@ func (ec *executionContext) unmarshalOCursor2ᚖgithubᚗcomᚋkuceraᚑlukasᚋ
 	if v == nil {
 		return nil, nil
 	}
-	var res = new(ent.Cursor)
+	res := new(ent.Cursor)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -6386,7 +6384,7 @@ func (ec *executionContext) unmarshalOID2ᚖgithubᚗcomᚋkuceraᚑlukasᚋsteg
 	if v == nil {
 		return nil, nil
 	}
-	var res = new(ulid.ID)
+	res := new(ulid.ID)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -6410,7 +6408,7 @@ func (ec *executionContext) unmarshalOImageOrderField2ᚖgithubᚗcomᚋkucera�
 	if v == nil {
 		return nil, nil
 	}
-	var res = new(ent.ImageOrderField)
+	res := new(ent.ImageOrderField)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
