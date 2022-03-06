@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -145,7 +146,7 @@ func (iu *ImageUpdate) defaults() {
 func (iu *ImageUpdate) check() error {
 	if v, ok := iu.mutation.Channel(); ok {
 		if err := image.ChannelValidator(v); err != nil {
-			return &ValidationError{Name: "channel", err: fmt.Errorf("ent: validator failed for field \"channel\": %w", err)}
+			return &ValidationError{Name: "channel", err: fmt.Errorf(`ent: validator failed for field "Image.channel": %w`, err)}
 		}
 	}
 	return nil
@@ -359,7 +360,7 @@ func (iuo *ImageUpdateOne) defaults() {
 func (iuo *ImageUpdateOne) check() error {
 	if v, ok := iuo.mutation.Channel(); ok {
 		if err := image.ChannelValidator(v); err != nil {
-			return &ValidationError{Name: "channel", err: fmt.Errorf("ent: validator failed for field \"channel\": %w", err)}
+			return &ValidationError{Name: "channel", err: fmt.Errorf(`ent: validator failed for field "Image.channel": %w`, err)}
 		}
 	}
 	return nil
@@ -378,7 +379,7 @@ func (iuo *ImageUpdateOne) sqlSave(ctx context.Context) (_node *Image, err error
 	}
 	id, ok := iuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Image.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Image.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := iuo.fields; len(fields) > 0 {

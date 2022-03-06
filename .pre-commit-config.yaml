@@ -3,7 +3,7 @@ repos:
     hooks:
       - id: make-fmt
         name: Make fmt
-        entry: bash -c "cd server && make fmt"
+        entry: bash -c "cd server && make ci"
         language: system
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.8.0

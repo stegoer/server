@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/contrib/entgql"
 	"github.com/99designs/gqlgen/graphql"
-	multierror "github.com/hashicorp/go-multierror"
+	"github.com/hashicorp/go-multierror"
 
 	"github.com/kucera-lukas/stegoer/ent/image"
 	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
@@ -46,7 +46,7 @@ type Edge struct {
 func (i *Image) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     i.ID,
-		Type:   "DisplayImage",
+		Type:   "Image",
 		Fields: make([]*Field, 3),
 		Edges:  make([]*Edge, 1),
 	}
@@ -92,7 +92,7 @@ func (u *User) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     u.ID,
 		Type:   "User",
-		Fields: make([]*Field, 4),
+		Fields: make([]*Field, 6),
 		Edges:  make([]*Edge, 1),
 	}
 	var buf []byte
@@ -120,16 +120,32 @@ func (u *User) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "name",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(u.Password); err != nil {
+	if buf, err = json.Marshal(u.Email); err != nil {
 		return nil, err
 	}
 	node.Fields[3] = &Field{
 		Type:  "string",
+		Name:  "email",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(u.Password); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "string",
 		Name:  "password",
 		Value: string(buf),
 	}
+	if buf, err = json.Marshal(u.LastLogin); err != nil {
+		return nil, err
+	}
+	node.Fields[5] = &Field{
+		Type:  "time.Time",
+		Name:  "last_login",
+		Value: string(buf),
+	}
 	node.Edges[0] = &Edge{
-		Type: "DisplayImage",
+		Type: "Image",
 		Name: "images",
 	}
 	err = u.QueryImages().
@@ -211,7 +227,7 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 	case image.Table:
 		n, err := c.Image.Query().
 			Where(image.ID(id)).
-			CollectFields(ctx, "DisplayImage").
+			CollectFields(ctx, "Image").
 			Only(ctx)
 		if err != nil {
 			return nil, err
@@ -302,7 +318,7 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 	case image.Table:
 		nodes, err := c.Image.Query().
 			Where(image.IDIn(ids...)).
-			CollectFields(ctx, "DisplayImage").
+			CollectFields(ctx, "Image").
 			All(ctx)
 		if err != nil {
 			return nil, err

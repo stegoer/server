@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	config := env.Load()
-	logger := log.New(config)
+	config := env.MustLoad()
+	logger := log.MustNew(config)
 	server.Run(config, logger)
 }

@@ -134,7 +134,7 @@ func (iq *ImageQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single Image entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one Image entity is not found.
+// Returns a *NotSingularError when more than one Image entity is found.
 // Returns a *NotFoundError when no Image entities are found.
 func (iq *ImageQuery) Only(ctx context.Context) (*Image, error) {
 	nodes, err := iq.Limit(2).All(ctx)
@@ -161,7 +161,7 @@ func (iq *ImageQuery) OnlyX(ctx context.Context) *Image {
 }
 
 // OnlyID is like Only, but returns the only Image ID in the query.
-// Returns a *NotSingularError when exactly one Image ID is not found.
+// Returns a *NotSingularError when more than one Image ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (iq *ImageQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -271,8 +271,9 @@ func (iq *ImageQuery) Clone() *ImageQuery {
 		predicates: append([]predicate.Image{}, iq.predicates...),
 		withUser:   iq.withUser.Clone(),
 		// clone intermediate query.
-		sql:  iq.sql.Clone(),
-		path: iq.path,
+		sql:    iq.sql.Clone(),
+		path:   iq.path,
+		unique: iq.unique,
 	}
 }
 
@@ -417,6 +418,10 @@ func (iq *ImageQuery) sqlAll(ctx context.Context) ([]*Image, error) {
 
 func (iq *ImageQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := iq.querySpec()
+	_spec.Node.Columns = iq.fields
+	if len(iq.fields) > 0 {
+		_spec.Unique = iq.unique != nil && *iq.unique
+	}
 	return sqlgraph.CountNodes(ctx, iq.driver, _spec)
 }
 
@@ -487,6 +492,9 @@ func (iq *ImageQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if iq.sql != nil {
 		selector = iq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if iq.unique != nil && *iq.unique {
+		selector.Distinct()
 	}
 	for _, p := range iq.predicates {
 		p(selector)
@@ -766,9 +774,7 @@ func (igb *ImageGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range igb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(igb.fields...)...)

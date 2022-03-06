@@ -37,8 +37,7 @@ var (
 
 // Schema is the API for creating, migrating and dropping a schema.
 type Schema struct {
-	drv         dialect.Driver
-	universalID bool
+	drv dialect.Driver
 }
 
 // NewSchema creates a new schema client.
@@ -51,6 +50,16 @@ func (s *Schema) Create(ctx context.Context, opts ...schema.MigrateOption) error
 		return fmt.Errorf("ent/migrate: %w", err)
 	}
 	return migrate.Create(ctx, Tables...)
+}
+
+// Diff creates a migration file containing the statements to resolve the diff
+// between the Ent schema and the connected database.
+func (s *Schema) Diff(ctx context.Context, opts ...schema.MigrateOption) error {
+	migrate, err := schema.NewMigrate(s.drv, opts...)
+	if err != nil {
+		return fmt.Errorf("ent/migrate: %w", err)
+	}
+	return migrate.Diff(ctx, Tables...)
 }
 
 // WriteTo writes the schema changes to w instead of running them against the database.

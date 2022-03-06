@@ -4,6 +4,8 @@ package image
 
 import (
 	"fmt"
+	"io"
+	"strconv"
 	"time"
 
 	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
@@ -99,4 +101,22 @@ func ChannelValidator(c Channel) error {
 	default:
 		return fmt.Errorf("image: invalid enum value for channel field: %q", c)
 	}
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (c Channel) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(c.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (c *Channel) UnmarshalGQL(val interface{}) error {
+	str, ok := val.(string)
+	if !ok {
+		return fmt.Errorf("enum %T must be a string", val)
+	}
+	*c = Channel(str)
+	if err := ChannelValidator(*c); err != nil {
+		return fmt.Errorf("%s is not a valid Channel", str)
+	}
+	return nil
 }

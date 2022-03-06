@@ -36,14 +36,24 @@ func (c *Config) IsProduction() bool {
 	return c.Env == Production
 }
 
-// Load loads and returns the env.Config struct.
-func Load() *Config {
-	config, err := load(configPath)
+// MustLoad ensures that a new env.Config struct is loaded and panics if not.
+func MustLoad() *Config {
+	config, err := Load()
 	if err != nil {
-		log.Panicf("failed to load config: %v", err)
+		log.Panic(err)
 	}
 
 	return config
+}
+
+// Load loads and returns the env.Config struct.
+func Load() (*Config, error) {
+	config, err := load(configPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load config: %w", err)
+	}
+
+	return config, nil
 }
 
 func load(path string) (*Config, error) {

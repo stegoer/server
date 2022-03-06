@@ -178,17 +178,17 @@ func (ic *ImageCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ic *ImageCreate) check() error {
 	if _, ok := ic.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Image.created_at"`)}
 	}
 	if _, ok := ic.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Image.updated_at"`)}
 	}
 	if _, ok := ic.mutation.Channel(); !ok {
-		return &ValidationError{Name: "channel", err: errors.New(`ent: missing required field "channel"`)}
+		return &ValidationError{Name: "channel", err: errors.New(`ent: missing required field "Image.channel"`)}
 	}
 	if v, ok := ic.mutation.Channel(); ok {
 		if err := image.ChannelValidator(v); err != nil {
-			return &ValidationError{Name: "channel", err: fmt.Errorf(`ent: validator failed for field "channel": %w`, err)}
+			return &ValidationError{Name: "channel", err: fmt.Errorf(`ent: validator failed for field "Image.channel": %w`, err)}
 		}
 	}
 	return nil
@@ -203,7 +203,11 @@ func (ic *ImageCreate) sqlSave(ctx context.Context) (*Image, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -221,7 +225,7 @@ func (ic *ImageCreate) createSpec() (*Image, *sqlgraph.CreateSpec) {
 	)
 	if id, ok := ic.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := ic.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

@@ -1,6 +1,7 @@
 //go:build ignore
+// +build ignore
 
-package ent
+package main
 
 import (
 	"log"
@@ -13,15 +14,17 @@ import (
 const (
 	schemaPath = "./schema"
 
-	gqlgenConfigPath     = "./gqlgen.yml"
-	entGraphqlSchemaPath = "./graph/ent.graphqls"
+	versionedMigrationsFeatureName = "sql/versioned-migration"
+
+	gqlgenConfigPath  = "../gqlgen.yml"
+	graphqlSchemaPath = "../graph/ent.graphqls"
 )
 
 func main() {
 	ex, err := entgql.NewExtension(
 		entgql.WithWhereFilters(true),
 		entgql.WithConfigPath(gqlgenConfigPath),
-		entgql.WithSchemaPath(entGraphqlSchemaPath),
+		entgql.WithSchemaPath(graphqlSchemaPath),
 	)
 	if err != nil {
 		log.Panicf("failed creating entgql extension: %v", err)
@@ -29,6 +32,7 @@ func main() {
 
 	opts := []entc.Option{
 		entc.Extensions(ex),
+		entc.FeatureNames(versionedMigrationsFeatureName),
 	}
 
 	if err := entc.Generate(schemaPath, &gen.Config{}, opts...); err != nil {

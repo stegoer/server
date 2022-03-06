@@ -1,0 +1,4 @@
+CREATE TABLE "users" ("id" character varying NOT NULL, "created_at" timestamp(0)with time zone NOT NULL, "updated_at" timestamp(0)with time zone NOT NULL, "name" character varying NOT NULL, "email" character varying NOT NULL, "password" character varying NOT NULL, "last_login" timestamp(0)with time zone NOT NULL, PRIMARY KEY ("id"));
+CREATE UNIQUE INDEX "users_name_key" ON "users" ("name");
+CREATE UNIQUE INDEX "users_email_key" ON "users" ("email");
+CREATE TABLE "images" ("id" character varying NOT NULL, "created_at" timestamp(0)with time zone NOT NULL, "updated_at" timestamp(0)with time zone NOT NULL, "channel" character varying NOT NULL, "user_id" character varying NULL, PRIMARY KEY ("id"), CONSTRAINT "images_users_images" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE SET NULL);

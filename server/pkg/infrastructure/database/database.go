@@ -1,16 +1,26 @@
-package client
+package database
 
 import (
 	"fmt"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
-	_ "github.com/lib/pq" // So we can use dialect.Postgres
+	"github.com/lib/pq"
 
 	"github.com/kucera-lukas/stegoer/ent"
 	"github.com/kucera-lukas/stegoer/pkg/infrastructure/env"
 	"github.com/kucera-lukas/stegoer/pkg/infrastructure/log"
 )
+
+// MustNew ensure that a new ent.Client is created and panics if not.
+func MustNew(config *env.Config, logger *log.Logger) *ent.Client {
+	client, err := New(config, logger)
+	if err != nil {
+		logger.Panic(err)
+	}
+
+	return client
+}
 
 // New returns a new instance of ent.Client.
 func New(config *env.Config, logger *log.Logger) (*ent.Client, error) {
@@ -18,7 +28,12 @@ func New(config *env.Config, logger *log.Logger) (*ent.Client, error) {
 
 	var drv dialect.Driver
 
-	drv, err := sql.Open(dialect.Postgres, config.DatabaseURL)
+	url, err := pq.ParseURL(config.DatabaseURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse database url: %w", err)
+	}
+
+	drv, err = sql.Open(dialect.Postgres, url)
 	if err != nil {
 		return nil, fmt.Errorf("error opening database client: %w", err)
 	}

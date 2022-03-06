@@ -1,6 +1,7 @@
 package log
 
 import (
+	"fmt"
 	"log"
 
 	"go.uber.org/zap"
@@ -11,17 +12,29 @@ import (
 // Logger wraps the zap.SugaredLogger and zap.Logger types.
 type Logger = zap.SugaredLogger
 
-func New(config *env.Config) *Logger {
+// MustNew ensure that a new Logger is created and panics if not.
+func MustNew(config *env.Config) *Logger {
+	logger, err := New(config)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	return logger
+}
+
+// New returns a new instance of Logger.
+func New(config *env.Config) (*Logger, error) {
 	cfg := updateConfig(getConfig(config))
 
 	logger, err := cfg.Build()
 	if err != nil {
-		log.Panicf("can't initialize logger: %v", err)
+		return nil, fmt.Errorf("can't initialize logger: %w", err)
 	}
 
-	return logger.Sugar()
+	return logger.Sugar(), nil
 }
 
+// Sync syncs a Logger.
 func Sync(logger Logger) {
 	if err := logger.Sync(); err != nil {
 		log.Panicf("failed to sync logger: %v", err)

@@ -282,6 +282,21 @@ type UserWhereInput struct {
 	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
 	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
 
+	// "email" field predicates.
+	Email             *string  `json:"email,omitempty"`
+	EmailNEQ          *string  `json:"emailNEQ,omitempty"`
+	EmailIn           []string `json:"emailIn,omitempty"`
+	EmailNotIn        []string `json:"emailNotIn,omitempty"`
+	EmailGT           *string  `json:"emailGT,omitempty"`
+	EmailGTE          *string  `json:"emailGTE,omitempty"`
+	EmailLT           *string  `json:"emailLT,omitempty"`
+	EmailLTE          *string  `json:"emailLTE,omitempty"`
+	EmailContains     *string  `json:"emailContains,omitempty"`
+	EmailHasPrefix    *string  `json:"emailHasPrefix,omitempty"`
+	EmailHasSuffix    *string  `json:"emailHasSuffix,omitempty"`
+	EmailEqualFold    *string  `json:"emailEqualFold,omitempty"`
+	EmailContainsFold *string  `json:"emailContainsFold,omitempty"`
+
 	// "password" field predicates.
 	Password             *string  `json:"password,omitempty"`
 	PasswordNEQ          *string  `json:"passwordNEQ,omitempty"`
@@ -296,6 +311,16 @@ type UserWhereInput struct {
 	PasswordHasSuffix    *string  `json:"passwordHasSuffix,omitempty"`
 	PasswordEqualFold    *string  `json:"passwordEqualFold,omitempty"`
 	PasswordContainsFold *string  `json:"passwordContainsFold,omitempty"`
+
+	// "last_login" field predicates.
+	LastLogin      *time.Time  `json:"lastLogin,omitempty"`
+	LastLoginNEQ   *time.Time  `json:"lastLoginNEQ,omitempty"`
+	LastLoginIn    []time.Time `json:"lastLoginIn,omitempty"`
+	LastLoginNotIn []time.Time `json:"lastLoginNotIn,omitempty"`
+	LastLoginGT    *time.Time  `json:"lastLoginGT,omitempty"`
+	LastLoginGTE   *time.Time  `json:"lastLoginGTE,omitempty"`
+	LastLoginLT    *time.Time  `json:"lastLoginLT,omitempty"`
+	LastLoginLTE   *time.Time  `json:"lastLoginLTE,omitempty"`
 
 	// "images" edge predicates.
 	HasImages     *bool              `json:"hasImages,omitempty"`
@@ -472,6 +497,45 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 	if i.NameContainsFold != nil {
 		predicates = append(predicates, user.NameContainsFold(*i.NameContainsFold))
 	}
+	if i.Email != nil {
+		predicates = append(predicates, user.EmailEQ(*i.Email))
+	}
+	if i.EmailNEQ != nil {
+		predicates = append(predicates, user.EmailNEQ(*i.EmailNEQ))
+	}
+	if len(i.EmailIn) > 0 {
+		predicates = append(predicates, user.EmailIn(i.EmailIn...))
+	}
+	if len(i.EmailNotIn) > 0 {
+		predicates = append(predicates, user.EmailNotIn(i.EmailNotIn...))
+	}
+	if i.EmailGT != nil {
+		predicates = append(predicates, user.EmailGT(*i.EmailGT))
+	}
+	if i.EmailGTE != nil {
+		predicates = append(predicates, user.EmailGTE(*i.EmailGTE))
+	}
+	if i.EmailLT != nil {
+		predicates = append(predicates, user.EmailLT(*i.EmailLT))
+	}
+	if i.EmailLTE != nil {
+		predicates = append(predicates, user.EmailLTE(*i.EmailLTE))
+	}
+	if i.EmailContains != nil {
+		predicates = append(predicates, user.EmailContains(*i.EmailContains))
+	}
+	if i.EmailHasPrefix != nil {
+		predicates = append(predicates, user.EmailHasPrefix(*i.EmailHasPrefix))
+	}
+	if i.EmailHasSuffix != nil {
+		predicates = append(predicates, user.EmailHasSuffix(*i.EmailHasSuffix))
+	}
+	if i.EmailEqualFold != nil {
+		predicates = append(predicates, user.EmailEqualFold(*i.EmailEqualFold))
+	}
+	if i.EmailContainsFold != nil {
+		predicates = append(predicates, user.EmailContainsFold(*i.EmailContainsFold))
+	}
 	if i.Password != nil {
 		predicates = append(predicates, user.PasswordEQ(*i.Password))
 	}
@@ -510,6 +574,30 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 	}
 	if i.PasswordContainsFold != nil {
 		predicates = append(predicates, user.PasswordContainsFold(*i.PasswordContainsFold))
+	}
+	if i.LastLogin != nil {
+		predicates = append(predicates, user.LastLoginEQ(*i.LastLogin))
+	}
+	if i.LastLoginNEQ != nil {
+		predicates = append(predicates, user.LastLoginNEQ(*i.LastLoginNEQ))
+	}
+	if len(i.LastLoginIn) > 0 {
+		predicates = append(predicates, user.LastLoginIn(i.LastLoginIn...))
+	}
+	if len(i.LastLoginNotIn) > 0 {
+		predicates = append(predicates, user.LastLoginNotIn(i.LastLoginNotIn...))
+	}
+	if i.LastLoginGT != nil {
+		predicates = append(predicates, user.LastLoginGT(*i.LastLoginGT))
+	}
+	if i.LastLoginGTE != nil {
+		predicates = append(predicates, user.LastLoginGTE(*i.LastLoginGTE))
+	}
+	if i.LastLoginLT != nil {
+		predicates = append(predicates, user.LastLoginLT(*i.LastLoginLT))
+	}
+	if i.LastLoginLTE != nil {
+		predicates = append(predicates, user.LastLoginLTE(*i.LastLoginLTE))
 	}
 
 	if i.HasImages != nil {

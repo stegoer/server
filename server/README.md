@@ -21,8 +21,7 @@ cp .env.example .env
 ### Initialize database
 
 ```sh
-createdb stegoer
-make migrate
+make db-init
 ```
 
 ## Development

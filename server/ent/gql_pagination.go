@@ -449,6 +449,16 @@ var (
 			}
 		},
 	}
+	// ImageOrderFieldChannel orders Image by channel.
+	ImageOrderFieldChannel = &ImageOrderField{
+		field: image.FieldChannel,
+		toCursor: func(i *Image) Cursor {
+			return Cursor{
+				ID:    i.ID,
+				Value: i.Channel,
+			}
+		},
+	}
 )
 
 // String implement fmt.Stringer interface.
@@ -459,6 +469,8 @@ func (f ImageOrderField) String() string {
 		str = "CREATED_AT"
 	case image.FieldUpdatedAt:
 		str = "UPDATED_AT"
+	case image.FieldChannel:
+		str = "CHANNEL"
 	}
 	return str
 }
@@ -479,6 +491,8 @@ func (f *ImageOrderField) UnmarshalGQL(v interface{}) error {
 		*f = *ImageOrderFieldCreatedAt
 	case "UPDATED_AT":
 		*f = *ImageOrderFieldUpdatedAt
+	case "CHANNEL":
+		*f = *ImageOrderFieldChannel
 	default:
 		return fmt.Errorf("%s is not a valid ImageOrderField", str)
 	}
@@ -733,6 +747,16 @@ var (
 			}
 		},
 	}
+	// UserOrderFieldLastLogin orders User by last_login.
+	UserOrderFieldLastLogin = &UserOrderField{
+		field: user.FieldLastLogin,
+		toCursor: func(u *User) Cursor {
+			return Cursor{
+				ID:    u.ID,
+				Value: u.LastLogin,
+			}
+		},
+	}
 )
 
 // String implement fmt.Stringer interface.
@@ -743,6 +767,8 @@ func (f UserOrderField) String() string {
 		str = "CREATED_AT"
 	case user.FieldUpdatedAt:
 		str = "UPDATED_AT"
+	case user.FieldLastLogin:
+		str = "LAST_LOGIN"
 	}
 	return str
 }
@@ -763,6 +789,8 @@ func (f *UserOrderField) UnmarshalGQL(v interface{}) error {
 		*f = *UserOrderFieldCreatedAt
 	case "UPDATED_AT":
 		*f = *UserOrderFieldUpdatedAt
+	case "LAST_LOGIN":
+		*f = *UserOrderFieldLastLogin
 	default:
 		return fmt.Errorf("%s is not a valid UserOrderField", str)
 	}

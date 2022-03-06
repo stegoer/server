@@ -8,16 +8,14 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/go-redis/redis/v8"
-
 	"github.com/kucera-lukas/stegoer/ent"
-	"github.com/kucera-lukas/stegoer/ent/migrate"
 	"github.com/kucera-lukas/stegoer/pkg/adapter/controller"
 	"github.com/kucera-lukas/stegoer/pkg/adapter/repository"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/client"
+	"github.com/kucera-lukas/stegoer/pkg/infrastructure/database"
 	"github.com/kucera-lukas/stegoer/pkg/infrastructure/env"
 	"github.com/kucera-lukas/stegoer/pkg/infrastructure/graphql"
 	"github.com/kucera-lukas/stegoer/pkg/infrastructure/log"
+	"github.com/kucera-lukas/stegoer/pkg/infrastructure/redis"
 	"github.com/kucera-lukas/stegoer/pkg/infrastructure/router"
 )
 
@@ -33,8 +31,8 @@ func Run(config *env.Config, logger *log.Logger) {
 }
 
 func create(config *env.Config, logger *log.Logger) *http.Server {
-	entClient := newDBClient(config, logger)
-	redisClient := newRedisClient(config, logger)
+	entClient := database.MustNew(config, logger)
+	redisClient := redis.MustNew(config, logger)
 	ctrl := newController(entClient)
 
 	gqlSrv := graphql.NewServer(config, logger, entClient, redisClient, ctrl)
@@ -78,40 +76,6 @@ func run(logger *log.Logger, srv *http.Server) {
 	}
 
 	logger.Info("server shutdown")
-}
-
-func newDBClient(config *env.Config, logger *log.Logger) *ent.Client {
-	entClient, err := client.New(config, logger)
-	if err != nil {
-		logger.Panicf("failed to open postgres client: %v", err)
-	}
-
-	if err := entClient.Schema.Create(
-		context.Background(),
-		migrate.WithDropIndex(true),
-		migrate.WithDropColumn(true),
-		migrate.WithForeignKeys(true),
-	); err != nil {
-		logger.Panicf("failed to create schema resources: %v", err)
-	}
-
-	return entClient
-}
-
-func newRedisClient(config *env.Config, logger *log.Logger) *redis.Client {
-	redisOptions, err := redis.ParseURL(config.RedisURL)
-	if err != nil {
-		logger.Panicf("failed to parse %s as a redis url: %v", config.RedisURL, err)
-	}
-
-	redisClient := redis.NewClient(redisOptions)
-
-	_, err = redisClient.Ping(context.Background()).Result()
-	if err != nil {
-		logger.Panicf("failed to open redis client: %v", err)
-	}
-
-	return redisClient
 }
 
 func newController(client *ent.Client) controller.Controller {
