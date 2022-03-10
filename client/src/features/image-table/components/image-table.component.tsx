@@ -1,12 +1,16 @@
-import ImageTable from "@features/images/components/image-table/image-table";
-import ImageTableNavigation from "@features/images/components/image-table/image-table-navigation";
-import { IMAGE_TABLE_PER_PAGE } from "@features/images/images.constants";
-import { useImagesQuery } from "@graphql/generated/codegen.generated";
+import ImageTable from "@features/image-table/components/image-table/image-table";
+import ImageTableNavigation from "@features/image-table/components/image-table/image-table.navigation";
+import { IMAGE_TABLE_PER_PAGE } from "@features/image-table/image-table.constants";
+import {
+  ImageOrderField,
+  OrderDirection,
+  useImagesQuery,
+} from "@graphql/generated/codegen.generated";
 
 import { Skeleton } from "@mantine/core";
 import { useCallback, useEffect, useState } from "react";
 
-import type { MoveDirection } from "@features/images/images.types";
+import type { MoveDirection } from "@features/image-table/image-table.types";
 import type {
   Image,
   ImagesConnection,
@@ -22,7 +26,7 @@ const getImageNodes = (page: number, images: ImagesConnection): Image[] => {
     .map((image) => image.node);
 };
 
-const ImagesComponent = (): JSX.Element => {
+const ImageTableComponent = (): JSX.Element => {
   // table navigation/pagination
   const [page, setPage] = useState(1);
   const [imageRows, setImageRows] = useState<Image[]>([]);
@@ -37,6 +41,10 @@ const ImagesComponent = (): JSX.Element => {
       last,
       after: endCursor,
       before: startCursor,
+      orderBy: {
+        direction: OrderDirection.Desc,
+        field: ImageOrderField.CreatedAt,
+      },
     },
   });
   // UI constants
@@ -51,7 +59,7 @@ const ImagesComponent = (): JSX.Element => {
           )),
   );
 
-  // fetch images after variables get updated
+  // fetch image-table after variables get updated
   useEffect(() => {
     void fetchImages();
   }, [fetchImages, page, first, last, startCursor, endCursor]);
@@ -110,4 +118,4 @@ const ImagesComponent = (): JSX.Element => {
   );
 };
 
-export default ImagesComponent;
+export default ImageTableComponent;

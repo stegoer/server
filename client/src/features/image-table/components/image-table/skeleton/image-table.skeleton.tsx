@@ -1,7 +1,7 @@
 import {
   IMAGE_TABLE_HEADERS,
   IMAGE_TABLE_PER_PAGE,
-} from "@features/images/images.constants";
+} from "@features/image-table/image-table.constants";
 
 import { Skeleton, Table } from "@mantine/core";
 

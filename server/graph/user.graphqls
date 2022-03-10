@@ -1,3 +1,24 @@
+input NewUser {
+  username: String!
+  email: String!
+  password: String!
+}
+
+input UpdateUser {
+  username: String
+  email: String
+  password: String
+}
+
+input Login {
+  email: String!
+  password: String!
+}
+
+input RefreshTokenInput {
+  token: String!
+}
+
 type User {
   id: ID!
   username: String!
@@ -16,39 +37,18 @@ type Auth {
   expires: Time!
 }
 
-input NewUser {
-  username: String!
-  email: String!
-  password: String!
-}
-
 type CreateUserPayload {
   user: User!
   auth: Auth!
-}
-
-input UpdateUser {
-  username: String
-  email: String
-  password: String
 }
 
 type UpdateUserPayload {
   user: User!
 }
 
-input Login {
-  email: String!
-  password: String!
-}
-
 type LoginPayload {
   user: User!
   auth: Auth!
-}
-
-input RefreshTokenInput {
-  token: String!
 }
 
 type RefreshTokenPayload {
@@ -62,7 +62,7 @@ extend type Query {
 
 extend type Mutation {
   createUser(input: NewUser!): CreateUserPayload!
+  updateUser(input: UpdateUser!): UpdateUserPayload!
   login(input: Login!): LoginPayload!
   refreshToken(input: RefreshTokenInput!): RefreshTokenPayload!
-  updateUser(input: UpdateUser!): UpdateUserPayload!
 }

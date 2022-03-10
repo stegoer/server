@@ -27,7 +27,7 @@ var (
 func GenerateAuth(
 	ctx context.Context,
 	entUser model.User,
-) (*generated.Auth, *model.Error) {
+) (*generated.Auth, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims, ok := token.Claims.(jwt.MapClaims)
@@ -54,7 +54,7 @@ func GenerateAuth(
 func ParseToken(
 	ctx context.Context,
 	tokenStr string,
-) (ulid.ID, *model.Error) {
+) (ulid.ID, error) {
 	token, err := jwt.Parse(tokenStr, func(_ *jwt.Token) (interface{}, error) {
 		return SecretKey, nil
 	})

@@ -72,7 +72,7 @@ func Jwt(
 }
 
 // JwtForContext finds user from context. Requires Jwt to have run.
-func JwtForContext(ctx context.Context) (*ent.User, *model.Error) {
+func JwtForContext(ctx context.Context) (*ent.User, error) {
 	entUser, ok := ctx.Value(userCtxKey).(*ent.User)
 	if !ok {
 		return nil, model.NewAuthorizationError(ctx, "invalid token")

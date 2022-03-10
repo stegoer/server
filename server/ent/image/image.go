@@ -20,6 +20,10 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldMessage holds the string denoting the message field in the database.
+	FieldMessage = "message"
+	// FieldLsbUsed holds the string denoting the lsb_used field in the database.
+	FieldLsbUsed = "lsb_used"
 	// FieldChannel holds the string denoting the channel field in the database.
 	FieldChannel = "channel"
 	// EdgeUser holds the string denoting the user edge name in mutations.
@@ -40,6 +44,8 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldMessage,
+	FieldLsbUsed,
 	FieldChannel,
 }
 
@@ -71,6 +77,10 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// MessageValidator is a validator for the "message" field. It is called by the builders before save.
+	MessageValidator func(string) error
+	// LsbUsedValidator is a validator for the "lsb_used" field. It is called by the builders before save.
+	LsbUsedValidator func(int) error
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() ulid.ID
 )

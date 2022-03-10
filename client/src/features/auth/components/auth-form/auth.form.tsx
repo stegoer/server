@@ -1,3 +1,4 @@
+import ErrorText from "@components/errors/error.text";
 import AuthFormInput from "@features/auth/components/auth-form/auth-form.input";
 import AuthFormNavigation from "@features/auth/components/auth-form/auth-form.navigation";
 import {
@@ -8,7 +9,7 @@ import useAuthForm from "@hooks/auth-form.hook";
 import useAuth from "@hooks/auth.hook";
 import { capitalize } from "@utils/format.utils";
 
-import { LoadingOverlay, Text, Title } from "@mantine/core";
+import { LoadingOverlay } from "@mantine/core";
 import { useCallback, useState } from "react";
 
 import type { FormType } from "@features/auth/auth.types";
@@ -92,27 +93,20 @@ const AuthForm = ({ formType, toggleFormType }: Props): JSX.Element => {
   );
 
   return (
-    <>
-      <Title>{title}</Title>
-      <form onSubmit={form.onSubmit(onSubmit)}>
-        <LoadingOverlay visible={loading} />
+    <form onSubmit={form.onSubmit(onSubmit)}>
+      <LoadingOverlay visible={loading} />
 
-        <AuthFormInput form={form} formType={formType} />
+      <AuthFormInput form={form} formType={formType} disabled={loading} />
 
-        {error && (
-          <Text color="red" size="sm" mt="sm">
-            {error}
-          </Text>
-        )}
+      {error && <ErrorText error={error} />}
 
-        <AuthFormNavigation
-          formType={formType}
-          loading={loading}
-          title={title}
-          onToggle={onToggle}
-        />
-      </form>
-    </>
+      <AuthFormNavigation
+        formType={formType}
+        loading={loading}
+        title={title}
+        onToggle={onToggle}
+      />
+    </form>
   );
 };
 

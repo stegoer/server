@@ -51,6 +51,18 @@ func (ic *ImageCreate) SetNillableUpdatedAt(t *time.Time) *ImageCreate {
 	return ic
 }
 
+// SetMessage sets the "message" field.
+func (ic *ImageCreate) SetMessage(s string) *ImageCreate {
+	ic.mutation.SetMessage(s)
+	return ic
+}
+
+// SetLsbUsed sets the "lsb_used" field.
+func (ic *ImageCreate) SetLsbUsed(i int) *ImageCreate {
+	ic.mutation.SetLsbUsed(i)
+	return ic
+}
+
 // SetChannel sets the "channel" field.
 func (ic *ImageCreate) SetChannel(i image.Channel) *ImageCreate {
 	ic.mutation.SetChannel(i)
@@ -183,6 +195,22 @@ func (ic *ImageCreate) check() error {
 	if _, ok := ic.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Image.updated_at"`)}
 	}
+	if _, ok := ic.mutation.Message(); !ok {
+		return &ValidationError{Name: "message", err: errors.New(`ent: missing required field "Image.message"`)}
+	}
+	if v, ok := ic.mutation.Message(); ok {
+		if err := image.MessageValidator(v); err != nil {
+			return &ValidationError{Name: "message", err: fmt.Errorf(`ent: validator failed for field "Image.message": %w`, err)}
+		}
+	}
+	if _, ok := ic.mutation.LsbUsed(); !ok {
+		return &ValidationError{Name: "lsb_used", err: errors.New(`ent: missing required field "Image.lsb_used"`)}
+	}
+	if v, ok := ic.mutation.LsbUsed(); ok {
+		if err := image.LsbUsedValidator(v); err != nil {
+			return &ValidationError{Name: "lsb_used", err: fmt.Errorf(`ent: validator failed for field "Image.lsb_used": %w`, err)}
+		}
+	}
 	if _, ok := ic.mutation.Channel(); !ok {
 		return &ValidationError{Name: "channel", err: errors.New(`ent: missing required field "Image.channel"`)}
 	}
@@ -242,6 +270,22 @@ func (ic *ImageCreate) createSpec() (*Image, *sqlgraph.CreateSpec) {
 			Column: image.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if value, ok := ic.mutation.Message(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: image.FieldMessage,
+		})
+		_node.Message = value
+	}
+	if value, ok := ic.mutation.LsbUsed(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: image.FieldLsbUsed,
+		})
+		_node.LsbUsed = value
 	}
 	if value, ok := ic.mutation.Channel(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

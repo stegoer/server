@@ -5,24 +5,62 @@ package resolver
 
 import (
 	"context"
+	"encoding/base64"
+	"fmt"
 
 	"github.com/kucera-lukas/stegoer/ent"
+	"github.com/kucera-lukas/stegoer/ent/schema"
 	"github.com/kucera-lukas/stegoer/graph/generated"
+	"github.com/kucera-lukas/stegoer/pkg/entity/model"
 	"github.com/kucera-lukas/stegoer/pkg/infrastructure/middleware"
+	"github.com/kucera-lukas/stegoer/pkg/steganography"
+	"github.com/kucera-lukas/stegoer/pkg/util"
 )
 
-func (r *mutationResolver) CreateImage(ctx context.Context, input generated.NewImage) (*generated.CreateImagePayload, error) {
+func (r *mutationResolver) EncodeImage(ctx context.Context, input generated.EncodeImageInput) (*generated.EncodeImagePayload, error) {
+	if !util.ValidLSBUsed(input.LsbUsed) {
+		return nil, model.NewValidationError(
+			ctx,
+			fmt.Sprintf(
+				"%d is out of the range [%d : %d] for least significant bit amount",
+				input.LsbUsed,
+				schema.LsbMin,
+				schema.LsbMax,
+			),
+		)
+	}
+
+	imgBuffer, err := steganography.Encode(input)
+	if err != nil {
+		return nil, model.NewValidationError(ctx, err.Error())
+	}
+
 	entUser, err := middleware.JwtForContext(ctx)
 	if err != nil {
-		return &generated.CreateImagePayload{Image: nil}, err
+		return nil, err
 	}
 
 	entImage, err := r.controller.Image.Create(ctx, *entUser, input)
 	if err != nil {
-		return &generated.CreateImagePayload{Image: nil}, err
+		return nil, err
 	}
 
-	return &generated.CreateImagePayload{Image: entImage}, nil
+	return &generated.EncodeImagePayload{
+		Image: entImage,
+		File: &generated.FileType{
+			Name:    input.File.Filename,
+			Content: base64.StdEncoding.EncodeToString(imgBuffer.Bytes()),
+		},
+	}, nil
+}
+
+func (r *mutationResolver) DecodeImage(ctx context.Context, input generated.DecodeImageInput) (*generated.DecodeImagePayload, error) {
+	message, err := steganography.Decode(input)
+	if err != nil {
+		return nil, model.NewValidationError(ctx, err.Error())
+	}
+
+	return &generated.DecodeImagePayload{Message: message}, nil
 }
 
 func (r *queryResolver) Images(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ImageWhereInput, orderBy *ent.ImageOrder) (*generated.ImagesConnection, error) {

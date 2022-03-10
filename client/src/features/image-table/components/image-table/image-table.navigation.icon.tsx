@@ -1,11 +1,11 @@
-import { IMAGE_TABLE_HOTKEY_NAVIGATION } from "@features/images/images.constants";
+import { IMAGE_TABLE_HOTKEY_NAVIGATION } from "@features/image-table/image-table.constants";
 
 import { ActionIcon } from "@mantine/core";
 import { useHotkeys } from "@mantine/hooks";
 import { ArrowLeftIcon, ArrowRightIcon } from "@modulz/radix-icons";
 import { useCallback } from "react";
 
-import type { MoveDirection } from "@features/images/images.types";
+import type { MoveDirection } from "@features/image-table/image-table.types";
 
 type Props = {
   disabled: boolean;

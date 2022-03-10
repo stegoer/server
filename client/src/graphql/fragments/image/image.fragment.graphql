@@ -1,5 +1,7 @@
 fragment ImageFragment on Image {
   id
+  message
+  lsbUsed
   channel
   createdAt
   updatedAt

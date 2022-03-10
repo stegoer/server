@@ -1,4 +1,4 @@
-import { IMAGE_TABLE_HEADERS } from "@features/images/images.constants";
+import { IMAGE_TABLE_HEADERS } from "@features/image-table/image-table.constants";
 
 import { Table } from "@mantine/core";
 

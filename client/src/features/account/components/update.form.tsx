@@ -1,4 +1,5 @@
 import SubmitButton from "@components/buttons/submit.button";
+import ErrorText from "@components/errors/error.text";
 import ConfirmPasswordInput from "@components/input/confirm-password.input";
 import EmailInput from "@components/input/email.input";
 import PasswordStrength from "@components/input/password-strength/password-strength.input";
@@ -8,26 +9,28 @@ import userUpdatedNotification from "@features/account/notifications/user-update
 import { useUpdateUserMutation } from "@graphql/generated/codegen.generated";
 import useAuthForm from "@hooks/auth-form.hook";
 
-import { Anchor, Collapse, Group, LoadingOverlay, Text } from "@mantine/core";
+import { Anchor, Collapse, Group, LoadingOverlay } from "@mantine/core";
 import { useNotifications } from "@mantine/notifications";
 import { useCallback, useState } from "react";
 
+import type { FormType } from "@features/auth/auth.types";
 import type { User } from "@graphql/generated/codegen.generated";
 
 type Props = {
   user: User;
 };
 
+const DEFAULT_FORM_TYPE: FormType = `register`;
+
 const getUpdatedValue = (user: User, key: keyof User, value?: string) =>
   value && value !== user[key] ? value : undefined;
 
 const UserForm = ({ user }: Props): JSX.Element => {
   const [passwordOpen, setPasswordOpen] = useState(false);
-  const form = useAuthForm(`register`, passwordOpen, user);
+  const form = useAuthForm(DEFAULT_FORM_TYPE, passwordOpen, user);
   const [updateResult, updateUser] = useUpdateUserMutation();
   const [error, setError] = useState<string>();
   const notifications = useNotifications();
-
   const loading = updateResult.fetching;
 
   const onSubmit = useCallback(
@@ -59,17 +62,14 @@ const UserForm = ({ user }: Props): JSX.Element => {
     [passwordOpen, notifications, updateUser, user],
   );
 
-  const errorContent = (
-    <Text color="red" size="sm" mt="sm">
-      {error}
-    </Text>
-  );
+  const errorContent = <ErrorText error={error} />;
 
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
       <LoadingOverlay visible={loading} />
-      <UsernameInput form={form} />
-      <EmailInput form={form} />
+
+      <UsernameInput form={form} disabled={loading} />
+      <EmailInput form={form} disabled={loading} />
 
       {error && !passwordOpen && errorContent}
 
@@ -81,8 +81,8 @@ const UserForm = ({ user }: Props): JSX.Element => {
           Set new password?
         </Anchor>
         <Collapse in={passwordOpen}>
-          <PasswordStrength form={form} />
-          <ConfirmPasswordInput form={form} />
+          <PasswordStrength form={form} disabled={loading} />
+          <ConfirmPasswordInput form={form} disabled={loading} />
         </Collapse>
 
         {error && passwordOpen && errorContent}

@@ -38,6 +38,9 @@ type ImageMutation struct {
 	id            *ulid.ID
 	created_at    *time.Time
 	updated_at    *time.Time
+	message       *string
+	lsb_used      *int
+	addlsb_used   *int
 	channel       *image.Channel
 	clearedFields map[string]struct{}
 	user          *ulid.ID
@@ -223,6 +226,98 @@ func (m *ImageMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
+// SetMessage sets the "message" field.
+func (m *ImageMutation) SetMessage(s string) {
+	m.message = &s
+}
+
+// Message returns the value of the "message" field in the mutation.
+func (m *ImageMutation) Message() (r string, exists bool) {
+	v := m.message
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMessage returns the old "message" field's value of the Image entity.
+// If the Image object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ImageMutation) OldMessage(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMessage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMessage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMessage: %w", err)
+	}
+	return oldValue.Message, nil
+}
+
+// ResetMessage resets all changes to the "message" field.
+func (m *ImageMutation) ResetMessage() {
+	m.message = nil
+}
+
+// SetLsbUsed sets the "lsb_used" field.
+func (m *ImageMutation) SetLsbUsed(i int) {
+	m.lsb_used = &i
+	m.addlsb_used = nil
+}
+
+// LsbUsed returns the value of the "lsb_used" field in the mutation.
+func (m *ImageMutation) LsbUsed() (r int, exists bool) {
+	v := m.lsb_used
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLsbUsed returns the old "lsb_used" field's value of the Image entity.
+// If the Image object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ImageMutation) OldLsbUsed(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLsbUsed is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLsbUsed requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLsbUsed: %w", err)
+	}
+	return oldValue.LsbUsed, nil
+}
+
+// AddLsbUsed adds i to the "lsb_used" field.
+func (m *ImageMutation) AddLsbUsed(i int) {
+	if m.addlsb_used != nil {
+		*m.addlsb_used += i
+	} else {
+		m.addlsb_used = &i
+	}
+}
+
+// AddedLsbUsed returns the value that was added to the "lsb_used" field in this mutation.
+func (m *ImageMutation) AddedLsbUsed() (r int, exists bool) {
+	v := m.addlsb_used
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLsbUsed resets all changes to the "lsb_used" field.
+func (m *ImageMutation) ResetLsbUsed() {
+	m.lsb_used = nil
+	m.addlsb_used = nil
+}
+
 // SetChannel sets the "channel" field.
 func (m *ImageMutation) SetChannel(i image.Channel) {
 	m.channel = &i
@@ -317,12 +412,18 @@ func (m *ImageMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ImageMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 5)
 	if m.created_at != nil {
 		fields = append(fields, image.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, image.FieldUpdatedAt)
+	}
+	if m.message != nil {
+		fields = append(fields, image.FieldMessage)
+	}
+	if m.lsb_used != nil {
+		fields = append(fields, image.FieldLsbUsed)
 	}
 	if m.channel != nil {
 		fields = append(fields, image.FieldChannel)
@@ -339,6 +440,10 @@ func (m *ImageMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case image.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case image.FieldMessage:
+		return m.Message()
+	case image.FieldLsbUsed:
+		return m.LsbUsed()
 	case image.FieldChannel:
 		return m.Channel()
 	}
@@ -354,6 +459,10 @@ func (m *ImageMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldCreatedAt(ctx)
 	case image.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case image.FieldMessage:
+		return m.OldMessage(ctx)
+	case image.FieldLsbUsed:
+		return m.OldLsbUsed(ctx)
 	case image.FieldChannel:
 		return m.OldChannel(ctx)
 	}
@@ -379,6 +488,20 @@ func (m *ImageMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedAt(v)
 		return nil
+	case image.FieldMessage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMessage(v)
+		return nil
+	case image.FieldLsbUsed:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLsbUsed(v)
+		return nil
 	case image.FieldChannel:
 		v, ok := value.(image.Channel)
 		if !ok {
@@ -393,13 +516,21 @@ func (m *ImageMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *ImageMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addlsb_used != nil {
+		fields = append(fields, image.FieldLsbUsed)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *ImageMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case image.FieldLsbUsed:
+		return m.AddedLsbUsed()
+	}
 	return nil, false
 }
 
@@ -408,6 +539,13 @@ func (m *ImageMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *ImageMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case image.FieldLsbUsed:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLsbUsed(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Image numeric field %s", name)
 }
@@ -440,6 +578,12 @@ func (m *ImageMutation) ResetField(name string) error {
 		return nil
 	case image.FieldUpdatedAt:
 		m.ResetUpdatedAt()
+		return nil
+	case image.FieldMessage:
+		m.ResetMessage()
+		return nil
+	case image.FieldLsbUsed:
+		m.ResetLsbUsed()
 		return nil
 	case image.FieldChannel:
 		m.ResetChannel()

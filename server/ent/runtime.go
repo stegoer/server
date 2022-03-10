@@ -32,6 +32,14 @@ func init() {
 	image.DefaultUpdatedAt = imageDescUpdatedAt.Default.(func() time.Time)
 	// image.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	image.UpdateDefaultUpdatedAt = imageDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// imageDescMessage is the schema descriptor for message field.
+	imageDescMessage := imageFields[0].Descriptor()
+	// image.MessageValidator is a validator for the "message" field. It is called by the builders before save.
+	image.MessageValidator = imageDescMessage.Validators[0].(func(string) error)
+	// imageDescLsbUsed is the schema descriptor for lsb_used field.
+	imageDescLsbUsed := imageFields[1].Descriptor()
+	// image.LsbUsedValidator is a validator for the "lsb_used" field. It is called by the builders before save.
+	image.LsbUsedValidator = imageDescLsbUsed.Validators[0].(func(int) error)
 	// imageDescID is the schema descriptor for id field.
 	imageDescID := imageMixinFields0[0].Descriptor()
 	// image.DefaultID holds the default value on creation for the id field.

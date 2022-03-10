@@ -3,18 +3,23 @@ import AuthComponent from "@features/auth/components/auth.component";
 import useUser from "@hooks/user.hook";
 import PageLayout from "@layouts/page.layout";
 
-import { Paper } from "@mantine/core";
+import { useState } from "react";
 
 import type { NextPage } from "next";
 
+const DEFAULT_TITLE = `account`;
+
 const Account: NextPage = () => {
   const [user] = useUser();
+  const [title, setTitle] = useState(DEFAULT_TITLE);
 
   return (
-    <PageLayout title="account">
-      <Paper style={{ width: 300, position: `relative` }}>
-        {user ? <AccountComponent user={user} /> : <AuthComponent />}
-      </Paper>
+    <PageLayout title={title}>
+      {user ? (
+        <AccountComponent user={user} />
+      ) : (
+        <AuthComponent setTitle={setTitle} />
+      )}
     </PageLayout>
   );
 };

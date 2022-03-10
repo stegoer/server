@@ -1,8 +1,8 @@
-import ImageTableNavigationIcon from "@features/images/components/image-table/image-table-navigation-icon";
+import ImageTableNavigationIcon from "@features/image-table/components/image-table/image-table.navigation.icon";
 
 import { Group } from "@mantine/core";
 
-import type { MoveDirection } from "@features/images/images.types";
+import type { MoveDirection } from "@features/image-table/image-table.types";
 
 type Props = {
   loading: boolean;

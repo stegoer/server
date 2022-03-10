@@ -8,6 +8,8 @@ export
 AIR = $(GOBIN)/air
 ENT = $(GOBIN)/ent
 GQLGEN = $(GOBIN)/gqlgen
+GODOC = $(GOBIN)/godoc
+GODOC-STATIC = $(GOBIN)/godoc-static
 GOFUMPT = $(GOBIN)/gofumpt
 GOLANGCI_LINT = $(GOBIN)/golangci-lint
 GOIMPORTS = $(GOBIN)/goimports-reviser
@@ -30,6 +32,12 @@ $(ENT):
 $(GQLGEN):
 	cd tools && go install github.com/99designs/gqlgen
 
+$(GODOC):
+	cd tools && go install golang.org/x/tools/cmd/godoc
+
+$(GODOC-STATIC):
+	cd tools && go install code.rocketnine.space/tslocum/godoc-static
+
 $(GOFUMPT):
 	cd tools && go install mvdan.cc/gofumpt
 
@@ -40,21 +48,31 @@ $(GOLANGCI_LINT):
 	cd tools && go install github.com/golangci/golangci-lint/cmd/golangci-lint
 
 $(MIGRATE):
-	curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.1/migrate.linux-amd64.tar.gz | tar xvz
-	mv migrate bin/migrate
+	cd tools && go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 
-.PHONY: describe gen fmt lint tidy test cover ci dev db-init makemigrations migrate-all migrate-up migrate-down build clean help
+.PHONY: describe serve-doc gen fmt lint tidy test cover ci dev db-init makemigrations migrate-all migrate-up migrate-down build clean help
 
 default: help
 
 describe: $(GQLGEN)  ## Describe ent schema.
 	@$(ENT) describe ./ent/schema
 
+serve-doc: $(GODOC) $(GODOC-STATIC)  ## Serve go documentation.
+	@$(GODOC) -http=:6060
+
+generate-doc: $(GODOC-STATIC)  ## Generate documentation.
+	@$(GODOC-STATIC) \
+		-site-name="stegoer documentation" \
+		-site-description-file=README.md \
+        -destination=docs \
+        src/github.com/kucera-lukas/stegoer
+
 gen: $(GQLGEN)  ## Generate server files.
 	@echo "generating ent files"
 	@go generate ./ent
 	@echo "generating gqlgen files"
 	@$(GQLEN)
+	@echo "files generated"
 
 fmt: $(GOFUMPT) $(GOIMPORTS) ## Format source files.
 	@echo "formatting via gofumpt and goimports-reviser"

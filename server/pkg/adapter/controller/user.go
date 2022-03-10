@@ -13,22 +13,22 @@ type User interface {
 	GetByID(
 		ctx context.Context,
 		id ulid.ID,
-	) (*model.User, *model.Error)
+	) (*model.User, error)
 	GetByEmail(
 		ctx context.Context,
 		email string,
-	) (*model.User, *model.Error)
+	) (*model.User, error)
 	Create(
 		ctx context.Context,
 		input generated.NewUser,
-	) (*model.User, *model.Error)
+	) (*model.User, error)
 	Update(
 		ctx context.Context,
 		entUser model.User,
 		input generated.UpdateUser,
-	) (*model.User, *model.Error)
+	) (*model.User, error)
 	SetLoggedIn(
 		ctx context.Context,
 		entUser model.User,
-	) (*model.User, *model.Error)
+	) (*model.User, error)
 }

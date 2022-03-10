@@ -17,9 +17,10 @@ generates:
       documentVariableSuffix: Document
       fragmentVariableSuffix: FragmentDocument
       scalars:
-        Time: Date
         Cursor: string
+        Time: Date
         Upload: File
+        FileType: src/graphql/graphql.types/FileType
   src/graphql/generated/introspection-schema.generated.json:
     plugins:
       - introspection

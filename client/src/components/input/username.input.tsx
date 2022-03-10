@@ -5,14 +5,19 @@ import type { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 
 type Props<T extends { username: string }> = {
   form: UseForm<T>;
+  disabled: boolean;
 };
 
-const UsernameInput = <T extends { username: string }>({ form }: Props<T>) => {
+const UsernameInput = <T extends { username: string }>({
+  form,
+  disabled,
+}: Props<T>) => {
   return (
     <TextInput
       label="Username"
       placeholder="Your username"
       icon={<AvatarIcon />}
+      disabled={disabled}
       required
       {...form.getInputProps(`username`)}
     />

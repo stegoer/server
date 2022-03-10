@@ -14,11 +14,13 @@ import type { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 type Props<T extends { password: string }> = {
   form: UseForm<T>;
   inputProps?: PasswordInputProps;
+  disabled: boolean;
 };
 
 const PasswordStrength = <T extends { password: string }>({
   form,
   inputProps,
+  disabled,
 }: Props<T>) => {
   const [popoverOpened, setPopoverOpened] = useState(false);
   const [password, setPassword] = useState(``);
@@ -57,6 +59,7 @@ const PasswordStrength = <T extends { password: string }>({
             },
             ...inputProps,
           }}
+          disabled={disabled}
         />
       }
     >

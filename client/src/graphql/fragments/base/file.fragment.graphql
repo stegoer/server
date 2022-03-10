@@ -1,0 +1,4 @@
+fragment FileTypeFragment on FileType {
+  name
+  content
+}

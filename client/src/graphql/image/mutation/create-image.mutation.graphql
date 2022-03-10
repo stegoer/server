@@ -1,7 +1,0 @@
-mutation createImage($channel: Channel!, $file: Upload!) {
-  createImage(input: { channel: $channel, file: $file }) {
-    image {
-      ...ImageFragment
-    }
-  }
-}

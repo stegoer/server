@@ -25,7 +25,7 @@ type userRepository struct {
 func (r *userRepository) GetByID(
 	ctx context.Context,
 	id ulid.ID,
-) (*model.User, *model.Error) {
+) (*model.User, error) {
 	entUser, err := r.client.User.Query().Where(user.IDEQ(id)).Only(ctx)
 	if err != nil {
 		return nil, model.NewDBError(ctx, err.Error())
@@ -37,7 +37,7 @@ func (r *userRepository) GetByID(
 func (r *userRepository) GetByEmail(
 	ctx context.Context,
 	email string,
-) (*model.User, *model.Error) {
+) (*model.User, error) {
 	entUser, err := r.client.User.Query().Where(user.EmailEQ(email)).Only(ctx)
 	if err != nil {
 		return nil, model.NewDBError(ctx, err.Error())
@@ -49,7 +49,7 @@ func (r *userRepository) GetByEmail(
 func (r *userRepository) Create(
 	ctx context.Context,
 	input generated.NewUser,
-) (*model.User, *model.Error) {
+) (*model.User, error) {
 	hashedPassword, err := util.HashPassword(input.Password)
 	if err != nil {
 		return nil, model.NewValidationError(ctx, err.Error())
@@ -72,7 +72,7 @@ func (r *userRepository) Update(
 	ctx context.Context,
 	entUser model.User,
 	input generated.UpdateUser,
-) (*model.User, *model.Error) {
+) (*model.User, error) {
 	update := entUser.Update()
 
 	if input.Username != nil {
@@ -103,7 +103,7 @@ func (r *userRepository) Update(
 func (r *userRepository) SetLoggedIn(
 	ctx context.Context,
 	entUser model.User,
-) (*model.User, *model.Error) {
+) (*model.User, error) {
 	updatedEntUser, err := entUser.Update().SetLastLogin(time.Now()).Save(ctx)
 	if err != nil {
 		return nil, model.NewDBError(ctx, err.Error())

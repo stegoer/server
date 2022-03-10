@@ -7,11 +7,13 @@ import type { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 type Props<T extends { password: string }> = {
   form: UseForm<T>;
   props?: PasswordInputProps;
+  disabled?: boolean;
 };
 
 const PasswordInput = <T extends { password: string }>({
   form,
   props,
+  disabled,
 }: Props<T>) => {
   return (
     <MantinePasswordInput
@@ -20,6 +22,7 @@ const PasswordInput = <T extends { password: string }>({
       placeholder="Password"
       toggleTabIndex={0}
       icon={<LockClosedIcon />}
+      disabled={disabled}
       {...form.getInputProps(`password`)}
       {...props}
     />

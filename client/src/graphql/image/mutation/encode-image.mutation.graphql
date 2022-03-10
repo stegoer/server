@@ -1,0 +1,22 @@
+mutation encodeImage(
+  $message: String!
+  $lsbUsed: Int!
+  $channel: Channel!
+  $file: Upload!
+) {
+  encodeImage(
+    input: {
+      message: $message
+      lsbUsed: $lsbUsed
+      channel: $channel
+      file: $file
+    }
+  ) {
+    image {
+      ...ImageFragment
+    }
+    file {
+      ...FileTypeFragment
+    }
+  }
+}

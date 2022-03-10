@@ -16,24 +16,32 @@ import (
 func (r *mutationResolver) CreateUser(ctx context.Context, input generated.NewUser) (*generated.CreateUserPayload, error) {
 	entUser, err := r.controller.User.Create(ctx, input)
 	if err != nil {
-		return &generated.CreateUserPayload{
-			User: nil,
-			Auth: nil,
-		}, err
+		return nil, err
 	}
 
 	auth, err := util.GenerateAuth(ctx, *entUser)
 	if err != nil {
-		return &generated.CreateUserPayload{
-			User: nil,
-			Auth: nil,
-		}, err
+		return nil, err
 	}
 
 	return &generated.CreateUserPayload{
 		User: entUser,
 		Auth: auth,
 	}, nil
+}
+
+func (r *mutationResolver) UpdateUser(ctx context.Context, input generated.UpdateUser) (*generated.UpdateUserPayload, error) {
+	entUser, err := middleware.JwtForContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	entUser, err = r.controller.User.Update(ctx, *entUser, input)
+	if err != nil {
+		return nil, err
+	}
+
+	return &generated.UpdateUserPayload{User: entUser}, nil
 }
 
 func (r *mutationResolver) Login(ctx context.Context, input generated.Login) (*generated.LoginPayload, error) {
@@ -43,28 +51,17 @@ func (r *mutationResolver) Login(ctx context.Context, input generated.Login) (*g
 		input.Password,
 		entUser.Password,
 	) {
-		err := model.NewNotFoundError(ctx, "email or password is incorrect")
-
-		return &generated.LoginPayload{
-			User: nil,
-			Auth: nil,
-		}, err
+		return nil, model.NewNotFoundError(ctx, "email or password is incorrect")
 	}
 
 	entUser, err := r.controller.User.SetLoggedIn(ctx, *entUser)
 	if err != nil {
-		return &generated.LoginPayload{
-			User: nil,
-			Auth: nil,
-		}, err
+		return nil, err
 	}
 
 	auth, err := util.GenerateAuth(ctx, *entUser)
 	if err != nil {
-		return &generated.LoginPayload{
-			User: nil,
-			Auth: nil,
-		}, err
+		return nil, err
 	}
 
 	return &generated.LoginPayload{
@@ -76,46 +73,23 @@ func (r *mutationResolver) Login(ctx context.Context, input generated.Login) (*g
 func (r *mutationResolver) RefreshToken(ctx context.Context, input generated.RefreshTokenInput) (*generated.RefreshTokenPayload, error) {
 	userID, err := util.ParseToken(ctx, input.Token)
 	if err != nil {
-		return &generated.RefreshTokenPayload{
-			User: nil,
-			Auth: nil,
-		}, err
+		return nil, err
 	}
 
 	entUser, err := r.controller.User.GetByID(ctx, userID)
 	if err != nil {
-		return &generated.RefreshTokenPayload{
-			User: nil,
-			Auth: nil,
-		}, err
+		return nil, err
 	}
 
 	auth, err := util.GenerateAuth(ctx, *entUser)
 	if err != nil {
-		return &generated.RefreshTokenPayload{
-			User: nil,
-			Auth: nil,
-		}, err
+		return nil, err
 	}
 
 	return &generated.RefreshTokenPayload{
 		User: entUser,
 		Auth: auth,
 	}, nil
-}
-
-func (r *mutationResolver) UpdateUser(ctx context.Context, input generated.UpdateUser) (*generated.UpdateUserPayload, error) {
-	entUser, err := middleware.JwtForContext(ctx)
-	if err != nil {
-		return &generated.UpdateUserPayload{User: nil}, err
-	}
-
-	entUser, err = r.controller.User.Update(ctx, *entUser, input)
-	if err != nil {
-		return &generated.UpdateUserPayload{User: nil}, err
-	}
-
-	return &generated.UpdateUserPayload{User: entUser}, nil
 }
 
 func (r *queryResolver) Overview(ctx context.Context) (*generated.OverviewPayload, error) {

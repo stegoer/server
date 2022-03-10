@@ -5,7 +5,7 @@ import (
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
-	"github.com/lib/pq"
+	_ "github.com/lib/pq" // so we can use dialect.Postgres
 
 	"github.com/kucera-lukas/stegoer/ent"
 	"github.com/kucera-lukas/stegoer/pkg/infrastructure/env"
@@ -28,12 +28,7 @@ func New(config *env.Config, logger *log.Logger) (*ent.Client, error) {
 
 	var drv dialect.Driver
 
-	url, err := pq.ParseURL(config.DatabaseURL)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse database url: %w", err)
-	}
-
-	drv, err = sql.Open(dialect.Postgres, url)
+	drv, err := sql.Open(dialect.Postgres, config.DatabaseURL)
 	if err != nil {
 		return nil, fmt.Errorf("error opening database client: %w", err)
 	}

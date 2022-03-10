@@ -1,10 +1,21 @@
 scalar Cursor
 scalar Time
+
+"The `Upload` scalar type represents a multipart file upload."
 scalar Upload
+
+interface Node {
+  id: ID!
+}
 
 enum OrderDirection {
   ASC
   DESC
+}
+
+type FileType {
+  name: String!
+  content: String!
 }
 
 type PageInfo {
@@ -14,10 +25,8 @@ type PageInfo {
   endCursor: Cursor
 }
 
-interface Node {
-  id: ID!
-}
-
+"The `Query` type, represents all of the entry points into our object graph."
 type Query
 
+"The `Mutation` type, represents all updates we can make to our data."
 type Mutation

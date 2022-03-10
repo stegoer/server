@@ -47,7 +47,7 @@ func (i *Image) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     i.ID,
 		Type:   "Image",
-		Fields: make([]*Field, 3),
+		Fields: make([]*Field, 5),
 		Edges:  make([]*Edge, 1),
 	}
 	var buf []byte
@@ -67,10 +67,26 @@ func (i *Image) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "updated_at",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(i.Channel); err != nil {
+	if buf, err = json.Marshal(i.Message); err != nil {
 		return nil, err
 	}
 	node.Fields[2] = &Field{
+		Type:  "string",
+		Name:  "message",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(i.LsbUsed); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "int",
+		Name:  "lsb_used",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(i.Channel); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
 		Type:  "image.Channel",
 		Name:  "channel",
 		Value: string(buf),

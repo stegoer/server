@@ -48,6 +48,31 @@ type ImageWhereInput struct {
 	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
 	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
 
+	// "message" field predicates.
+	Message             *string  `json:"message,omitempty"`
+	MessageNEQ          *string  `json:"messageNEQ,omitempty"`
+	MessageIn           []string `json:"messageIn,omitempty"`
+	MessageNotIn        []string `json:"messageNotIn,omitempty"`
+	MessageGT           *string  `json:"messageGT,omitempty"`
+	MessageGTE          *string  `json:"messageGTE,omitempty"`
+	MessageLT           *string  `json:"messageLT,omitempty"`
+	MessageLTE          *string  `json:"messageLTE,omitempty"`
+	MessageContains     *string  `json:"messageContains,omitempty"`
+	MessageHasPrefix    *string  `json:"messageHasPrefix,omitempty"`
+	MessageHasSuffix    *string  `json:"messageHasSuffix,omitempty"`
+	MessageEqualFold    *string  `json:"messageEqualFold,omitempty"`
+	MessageContainsFold *string  `json:"messageContainsFold,omitempty"`
+
+	// "lsb_used" field predicates.
+	LsbUsed      *int  `json:"lsbUsed,omitempty"`
+	LsbUsedNEQ   *int  `json:"lsbUsedNEQ,omitempty"`
+	LsbUsedIn    []int `json:"lsbUsedIn,omitempty"`
+	LsbUsedNotIn []int `json:"lsbUsedNotIn,omitempty"`
+	LsbUsedGT    *int  `json:"lsbUsedGT,omitempty"`
+	LsbUsedGTE   *int  `json:"lsbUsedGTE,omitempty"`
+	LsbUsedLT    *int  `json:"lsbUsedLT,omitempty"`
+	LsbUsedLTE   *int  `json:"lsbUsedLTE,omitempty"`
+
 	// "channel" field predicates.
 	Channel      *image.Channel  `json:"channel,omitempty"`
 	ChannelNEQ   *image.Channel  `json:"channelNEQ,omitempty"`
@@ -189,6 +214,69 @@ func (i *ImageWhereInput) P() (predicate.Image, error) {
 	}
 	if i.UpdatedAtLTE != nil {
 		predicates = append(predicates, image.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+	if i.Message != nil {
+		predicates = append(predicates, image.MessageEQ(*i.Message))
+	}
+	if i.MessageNEQ != nil {
+		predicates = append(predicates, image.MessageNEQ(*i.MessageNEQ))
+	}
+	if len(i.MessageIn) > 0 {
+		predicates = append(predicates, image.MessageIn(i.MessageIn...))
+	}
+	if len(i.MessageNotIn) > 0 {
+		predicates = append(predicates, image.MessageNotIn(i.MessageNotIn...))
+	}
+	if i.MessageGT != nil {
+		predicates = append(predicates, image.MessageGT(*i.MessageGT))
+	}
+	if i.MessageGTE != nil {
+		predicates = append(predicates, image.MessageGTE(*i.MessageGTE))
+	}
+	if i.MessageLT != nil {
+		predicates = append(predicates, image.MessageLT(*i.MessageLT))
+	}
+	if i.MessageLTE != nil {
+		predicates = append(predicates, image.MessageLTE(*i.MessageLTE))
+	}
+	if i.MessageContains != nil {
+		predicates = append(predicates, image.MessageContains(*i.MessageContains))
+	}
+	if i.MessageHasPrefix != nil {
+		predicates = append(predicates, image.MessageHasPrefix(*i.MessageHasPrefix))
+	}
+	if i.MessageHasSuffix != nil {
+		predicates = append(predicates, image.MessageHasSuffix(*i.MessageHasSuffix))
+	}
+	if i.MessageEqualFold != nil {
+		predicates = append(predicates, image.MessageEqualFold(*i.MessageEqualFold))
+	}
+	if i.MessageContainsFold != nil {
+		predicates = append(predicates, image.MessageContainsFold(*i.MessageContainsFold))
+	}
+	if i.LsbUsed != nil {
+		predicates = append(predicates, image.LsbUsedEQ(*i.LsbUsed))
+	}
+	if i.LsbUsedNEQ != nil {
+		predicates = append(predicates, image.LsbUsedNEQ(*i.LsbUsedNEQ))
+	}
+	if len(i.LsbUsedIn) > 0 {
+		predicates = append(predicates, image.LsbUsedIn(i.LsbUsedIn...))
+	}
+	if len(i.LsbUsedNotIn) > 0 {
+		predicates = append(predicates, image.LsbUsedNotIn(i.LsbUsedNotIn...))
+	}
+	if i.LsbUsedGT != nil {
+		predicates = append(predicates, image.LsbUsedGT(*i.LsbUsedGT))
+	}
+	if i.LsbUsedGTE != nil {
+		predicates = append(predicates, image.LsbUsedGTE(*i.LsbUsedGTE))
+	}
+	if i.LsbUsedLT != nil {
+		predicates = append(predicates, image.LsbUsedLT(*i.LsbUsedLT))
+	}
+	if i.LsbUsedLTE != nil {
+		predicates = append(predicates, image.LsbUsedLTE(*i.LsbUsedLTE))
 	}
 	if i.Channel != nil {
 		predicates = append(predicates, image.ChannelEQ(*i.Channel))

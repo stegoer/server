@@ -2,7 +2,6 @@ import AccountNavigation from "@features/account/components/account.navigation";
 import UpdateModal from "@features/account/components/modals/update.modal";
 import UserData from "@features/account/components/user-data";
 
-import { Title } from "@mantine/core";
 import { useState } from "react";
 
 import type { User } from "@graphql/generated/codegen.generated";
@@ -16,7 +15,6 @@ const AccountComponent = ({ user }: Props): JSX.Element => {
 
   return (
     <>
-      <Title>Account</Title>
       <UserData user={user} />
       <UpdateModal
         user={user}

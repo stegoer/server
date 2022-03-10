@@ -147,6 +147,35 @@ input ImageWhereInput {
   updatedAtLTE: Time
 
   """
+  message field predicates
+  """
+  message: String
+  messageNEQ: String
+  messageIn: [String!]
+  messageNotIn: [String!]
+  messageGT: String
+  messageGTE: String
+  messageLT: String
+  messageLTE: String
+  messageContains: String
+  messageHasPrefix: String
+  messageHasSuffix: String
+  messageEqualFold: String
+  messageContainsFold: String
+
+  """
+  lsb_used field predicates
+  """
+  lsbUsed: Int
+  lsbUsedNEQ: Int
+  lsbUsedIn: [Int!]
+  lsbUsedNotIn: [Int!]
+  lsbUsedGT: Int
+  lsbUsedGTE: Int
+  lsbUsedLT: Int
+  lsbUsedLTE: Int
+
+  """
   channel field predicates
   """
   channel: Channel

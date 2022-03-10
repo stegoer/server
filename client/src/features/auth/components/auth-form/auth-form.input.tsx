@@ -15,19 +15,24 @@ type Props = {
     confirmPassword: string;
   }>;
   formType: FormType;
+  disabled: boolean;
 };
 
-const AuthFormInput = ({ form, formType }: Props): JSX.Element => {
+const AuthFormInput = ({ form, formType, disabled }: Props): JSX.Element => {
   return (
     <>
-      {formType === `register` && <UsernameInput form={form} />}
-      <EmailInput form={form} />
-      {formType === `register` ? (
-        <PasswordStrength form={form} />
-      ) : (
-        <PasswordInput form={form} />
+      {formType === `register` && (
+        <UsernameInput form={form} disabled={disabled} />
       )}
-      {formType === `register` && <ConfirmPasswordInput form={form} />}
+      <EmailInput form={form} disabled={disabled} />
+      {formType === `register` ? (
+        <PasswordStrength form={form} disabled={disabled} />
+      ) : (
+        <PasswordInput form={form} disabled={disabled} />
+      )}
+      {formType === `register` && (
+        <ConfirmPasswordInput form={form} disabled={disabled} />
+      )}
     </>
   );
 };

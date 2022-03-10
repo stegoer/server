@@ -8,21 +8,21 @@ const Navbar = (): JSX.Element => {
     <MantineNavbar padding="xs" width={{ base: 100 }}>
       <MantineNavbar.Section>
         <Link href="/account">
-          <a>Account</a>
+          <a>account</a>
         </Link>
       </MantineNavbar.Section>
       <MantineNavbar.Section>
         <Link href="/encode">
-          <a>Encode</a>
+          <a>encode</a>
         </Link>
       </MantineNavbar.Section>
       <MantineNavbar.Section>
         <Link href="/decode">
-          <a>Decode</a>
+          <a>decode</a>
         </Link>
       </MantineNavbar.Section>
       <MantineNavbar.Section>
-        <LoginRequiredLink to="/images">Images</LoginRequiredLink>
+        <LoginRequiredLink to="/images">images</LoginRequiredLink>
       </MantineNavbar.Section>
     </MantineNavbar>
   );
