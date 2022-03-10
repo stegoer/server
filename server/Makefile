@@ -48,7 +48,8 @@ $(GOLANGCI_LINT):
 	cd tools && go install github.com/golangci/golangci-lint/cmd/golangci-lint
 
 $(MIGRATE):
-	cd tools && go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+	curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.1/migrate.linux-amd64.tar.gz | tar xvz
+	mv migrate bin/migrate
 
 .PHONY: describe serve-doc gen fmt lint tidy test cover ci dev db-init makemigrations migrate-all migrate-up migrate-down build clean help
 
