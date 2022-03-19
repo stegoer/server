@@ -8,7 +8,7 @@ require (
 	github.com/99designs/gqlgen v0.17.1
 	github.com/golangci/golangci-lint v1.44.2
 	github.com/incu6us/goimports-reviser v0.1.6
-	golang.org/x/tools v0.1.9
+	golang.org/x/tools v0.1.10
 	mvdan.cc/gofumpt v0.3.0
 )
 
@@ -165,7 +165,7 @@ require (
 	github.com/yuin/goldmark v1.4.1 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
 	gitlab.com/bosi/decorder v0.2.1 // indirect
-	golang.org/x/mod v0.5.1 // indirect
+	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/sys v0.0.0-20220209214540-3681064d5158 // indirect
