@@ -15,12 +15,12 @@ import { useCallback, useState } from "react";
 import type { FormType } from "@features/auth/auth.types";
 import type { SetStateAction } from "react";
 
-type Props = {
+export type AuthFormProps = {
   formType: FormType;
   toggleFormType(value?: SetStateAction<FormType> | undefined): void;
 };
 
-const AuthForm = ({ formType, toggleFormType }: Props): JSX.Element => {
+const AuthForm = ({ formType, toggleFormType }: AuthFormProps): JSX.Element => {
   const form = useAuthForm(formType, true);
   const auth = useAuth();
   const [loginResult, login] = useLoginMutation();
@@ -50,10 +50,7 @@ const AuthForm = ({ formType, toggleFormType }: Props): JSX.Element => {
         if (result.error) {
           setError(result.error.message);
         } else if (result.data?.login) {
-          auth.afterLogin(
-            result.data.login.auth.token,
-            result.data.login.user,
-          );
+          auth.afterLogin(result.data.login.auth.token, result.data.login.user);
         }
       });
     },
@@ -96,7 +93,11 @@ const AuthForm = ({ formType, toggleFormType }: Props): JSX.Element => {
     <form onSubmit={form.onSubmit(onSubmit)}>
       <LoadingOverlay visible={loading} />
 
-      <AuthFormInput form={form} formType={formType} disabled={loading} />
+      <AuthFormInput
+        form={form}
+        formType={formType}
+        disabled={loading}
+      />
 
       {error && <ErrorText error={error} />}
 

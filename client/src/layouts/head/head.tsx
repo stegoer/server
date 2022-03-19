@@ -1,17 +1,23 @@
 import NextHead from "next/head";
 
-type Props = {
+export type HeadProps = {
   title?: string;
 };
 
 const BASE_TITLE = `stegoer`;
 
-const Head = ({ title }: Props): JSX.Element => {
+const Head = ({ title }: HeadProps): JSX.Element => {
   return (
     <NextHead>
       <title>{title ? `${BASE_TITLE} | ${title}` : BASE_TITLE}</title>
-      <link rel="manifest" href="site.webmanifest.json" />
-      <link rel="shortcut icon" href="/images/favicon.ico" />
+      <link
+        rel="manifest"
+        href="site.webmanifest.json"
+      />
+      <link
+        rel="shortcut icon"
+        href="/images/favicon.ico"
+      />
       <link
         rel="apple-touch-icon"
         sizes="180x180"

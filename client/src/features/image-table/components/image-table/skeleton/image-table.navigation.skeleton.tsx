@@ -5,11 +5,17 @@ const ImageTableNavigationSkeleton = (): JSX.Element => {
   return (
     <Group>
       <ActionIcon disabled>
-        <ArrowLeftIcon width={25} height={25} />
+        <ArrowLeftIcon
+          width={25}
+          height={25}
+        />
       </ActionIcon>
       <span>0</span>
       <ActionIcon disabled>
-        <ArrowRightIcon width={25} height={25} />
+        <ArrowRightIcon
+          width={25}
+          height={25}
+        />
       </ActionIcon>
     </Group>
   );

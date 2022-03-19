@@ -9,11 +9,11 @@ import { useEffect, useState } from "react";
 import type { FormType } from "@features/auth/auth.types";
 import type { Dispatch, SetStateAction } from "react";
 
-type Props = {
+export type AuthComponentProps = {
   setTitle: Dispatch<SetStateAction<string>>;
 };
 
-const AuthComponent = ({ setTitle }: Props): JSX.Element => {
+const AuthComponent = ({ setTitle }: AuthComponentProps): JSX.Element => {
   const router = useRouter();
   const { form: formQuery } = router.query;
   const [formType, setFormType] = useState<FormType>(DEFAULT_FORM_TYPE);
@@ -53,9 +53,7 @@ const AuthComponent = ({ setTitle }: Props): JSX.Element => {
     <AuthForm
       formType={formType}
       toggleFormType={() =>
-        setFormType((previous) =>
-          previous === `login` ? `register` : `login`,
-        )
+        setFormType((previous) => (previous === `login` ? `register` : `login`))
       }
     />
   ) : (

@@ -4,14 +4,14 @@ import { useNotifications } from "@mantine/notifications";
 import type { NotificationProps } from "@mantine/notifications";
 import type { PropsWithChildren } from "react";
 
-type Props = PropsWithChildren<{
+export type NotificationButtonProps = PropsWithChildren<{
   notificationProps: NotificationProps;
 }>;
 
 const NotificationButton = ({
   children,
   notificationProps,
-}: Props): JSX.Element => {
+}: NotificationButtonProps): JSX.Element => {
   const notifications = useNotifications();
 
   return (

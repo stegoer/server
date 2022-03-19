@@ -4,7 +4,7 @@ import { useHotkeys } from "@mantine/hooks";
 import type { ColorScheme } from "@mantine/core";
 import type { PropsWithChildren } from "react";
 
-type Props = PropsWithChildren<{
+export type ColorSchemeProviderProps = PropsWithChildren<{
   colorScheme: ColorScheme;
   toggleColorScheme(colorScheme?: ColorScheme): void;
 }>;
@@ -13,7 +13,7 @@ const ColorSchemeProvider = ({
   children,
   colorScheme,
   toggleColorScheme,
-}: Props): JSX.Element => {
+}: ColorSchemeProviderProps): JSX.Element => {
   useHotkeys([[`mod+J`, () => toggleColorScheme()]]);
 
   return (

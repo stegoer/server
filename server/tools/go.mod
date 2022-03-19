@@ -3,7 +3,6 @@ module tools
 go 1.17
 
 require (
-	code.rocketnine.space/tslocum/godoc-static v0.2.1
 	entgo.io/ent v0.10.1
 	github.com/99designs/gqlgen v0.17.1
 	github.com/golangci/golangci-lint v1.44.2
@@ -21,11 +20,9 @@ require (
 	github.com/Djarvur/go-err113 v0.0.0-20210108212216-aea10b59be24 // indirect
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/OpenPeeDeeP/depguard v1.1.0 // indirect
-	github.com/PuerkitoBio/goquery v1.7.1 // indirect
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/agnivade/levenshtein v1.1.0 // indirect
 	github.com/alexkohler/prealloc v1.0.0 // indirect
-	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/ashanbrown/forbidigo v1.3.0 // indirect
 	github.com/ashanbrown/makezero v1.1.0 // indirect

@@ -1,12 +1,24 @@
 # stegoer
 
-- App for LSB Steganography
+[![Continuous Integration](https://github.com/kucera-lukas/stegoer/actions/workflows/ci.yml/badge.svg)](https://github.com/kucera-lukas/stegoer/actions/workflows/ci.yml)
+[![Docs](https://github.com/kucera-lukas/stegoer/actions/workflows/docs.yml/badge.svg)](https://github.com/kucera-lukas/stegoer/actions/workflows/docs.yml)
 
-## Installation
+App for LSB steganography
 
-### Install dependencies
+---
+
+Website: https://stegoer.vercel.app/
+
+Source code: https://github.com/kucera-lukas/stegoer
+
+---
+
+## Contributing
 
 ```sh
-# Setup code formatting on commit
 pre-commit install
 ```
+
+## License
+
+Developed under the [MIT](https://github.com/kucera-lukas/stegoer/blob/main/LICENSE) license.

@@ -1,6 +1,12 @@
 # stegoer - client
 
-- Client is using TypeScript, NextJS and GraphQL.
+Client is using TypeScript, NextJS and GraphQL.
+
+---
+
+Client endpoint: https://stegoer.vercel.app/
+
+---
 
 ## Installation
 
@@ -42,3 +48,14 @@ To add a new query or mutation head to `client/src/graphql/user` or
 `client/src/graphql/image` and add a new file.
 
 To add a new fragment head to the `client/src/graphql/fragments` folder.
+
+### Docs
+
+```sh
+npm run build-docs
+```
+
+[TypeDoc](https://github.com/TypeStrong/typedoc) is used to generate documentation
+which is then published via the
+[Docs GitHub Action](https://github.com/kucera-lukas/stegoer/blob/master/.github/workflows/docs.yml)
+on [GitHub Pages](https://pages.github.com/).

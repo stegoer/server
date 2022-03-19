@@ -1,6 +1,12 @@
 # stegoer - server
 
-- Server is using Go, Postgres, GraphQL and Redis.
+Server is using Go, Postgres, GraphQL and Redis.
+
+---
+
+Server endpoint: https://stegoer-server.herokuapp.com/
+
+---
 
 ## Installation
 
@@ -38,20 +44,8 @@ make dev
 redis-server
 ```
 
-### Codegen
+### Make
 
 ```sh
-make gen
-```
-
-### Tests
-
-```sh
-make test
-```
-
-### Coverage
-
-```sh
-make cover
+make help
 ```

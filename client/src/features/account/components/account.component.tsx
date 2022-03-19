@@ -6,11 +6,11 @@ import { useState } from "react";
 
 import type { User } from "@graphql/generated/codegen.generated";
 
-type Props = {
+export type AccountComponentProps = {
   user: User;
 };
 
-const AccountComponent = ({ user }: Props): JSX.Element => {
+const AccountComponent = ({ user }: AccountComponentProps): JSX.Element => {
   const [modelOpened, setModalOpened] = useState(false);
 
   return (

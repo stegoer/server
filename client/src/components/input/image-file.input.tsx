@@ -1,7 +1,7 @@
 import type { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 import type { ChangeEvent } from "react";
 
-type Props<T extends { file?: File }> = {
+export type ImageFileInputProps<T extends { file?: File }> = {
   form: UseForm<T>;
   disabled: boolean;
 };
@@ -9,7 +9,7 @@ type Props<T extends { file?: File }> = {
 const ImageFileInput = <T extends { file?: File }>({
   form,
   disabled,
-}: Props<T>): JSX.Element => {
+}: ImageFileInputProps<T>): JSX.Element => {
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.item(0) ?? undefined;
     form.setFieldValue(`file`, file);

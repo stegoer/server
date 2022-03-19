@@ -5,13 +5,17 @@ import { Modal } from "@mantine/core";
 import type { User } from "@graphql/generated/codegen.generated";
 import type { Dispatch, SetStateAction } from "react";
 
-type Props = {
+export type UpdateModalProps = {
   user: User;
   opened: boolean;
   setOpened: Dispatch<SetStateAction<boolean>>;
 };
 
-const UpdateModal = ({ user, opened, setOpened }: Props): JSX.Element => {
+const UpdateModal = ({
+  user,
+  opened,
+  setOpened,
+}: UpdateModalProps): JSX.Element => {
   return (
     <Modal
       opened={opened}

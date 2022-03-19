@@ -1,0 +1,11 @@
+{
+  "tsconfig": "tsconfig.json",
+  "entryPoints": ["src"],
+  "entryPointStrategy": "Expand",
+  "out": "docs",
+  "emit": "both",
+  "includeVersion": true,
+  "readme": "README.md",
+  "githubPages": true,
+  "favicon": "public/images/favicon.ico"
+}

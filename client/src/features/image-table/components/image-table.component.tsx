@@ -54,9 +54,7 @@ const ImageTableComponent = (): JSX.Element => {
     imagesQuery.data?.images.totalCount === 0 ||
       (imagesQuery.data &&
         page ===
-          Math.ceil(
-            imagesQuery.data.images.totalCount / IMAGE_TABLE_PER_PAGE,
-          )),
+          Math.ceil(imagesQuery.data.images.totalCount / IMAGE_TABLE_PER_PAGE)),
   );
 
   // fetch image-table after variables get updated
@@ -80,9 +78,7 @@ const ImageTableComponent = (): JSX.Element => {
         return;
       }
 
-      setPage((previousPage) =>
-        isLeft ? previousPage - 1 : previousPage + 1,
-      );
+      setPage((previousPage) => (isLeft ? previousPage - 1 : previousPage + 1));
       setFirst(isLeft ? undefined : IMAGE_TABLE_PER_PAGE);
       setLast(isLeft ? IMAGE_TABLE_PER_PAGE : undefined);
       setStartCursor(

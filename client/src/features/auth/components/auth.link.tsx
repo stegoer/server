@@ -2,7 +2,7 @@ import { Anchor } from "@mantine/core";
 
 import type { FormType } from "@features/auth/auth.types";
 
-type Props = {
+export type AuthLinkProps = {
   formType: FormType;
   toggleFormType(): void;
   disabled: boolean;
@@ -12,7 +12,7 @@ const AuthLink = ({
   formType,
   toggleFormType,
   disabled,
-}: Props): JSX.Element => {
+}: AuthLinkProps): JSX.Element => {
   return (
     <Anchor
       component="button"

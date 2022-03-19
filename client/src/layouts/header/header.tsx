@@ -5,10 +5,16 @@ import Link from "next/link";
 
 const Header = (): JSX.Element => {
   return (
-    <MantineHeader height={55} padding="xs">
+    <MantineHeader
+      height={55}
+      padding="xs"
+    >
       <div>
         <div style={{ float: `left` }}>
-          <Link href="/" passHref>
+          <Link
+            href="/"
+            passHref
+          >
             <a>
               <Title>stegoer</Title>
             </a>

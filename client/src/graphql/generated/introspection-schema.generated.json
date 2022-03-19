@@ -439,9 +439,7 @@
           }
         ],
         "inputFields": null,
-        "interfaces": [
-          { "kind": "INTERFACE", "name": "Node", "ofType": null }
-        ],
+        "interfaces": [{ "kind": "INTERFACE", "name": "Node", "ofType": null }],
         "enumValues": null,
         "possibleTypes": null
       },
@@ -1549,9 +1547,7 @@
         "inputFields": null,
         "interfaces": [],
         "enumValues": null,
-        "possibleTypes": [
-          { "kind": "OBJECT", "name": "Image", "ofType": null }
-        ]
+        "possibleTypes": [{ "kind": "OBJECT", "name": "Image", "ofType": null }]
       },
       {
         "kind": "ENUM",

@@ -6,7 +6,7 @@ repos:
         entry: bash -c "cd server && make ci"
         language: system
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.8.0
+    rev: v8.11.0
     hooks:
       - id: eslint
         name: ESLint
@@ -14,9 +14,9 @@ repos:
         types: [file]
         entry: bash -c "cd client && eslint src --fix"
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.5.1
+    rev: v2.6.0
     hooks:
       - id: prettier
         name: Prettier
-        entry: prettier --write --list-different
+        entry: prettier --write --list-different ../.
         files: "\\.(graphql|graphqls|json|md|js|jsx|ts|tsx|yaml|yml|css|less|scss)$"

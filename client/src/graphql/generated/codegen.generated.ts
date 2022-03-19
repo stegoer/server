@@ -793,11 +793,7 @@ export function useImagesQuery(
   return Urql.useQuery<ImagesQuery>({ query: ImagesDocument, ...options });
 }
 export const CreateUserDocument = gql`
-  mutation createUser(
-    $username: String!
-    $password: String!
-    $email: String!
-  ) {
+  mutation createUser($username: String!, $password: String!, $email: String!) {
     createUser(
       input: { username: $username, password: $password, email: $email }
     ) {
@@ -834,9 +830,7 @@ export const LoginDocument = gql`
 `;
 
 export function useLoginMutation() {
-  return Urql.useMutation<LoginMutation, LoginMutationVariables>(
-    LoginDocument,
-  );
+  return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
 }
 export const RefreshTokenDocument = gql`
   mutation refreshToken($token: String!) {

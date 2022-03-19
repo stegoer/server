@@ -4,7 +4,6 @@
 package tools
 
 import (
-	_ "code.rocketnine.space/tslocum/godoc-static"
 	_ "entgo.io/ent/cmd/ent"
 	_ "github.com/99designs/gqlgen"
 	_ "github.com/cosmtrek/air@latest"

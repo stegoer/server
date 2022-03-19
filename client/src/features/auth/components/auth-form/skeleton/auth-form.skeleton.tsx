@@ -6,7 +6,12 @@ const AuthFormSkeleton = (): JSX.Element => {
   return (
     <>
       {keys.map((key) => (
-        <Skeleton key={key} height={30} mb={10} visible />
+        <Skeleton
+          key={key}
+          height={30}
+          mb={10}
+          visible
+        />
       ))}
     </>
   );

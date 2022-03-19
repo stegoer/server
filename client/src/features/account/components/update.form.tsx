@@ -16,7 +16,7 @@ import { useCallback, useState } from "react";
 import type { FormType } from "@features/auth/auth.types";
 import type { User } from "@graphql/generated/codegen.generated";
 
-type Props = {
+export type UserFormProps = {
   user: User;
 };
 
@@ -25,7 +25,7 @@ const DEFAULT_FORM_TYPE: FormType = `register`;
 const getUpdatedValue = (user: User, key: keyof User, value?: string) =>
   value && value !== user[key] ? value : undefined;
 
-const UserForm = ({ user }: Props): JSX.Element => {
+const UserForm = ({ user }: UserFormProps): JSX.Element => {
   const [passwordOpen, setPasswordOpen] = useState(false);
   const form = useAuthForm(DEFAULT_FORM_TYPE, passwordOpen, user);
   const [updateResult, updateUser] = useUpdateUserMutation();
@@ -68,12 +68,21 @@ const UserForm = ({ user }: Props): JSX.Element => {
     <form onSubmit={form.onSubmit(onSubmit)}>
       <LoadingOverlay visible={loading} />
 
-      <UsernameInput form={form} disabled={loading} />
-      <EmailInput form={form} disabled={loading} />
+      <UsernameInput
+        form={form}
+        disabled={loading}
+      />
+      <EmailInput
+        form={form}
+        disabled={loading}
+      />
 
       {error && !passwordOpen && errorContent}
 
-      <Group position="apart" mt="xs">
+      <Group
+        position="apart"
+        mt="xs"
+      >
         <Anchor
           size="sm"
           onClick={() => setPasswordOpen((current) => !current)}
@@ -81,8 +90,14 @@ const UserForm = ({ user }: Props): JSX.Element => {
           Set new password?
         </Anchor>
         <Collapse in={passwordOpen}>
-          <PasswordStrength form={form} disabled={loading} />
-          <ConfirmPasswordInput form={form} disabled={loading} />
+          <PasswordStrength
+            form={form}
+            disabled={loading}
+          />
+          <ConfirmPasswordInput
+            form={form}
+            disabled={loading}
+          />
         </Collapse>
 
         {error && passwordOpen && errorContent}

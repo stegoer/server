@@ -31,9 +31,7 @@ const useAuthForm = (
         formType === `login` ||
         calculateStrength(value) === 100,
       confirmPassword: (value, values) =>
-        !validatePassword ||
-        formType === `login` ||
-        value === values?.password,
+        !validatePassword || formType === `login` || value === values?.password,
     },
 
     errorMessages: {

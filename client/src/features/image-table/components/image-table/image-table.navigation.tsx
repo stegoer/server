@@ -4,7 +4,7 @@ import { Group } from "@mantine/core";
 
 import type { MoveDirection } from "@features/image-table/image-table.types";
 
-type Props = {
+export type ImageTableNavigationProps = {
   loading: boolean;
   isFirstPage: boolean;
   isLastPage: boolean;
@@ -18,7 +18,7 @@ const ImageTableNavigation = ({
   isLastPage,
   selectedPage,
   onMove,
-}: Props): JSX.Element => {
+}: ImageTableNavigationProps): JSX.Element => {
   return (
     <Group>
       <ImageTableNavigationIcon

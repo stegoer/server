@@ -11,8 +11,17 @@ const ImageTableSkeleton = (): JSX.Element => {
     .map((_, index) => {
       return (
         <tr key={index}>
-          <td key={index} colSpan={IMAGE_TABLE_HEADERS.length}>
-            <Skeleton key={index} height={10} m={5} animate={false} visible />
+          <td
+            key={index}
+            colSpan={IMAGE_TABLE_HEADERS.length}
+          >
+            <Skeleton
+              key={index}
+              height={10}
+              m={5}
+              animate={false}
+              visible
+            />
           </td>
         </tr>
       );

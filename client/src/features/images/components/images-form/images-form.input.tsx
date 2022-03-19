@@ -7,7 +7,7 @@ import type { FormType } from "@features/images/images.types";
 import type { Channel } from "@graphql/generated/codegen.generated";
 import type { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 
-type Props = {
+export type ImagesFormInputProps = {
   form: UseForm<{
     message: string;
     lsbUsed: number;
@@ -18,7 +18,11 @@ type Props = {
   disabled: boolean;
 };
 
-const ImagesFormInput = ({ form, formType, disabled }: Props): JSX.Element => {
+const ImagesFormInput = ({
+  form,
+  formType,
+  disabled,
+}: ImagesFormInputProps): JSX.Element => {
   return (
     <>
       {formType === `encode` && (
@@ -29,8 +33,14 @@ const ImagesFormInput = ({ form, formType, disabled }: Props): JSX.Element => {
         />
       )}
       <LSBUsedSlider form={form} />
-      <ChannelSwitches form={form} disabled={disabled} />
-      <ImageFileInput form={form} disabled={disabled} />
+      <ChannelSwitches
+        form={form}
+        disabled={disabled}
+      />
+      <ImageFileInput
+        form={form}
+        disabled={disabled}
+      />
     </>
   );
 };

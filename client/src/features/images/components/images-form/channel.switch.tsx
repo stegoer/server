@@ -10,7 +10,7 @@ import type {
 } from "@features/images/images.types";
 import type { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 
-type Props<T extends { channel?: Channel }> = {
+export type ChannelSwitchesProps<T extends { channel?: Channel }> = {
   form: UseForm<T>;
   disabled: boolean;
 };
@@ -18,7 +18,7 @@ type Props<T extends { channel?: Channel }> = {
 const ChannelSwitches = <T extends { channel?: Channel }>({
   form,
   disabled,
-}: Props<T>): JSX.Element => {
+}: ChannelSwitchesProps<T>): JSX.Element => {
   const [redChecked, setRedChecked] = useState(true);
   const [greenChecked, setGreenChecked] = useState(true);
   const [blueChecked, setBlueChecked] = useState(true);

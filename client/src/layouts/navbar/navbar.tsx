@@ -5,7 +5,10 @@ import Link from "next/link";
 
 const Navbar = (): JSX.Element => {
   return (
-    <MantineNavbar padding="xs" width={{ base: 100 }}>
+    <MantineNavbar
+      padding="xs"
+      width={{ base: 100 }}
+    >
       <MantineNavbar.Section>
         <Link href="/account">
           <a>account</a>

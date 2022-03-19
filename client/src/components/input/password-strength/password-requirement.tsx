@@ -1,12 +1,15 @@
 import { Box, Text } from "@mantine/core";
 import { CheckIcon, Cross1Icon } from "@modulz/radix-icons";
 
-type Props = {
+export type PasswordRequirementProps = {
   meets: boolean;
   label: string;
 };
 
-const PasswordRequirement = ({ meets, label }: Props): JSX.Element => {
+const PasswordRequirement = ({
+  meets,
+  label,
+}: PasswordRequirementProps): JSX.Element => {
   return (
     <Text
       color={meets ? `teal` : `red`}

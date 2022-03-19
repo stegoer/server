@@ -4,11 +4,11 @@ import { Paper, Title } from "@mantine/core";
 
 import type { PropsWithChildren } from "react";
 
-type Props = PropsWithChildren<{
+export type PageLayoutProps = PropsWithChildren<{
   title: string;
 }>;
 
-const PageLayout = ({ children, title }: Props): JSX.Element => {
+const PageLayout = ({ children, title }: PageLayoutProps): JSX.Element => {
   return (
     <Paper style={{ width: 300, position: `relative` }}>
       <Head title={title} />

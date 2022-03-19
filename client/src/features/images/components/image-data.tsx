@@ -2,11 +2,11 @@ import { List, Text } from "@mantine/core";
 
 import type { Image } from "@graphql/generated/codegen.generated";
 
-type Props = {
+export type ImageDataProps = {
   image: Image;
 };
 
-const ImageData = ({ image }: Props): JSX.Element => {
+const ImageData = ({ image }: ImageDataProps): JSX.Element => {
   return (
     <Text>
       Image {image.id}

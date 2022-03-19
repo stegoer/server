@@ -5,9 +5,9 @@ import { Provider } from "urql";
 
 import type { PropsWithChildren } from "react";
 
-type Props = PropsWithChildren<Record<never, never>>;
+export type GraphqlProviderProps = PropsWithChildren<Record<never, never>>;
 
-const GraphqlProvider = ({ children }: Props): JSX.Element => {
+const GraphqlProvider = ({ children }: GraphqlProviderProps): JSX.Element => {
   const [user] = useUser();
   const client = useClient(!!user);
 
