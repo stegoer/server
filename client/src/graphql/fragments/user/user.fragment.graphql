@@ -1,8 +1,0 @@
-fragment UserFragment on User {
-  id
-  username
-  email
-  lastLogin
-  createdAt
-  updatedAt
-}

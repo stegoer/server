@@ -6,20 +6,14 @@ updates:
     schedule:
       interval: daily
 
-  # Maintain dependencies for server Go Module.
+  # Maintain dependencies for github.com/stegoer/server Go Module.
   - package-ecosystem: gomod
-    directory: /server
+    directory: /
     schedule:
       interval: daily
 
-  # Maintain dependencies for tools Go Module.
+  # Maintain dependencies for github.com/stegoer/server/tools Go Module.
   - package-ecosystem: gomod
-    directory: /server/tools
-    schedule:
-      interval: daily
-
-  # Maintain dependencies for client.
-  - package-ecosystem: npm
-    directory: /client
+    directory: /tools
     schedule:
       interval: daily
