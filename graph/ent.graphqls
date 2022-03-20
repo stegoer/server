@@ -6,8 +6,10 @@ input UserWhereInput {
   not: UserWhereInput
   and: [UserWhereInput!]
   or: [UserWhereInput!]
-  
-  """created_at field predicates"""
+
+  """
+  created_at field predicates
+  """
   createdAt: Time
   createdAtNEQ: Time
   createdAtIn: [Time!]
@@ -16,8 +18,10 @@ input UserWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
-  """updated_at field predicates"""
+
+  """
+  updated_at field predicates
+  """
   updatedAt: Time
   updatedAtNEQ: Time
   updatedAtIn: [Time!]
@@ -26,8 +30,10 @@ input UserWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
-  """name field predicates"""
+
+  """
+  name field predicates
+  """
   name: String
   nameNEQ: String
   nameIn: [String!]
@@ -41,8 +47,10 @@ input UserWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  
-  """email field predicates"""
+
+  """
+  email field predicates
+  """
   email: String
   emailNEQ: String
   emailIn: [String!]
@@ -56,8 +64,10 @@ input UserWhereInput {
   emailHasSuffix: String
   emailEqualFold: String
   emailContainsFold: String
-  
-  """password field predicates"""
+
+  """
+  password field predicates
+  """
   password: String
   passwordNEQ: String
   passwordIn: [String!]
@@ -71,8 +81,10 @@ input UserWhereInput {
   passwordHasSuffix: String
   passwordEqualFold: String
   passwordContainsFold: String
-  
-  """last_login field predicates"""
+
+  """
+  last_login field predicates
+  """
   lastLogin: Time
   lastLoginNEQ: Time
   lastLoginIn: [Time!]
@@ -81,8 +93,10 @@ input UserWhereInput {
   lastLoginGTE: Time
   lastLoginLT: Time
   lastLoginLTE: Time
-  
-  """id field predicates"""
+
+  """
+  id field predicates
+  """
   id: ID
   idNEQ: ID
   idIn: [ID!]
@@ -91,8 +105,10 @@ input UserWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
-  """images edge predicates"""
+
+  """
+  images edge predicates
+  """
   hasImages: Boolean
   hasImagesWith: [ImageWhereInput!]
 }
@@ -105,8 +121,10 @@ input ImageWhereInput {
   not: ImageWhereInput
   and: [ImageWhereInput!]
   or: [ImageWhereInput!]
-  
-  """created_at field predicates"""
+
+  """
+  created_at field predicates
+  """
   createdAt: Time
   createdAtNEQ: Time
   createdAtIn: [Time!]
@@ -115,8 +133,10 @@ input ImageWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
-  """updated_at field predicates"""
+
+  """
+  updated_at field predicates
+  """
   updatedAt: Time
   updatedAtNEQ: Time
   updatedAtIn: [Time!]
@@ -125,8 +145,10 @@ input ImageWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
-  """message field predicates"""
+
+  """
+  message field predicates
+  """
   message: String
   messageNEQ: String
   messageIn: [String!]
@@ -140,8 +162,10 @@ input ImageWhereInput {
   messageHasSuffix: String
   messageEqualFold: String
   messageContainsFold: String
-  
-  """lsb_used field predicates"""
+
+  """
+  lsb_used field predicates
+  """
   lsbUsed: Int
   lsbUsedNEQ: Int
   lsbUsedIn: [Int!]
@@ -150,14 +174,18 @@ input ImageWhereInput {
   lsbUsedGTE: Int
   lsbUsedLT: Int
   lsbUsedLTE: Int
-  
-  """channel field predicates"""
+
+  """
+  channel field predicates
+  """
   channel: Channel
   channelNEQ: Channel
   channelIn: [Channel!]
   channelNotIn: [Channel!]
-  
-  """id field predicates"""
+
+  """
+  id field predicates
+  """
   id: ID
   idNEQ: ID
   idIn: [ID!]
@@ -166,8 +194,10 @@ input ImageWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
-  """user edge predicates"""
+
+  """
+  user edge predicates
+  """
   hasUser: Boolean
   hasUserWith: [UserWhereInput!]
 }
