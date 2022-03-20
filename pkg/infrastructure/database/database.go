@@ -6,10 +6,9 @@ import (
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	_ "github.com/lib/pq" // so we can use dialect.Postgres
-
-	"github.com/kucera-lukas/stegoer/ent"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/env"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/log"
+	"github.com/stegoer/server/ent"
+	"github.com/stegoer/server/pkg/infrastructure/env"
+	"github.com/stegoer/server/pkg/infrastructure/log"
 )
 
 // MustNew ensure that a new ent.Client is created and panics if not.

@@ -6,7 +6,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
 
-	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
+	"github.com/stegoer/server/ent/schema/ulid"
 )
 
 // NewUlid creates a Mixin that encodes the provided prefix.

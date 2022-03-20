@@ -9,8 +9,8 @@ import (
 	"image/png"
 	"io"
 
-	entImage "github.com/kucera-lukas/stegoer/ent/image"
-	"github.com/kucera-lukas/stegoer/pkg/util"
+	entImage "github.com/stegoer/server/ent/image"
+	"github.com/stegoer/server/pkg/util"
 )
 
 type ImageData struct {

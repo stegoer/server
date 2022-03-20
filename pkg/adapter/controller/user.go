@@ -3,9 +3,9 @@ package controller
 import (
 	"context"
 
-	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
-	"github.com/kucera-lukas/stegoer/graph/generated"
-	"github.com/kucera-lukas/stegoer/pkg/entity/model"
+	"github.com/stegoer/server/ent/schema/ulid"
+	"github.com/stegoer/server/graph/generated"
+	"github.com/stegoer/server/pkg/entity/model"
 )
 
 // User controller interface.

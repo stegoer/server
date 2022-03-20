@@ -6,11 +6,10 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
-
-	"github.com/kucera-lukas/stegoer/ent"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/env"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/log"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/middleware"
+	"github.com/stegoer/server/ent"
+	"github.com/stegoer/server/pkg/infrastructure/env"
+	"github.com/stegoer/server/pkg/infrastructure/log"
+	"github.com/stegoer/server/pkg/infrastructure/middleware"
 )
 
 // Routes of Router.

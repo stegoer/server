@@ -38,8 +38,8 @@ skip_mod_tidy: true
 # gqlgen will search for any type names in the schema in these go packages
 # if they match it will use them, otherwise it will generate them.
 autobind:
-  - github.com/kucera-lukas/stegoer/pkg/entity/model
-  - github.com/kucera-lukas/stegoer/ent
+  - github.com/stegoer/server/pkg/entity/model
+  - github.com/stegoer/server/ent
 
 # This section declares type mapping between the GraphQL and go type systems
 #
@@ -49,7 +49,7 @@ autobind:
 models:
   ID:
     model:
-      - github.com/kucera-lukas/stegoer/pkg/entity/model.ID
+      - github.com/stegoer/server/pkg/entity/model.ID
   Int:
     model:
       - github.com/99designs/gqlgen/graphql.Int
@@ -60,7 +60,7 @@ models:
       - github.com/99designs/gqlgen/graphql.String
   Node:
     model:
-      - github.com/kucera-lukas/stegoer/pkg/entity/model.Node
+      - github.com/stegoer/server/pkg/entity/model.Node
   Channel:
     model:
-      - github.com/kucera-lukas/stegoer/pkg/entity/model.Channel
+      - github.com/stegoer/server/pkg/entity/model.Channel

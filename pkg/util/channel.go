@@ -3,7 +3,7 @@ package util
 import (
 	"strings"
 
-	"github.com/kucera-lukas/stegoer/ent/image"
+	"github.com/stegoer/server/ent/image"
 )
 
 const (

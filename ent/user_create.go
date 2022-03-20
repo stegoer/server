@@ -10,10 +10,9 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-
-	"github.com/kucera-lukas/stegoer/ent/image"
-	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
-	"github.com/kucera-lukas/stegoer/ent/user"
+	"github.com/stegoer/server/ent/image"
+	"github.com/stegoer/server/ent/schema/ulid"
+	"github.com/stegoer/server/ent/user"
 )
 
 // UserCreate is the builder for creating a User entity.

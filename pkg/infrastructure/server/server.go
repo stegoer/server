@@ -8,15 +8,15 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/kucera-lukas/stegoer/ent"
-	"github.com/kucera-lukas/stegoer/pkg/adapter/controller"
-	"github.com/kucera-lukas/stegoer/pkg/adapter/repository"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/database"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/env"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/graphql"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/log"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/redis"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/router"
+	"github.com/stegoer/server/ent"
+	"github.com/stegoer/server/pkg/adapter/controller"
+	"github.com/stegoer/server/pkg/adapter/repository"
+	"github.com/stegoer/server/pkg/infrastructure/database"
+	"github.com/stegoer/server/pkg/infrastructure/env"
+	"github.com/stegoer/server/pkg/infrastructure/graphql"
+	"github.com/stegoer/server/pkg/infrastructure/log"
+	"github.com/stegoer/server/pkg/infrastructure/redis"
+	"github.com/stegoer/server/pkg/infrastructure/router"
 )
 
 const (

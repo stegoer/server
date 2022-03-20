@@ -6,13 +6,13 @@ updates:
     schedule:
       interval: daily
 
-  # Maintain dependencies for github.com/kucera-lukas/stegoer Go Module.
+  # Maintain dependencies for github.com/stegoer/server Go Module.
   - package-ecosystem: gomod
     directory: /
     schedule:
       interval: daily
 
-  # Maintain dependencies for github.com/kucera-lukas/stegoer/tools Go Module.
+  # Maintain dependencies for github.com/stegoer/server/tools Go Module.
   - package-ecosystem: gomod
     directory: /tools
     schedule:

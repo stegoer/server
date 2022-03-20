@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kucera-lukas/stegoer/ent/image"
-	"github.com/kucera-lukas/stegoer/ent/predicate"
-	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
-	"github.com/kucera-lukas/stegoer/ent/user"
+	"github.com/stegoer/server/ent/image"
+	"github.com/stegoer/server/ent/predicate"
+	"github.com/stegoer/server/ent/schema/ulid"
+	"github.com/stegoer/server/ent/user"
 )
 
 // ImageWhereInput represents a where input for filtering Image queries.
@@ -311,7 +311,7 @@ func (i *ImageWhereInput) P() (predicate.Image, error) {
 	}
 	switch len(predicates) {
 	case 0:
-		return nil, fmt.Errorf("github.com/kucera-lukas/stegoer/ent: empty predicate ImageWhereInput")
+		return nil, fmt.Errorf("github.com/stegoer/server/ent: empty predicate ImageWhereInput")
 	case 1:
 		return predicates[0], nil
 	default:
@@ -708,7 +708,7 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 	}
 	switch len(predicates) {
 	case 0:
-		return nil, fmt.Errorf("github.com/kucera-lukas/stegoer/ent: empty predicate UserWhereInput")
+		return nil, fmt.Errorf("github.com/stegoer/server/ent: empty predicate UserWhereInput")
 	case 1:
 		return predicates[0], nil
 	default:

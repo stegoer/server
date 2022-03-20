@@ -17,9 +17,9 @@ import (
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 
-	"github.com/kucera-lukas/stegoer/ent"
-	"github.com/kucera-lukas/stegoer/ent/image"
-	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
+	"github.com/stegoer/server/ent"
+	"github.com/stegoer/server/ent/image"
+	"github.com/stegoer/server/ent/schema/ulid"
 )
 
 // region    ************************** generated!.gotpl **************************

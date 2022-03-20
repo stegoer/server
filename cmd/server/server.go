@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/env"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/log"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/server"
+	"github.com/stegoer/server/pkg/infrastructure/env"
+	"github.com/stegoer/server/pkg/infrastructure/log"
+	"github.com/stegoer/server/pkg/infrastructure/server"
 )
 
 func main() {

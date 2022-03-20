@@ -1,4 +1,4 @@
-module github.com/kucera-lukas/stegoer/tools
+module github.com/stegoer/server/tools
 
 go 1.17
 

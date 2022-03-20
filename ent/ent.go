@@ -8,9 +8,8 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-
-	"github.com/kucera-lukas/stegoer/ent/image"
-	"github.com/kucera-lukas/stegoer/ent/user"
+	"github.com/stegoer/server/ent/image"
+	"github.com/stegoer/server/ent/user"
 )
 
 // ent aliases to avoid import conflicts in user's code.

@@ -6,9 +6,9 @@ import (
 	"ariga.io/atlas/sql/migrate"
 	"entgo.io/ent/dialect/sql/schema"
 
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/database"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/env"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/log"
+	"github.com/stegoer/server/pkg/infrastructure/database"
+	"github.com/stegoer/server/pkg/infrastructure/env"
+	"github.com/stegoer/server/pkg/infrastructure/log"
 )
 
 func main() {

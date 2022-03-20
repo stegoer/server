@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/kucera-lukas/stegoer/ent"
+	"github.com/stegoer/server/ent"
 )
 
 // User is the model entity for the User schema.

@@ -3,11 +3,11 @@ package repository
 import (
 	"context"
 
-	"github.com/kucera-lukas/stegoer/ent"
-	"github.com/kucera-lukas/stegoer/ent/image"
-	"github.com/kucera-lukas/stegoer/graph/generated"
-	"github.com/kucera-lukas/stegoer/pkg/adapter/controller"
-	"github.com/kucera-lukas/stegoer/pkg/entity/model"
+	"github.com/stegoer/server/ent"
+	"github.com/stegoer/server/ent/image"
+	"github.com/stegoer/server/graph/generated"
+	"github.com/stegoer/server/pkg/adapter/controller"
+	"github.com/stegoer/server/pkg/entity/model"
 )
 
 // NewImageRepository returns implementation of the controller.Image interface.
