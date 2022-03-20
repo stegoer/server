@@ -1,6 +1,9 @@
 # server
 
+![stegoer-server deployment](https://img.shields.io/github/deployments/stegoer/server/stegoer-server?label=heroku&logo=heroku&logoColor=heroku)
 [![Continuous Integration](https://github.com/stegoer/server/actions/workflows/ci.yml/badge.svg)](https://github.com/stegoer/server/actions/workflows/ci.yml)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/stegoer/server/main.svg)](https://github.com/stegoer/server/blob/main/.pre-commit-config.yaml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/stegoer/server.svg)](https://pkg.go.dev/github.com/stegoer/server)
 
 Server is using Go, Postgres, GraphQL and Redis.
 
