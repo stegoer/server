@@ -1,4 +1,6 @@
-# stegoer - server
+# server
+
+[![Continuous Integration](https://github.com/stegoer/server/actions/workflows/ci.yml/badge.svg)](https://github.com/stegoer/server/actions/workflows/ci.yml)
 
 Server is using Go, Postgres, GraphQL and Redis.
 
@@ -49,3 +51,13 @@ redis-server
 ```sh
 make help
 ```
+
+## Contributing
+
+```sh
+pre-commit install
+```
+
+## License
+
+Developed under the [MIT](https://github.com/stegoer/server/blob/master/LICENSE) license.
