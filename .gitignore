@@ -4,8 +4,8 @@
 *.dll
 *.so
 *.dylib
-server/bin
-server/main
+bin
+main
 
 # Test binary, built with `go test -c`
 *.test
@@ -32,45 +32,8 @@ cover.out
 # GraphQL
 .graphqlconfig
 
-# dependencies
-client/node_modules
-client/.pnp
-client/.pnp.js
-
-# testing
-client/coverage
-
-# next.js
-client/.next/*
-client/out/
-
-# production
-client/build
-
-# misc
-client/.DS_Store
-client/*.pem
-
-# debug
-client/npm-debug.log*
-client/yarn-debug.log*
-client/yarn-error.log*
-
-# local env files
-client/.env.local
-client/.env.development.local
-client/.env.test.local
-client/.env.production.local
-
 # docs
-client/docs
-server/docs
-
-# vercel
-client/.vercel
-
-# typescript
-client/*.tsbuildinfo
+docs
 
 # backups
 *.bak
@@ -79,4 +42,4 @@ client/*.tsbuildinfo
 dump.rdb
 
 # air
-server/tmp
+tmp

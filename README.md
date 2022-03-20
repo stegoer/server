@@ -1,24 +1,51 @@
-# stegoer
+# stegoer - server
 
-[![Continuous Integration](https://github.com/kucera-lukas/stegoer/actions/workflows/ci.yml/badge.svg)](https://github.com/kucera-lukas/stegoer/actions/workflows/ci.yml)
-[![Docs](https://github.com/kucera-lukas/stegoer/actions/workflows/docs.yml/badge.svg)](https://github.com/kucera-lukas/stegoer/actions/workflows/docs.yml)
-
-App for LSB steganography
+Server is using Go, Postgres, GraphQL and Redis.
 
 ---
 
-Website: https://stegoer.vercel.app/
-
-Source code: https://github.com/kucera-lukas/stegoer
+Server endpoint: https://stegoer-server.herokuapp.com/
 
 ---
 
-## Contributing
+## Installation
+
+### Install dependencies
 
 ```sh
-pre-commit install
+go get ./...
 ```
 
-## License
+### Create the `.env` file
 
-Developed under the [MIT](https://github.com/kucera-lukas/stegoer/blob/main/LICENSE) license.
+Create a `.env` file and copy the contents of `.env.example` file into the `.env` file
+
+```sh
+cp .env.example .env
+```
+
+### Initialize database
+
+```sh
+make db-init
+```
+
+## Development
+
+### Dev server
+
+```sh
+make dev
+```
+
+### Redis server
+
+```sh
+redis-server
+```
+
+### Make
+
+```sh
+make help
+```

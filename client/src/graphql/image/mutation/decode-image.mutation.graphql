@@ -1,5 +1,0 @@
-mutation decodeImage($lsbUsed: Int!, $channel: Channel!, $file: Upload!) {
-  decodeImage(input: { lsbUsed: $lsbUsed, channel: $channel, file: $file }) {
-    message
-  }
-}
