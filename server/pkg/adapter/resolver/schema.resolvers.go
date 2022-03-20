@@ -4,7 +4,7 @@ package resolver
 // will be copied through when generating and any unknown code will be moved to the end.
 
 import (
-	"github.com/kucera-lukas/stegoer/graph/generated"
+	"github.com/kucera-lukas/stegoer/server/graph/generated"
 )
 
 // Mutation returns generated.MutationResolver implementation.

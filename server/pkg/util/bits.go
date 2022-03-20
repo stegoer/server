@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kucera-lukas/stegoer/ent/schema"
+	"github.com/kucera-lukas/stegoer/server/ent/schema"
 )
 
 const (

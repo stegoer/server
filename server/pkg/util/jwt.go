@@ -8,9 +8,9 @@ import (
 
 	"github.com/golang-jwt/jwt"
 
-	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
-	"github.com/kucera-lukas/stegoer/graph/generated"
-	"github.com/kucera-lukas/stegoer/pkg/entity/model"
+	"github.com/kucera-lukas/stegoer/server/ent/schema/ulid"
+	"github.com/kucera-lukas/stegoer/server/graph/generated"
+	"github.com/kucera-lukas/stegoer/server/pkg/entity/model"
 )
 
 const (

@@ -6,8 +6,8 @@ import (
 
 	"github.com/go-redis/redis/v8"
 
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/env"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/log"
+	"github.com/kucera-lukas/stegoer/server/pkg/infrastructure/env"
+	"github.com/kucera-lukas/stegoer/server/pkg/infrastructure/log"
 )
 
 // Client wraps redis.Client.

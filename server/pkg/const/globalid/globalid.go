@@ -5,8 +5,8 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/kucera-lukas/stegoer/ent/image"
-	"github.com/kucera-lukas/stegoer/ent/user"
+	"github.com/kucera-lukas/stegoer/server/ent/image"
+	"github.com/kucera-lukas/stegoer/server/ent/user"
 )
 
 type field struct {

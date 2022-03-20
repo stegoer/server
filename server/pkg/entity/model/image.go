@@ -1,8 +1,8 @@
 package model
 
 import (
-	"github.com/kucera-lukas/stegoer/ent"
-	"github.com/kucera-lukas/stegoer/ent/image"
+	"github.com/kucera-lukas/stegoer/server/ent"
+	"github.com/kucera-lukas/stegoer/server/ent/image"
 )
 
 // Image is the model entity for the Image schema.

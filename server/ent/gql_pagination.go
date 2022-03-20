@@ -17,9 +17,9 @@ import (
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"github.com/vmihailenco/msgpack/v5"
 
-	"github.com/kucera-lukas/stegoer/ent/image"
-	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
-	"github.com/kucera-lukas/stegoer/ent/user"
+	"github.com/kucera-lukas/stegoer/server/ent/image"
+	"github.com/kucera-lukas/stegoer/server/ent/schema/ulid"
+	"github.com/kucera-lukas/stegoer/server/ent/user"
 )
 
 // OrderDirection defines the directions in which to order a list of items.

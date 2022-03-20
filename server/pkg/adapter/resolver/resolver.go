@@ -8,11 +8,11 @@ package resolver
 import (
 	"github.com/99designs/gqlgen/graphql"
 
-	"github.com/kucera-lukas/stegoer/ent"
-	"github.com/kucera-lukas/stegoer/graph/generated"
-	"github.com/kucera-lukas/stegoer/pkg/adapter/controller"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/env"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/log"
+	"github.com/kucera-lukas/stegoer/server/ent"
+	"github.com/kucera-lukas/stegoer/server/graph/generated"
+	"github.com/kucera-lukas/stegoer/server/pkg/adapter/controller"
+	"github.com/kucera-lukas/stegoer/server/pkg/infrastructure/env"
+	"github.com/kucera-lukas/stegoer/server/pkg/infrastructure/log"
 )
 
 // Resolver is a context struct.

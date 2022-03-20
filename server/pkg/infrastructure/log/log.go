@@ -6,7 +6,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/env"
+	"github.com/kucera-lukas/stegoer/server/pkg/infrastructure/env"
 )
 
 // Logger wraps the zap.SugaredLogger and zap.Logger types.

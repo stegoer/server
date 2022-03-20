@@ -3,8 +3,8 @@ package controller
 import (
 	"context"
 
-	"github.com/kucera-lukas/stegoer/graph/generated"
-	"github.com/kucera-lukas/stegoer/pkg/entity/model"
+	"github.com/kucera-lukas/stegoer/server/graph/generated"
+	"github.com/kucera-lukas/stegoer/server/pkg/entity/model"
 )
 
 // Image controller interface.

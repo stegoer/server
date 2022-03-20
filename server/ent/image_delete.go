@@ -10,8 +10,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 
-	"github.com/kucera-lukas/stegoer/ent/image"
-	"github.com/kucera-lukas/stegoer/ent/predicate"
+	"github.com/kucera-lukas/stegoer/server/ent/image"
+	"github.com/kucera-lukas/stegoer/server/ent/predicate"
 )
 
 // ImageDelete is the builder for deleting a Image entity.

@@ -4,11 +4,11 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/kucera-lukas/stegoer/ent"
-	"github.com/kucera-lukas/stegoer/pkg/adapter/repository"
-	"github.com/kucera-lukas/stegoer/pkg/entity/model"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/log"
-	"github.com/kucera-lukas/stegoer/pkg/util"
+	"github.com/kucera-lukas/stegoer/server/ent"
+	"github.com/kucera-lukas/stegoer/server/pkg/adapter/repository"
+	"github.com/kucera-lukas/stegoer/server/pkg/entity/model"
+	"github.com/kucera-lukas/stegoer/server/pkg/infrastructure/log"
+	"github.com/kucera-lukas/stegoer/server/pkg/util"
 )
 
 var userCtxKey = &contextKey{"user"} //nolint:gochecknoglobals

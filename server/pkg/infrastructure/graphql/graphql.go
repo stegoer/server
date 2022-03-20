@@ -12,13 +12,13 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 
-	"github.com/kucera-lukas/stegoer/ent"
-	"github.com/kucera-lukas/stegoer/pkg/adapter/controller"
-	"github.com/kucera-lukas/stegoer/pkg/adapter/resolver"
-	"github.com/kucera-lukas/stegoer/pkg/entity/model"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/apq"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/env"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/log"
+	"github.com/kucera-lukas/stegoer/server/ent"
+	"github.com/kucera-lukas/stegoer/server/pkg/adapter/controller"
+	"github.com/kucera-lukas/stegoer/server/pkg/adapter/resolver"
+	"github.com/kucera-lukas/stegoer/server/pkg/entity/model"
+	"github.com/kucera-lukas/stegoer/server/pkg/infrastructure/apq"
+	"github.com/kucera-lukas/stegoer/server/pkg/infrastructure/env"
+	"github.com/kucera-lukas/stegoer/server/pkg/infrastructure/log"
 )
 
 const complexityLimit = 1000

@@ -1,3 +1,4 @@
+import GAScript from "@features/google-analytics/ga.script";
 import useColorScheme from "@hooks/color-cheme.hook";
 import Header from "@layouts/header/header";
 import Navbar from "@layouts/navbar/navbar";
@@ -17,7 +18,7 @@ const AppProvider = ({ children }: AppProviderProps): JSX.Element => {
   const [colorScheme, toggleColorScheme] = useColorScheme();
 
   return (
-    <>
+    <GAScript>
       <UserProvider>
         <GraphqlProvider>
           <AuthProvider>
@@ -44,7 +45,7 @@ const AppProvider = ({ children }: AppProviderProps): JSX.Element => {
           </AuthProvider>
         </GraphqlProvider>
       </UserProvider>
-    </>
+    </GAScript>
   );
 };
 

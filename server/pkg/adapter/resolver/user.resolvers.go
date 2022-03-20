@@ -6,11 +6,11 @@ package resolver
 import (
 	"context"
 
-	"github.com/kucera-lukas/stegoer/ent"
-	"github.com/kucera-lukas/stegoer/graph/generated"
-	"github.com/kucera-lukas/stegoer/pkg/entity/model"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/middleware"
-	"github.com/kucera-lukas/stegoer/pkg/util"
+	"github.com/kucera-lukas/stegoer/server/ent"
+	"github.com/kucera-lukas/stegoer/server/graph/generated"
+	"github.com/kucera-lukas/stegoer/server/pkg/entity/model"
+	"github.com/kucera-lukas/stegoer/server/pkg/infrastructure/middleware"
+	"github.com/kucera-lukas/stegoer/server/pkg/util"
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input generated.NewUser) (*generated.CreateUserPayload, error) {

@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/kucera-lukas/stegoer/graph/generated"
-	"github.com/kucera-lukas/stegoer/pkg/util"
+	"github.com/kucera-lukas/stegoer/server/graph/generated"
+	"github.com/kucera-lukas/stegoer/server/pkg/util"
 )
 
 const bitSize = 8

@@ -11,10 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 
-	"github.com/kucera-lukas/stegoer/ent/image"
-	"github.com/kucera-lukas/stegoer/ent/migrate"
-	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
-	"github.com/kucera-lukas/stegoer/ent/user"
+	"github.com/kucera-lukas/stegoer/server/ent/image"
+	"github.com/kucera-lukas/stegoer/server/ent/migrate"
+	"github.com/kucera-lukas/stegoer/server/ent/schema/ulid"
+	"github.com/kucera-lukas/stegoer/server/ent/user"
 )
 
 // Client is the client that holds all ent builders.

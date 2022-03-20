@@ -17,9 +17,9 @@ import (
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 
-	"github.com/kucera-lukas/stegoer/ent"
-	"github.com/kucera-lukas/stegoer/ent/image"
-	"github.com/kucera-lukas/stegoer/ent/schema/ulid"
+	"github.com/kucera-lukas/stegoer/server/ent"
+	"github.com/kucera-lukas/stegoer/server/ent/image"
+	"github.com/kucera-lukas/stegoer/server/ent/schema/ulid"
 )
 
 // region    ************************** generated!.gotpl **************************
@@ -587,7 +587,7 @@ input UserWhereInput {
   not: UserWhereInput
   and: [UserWhereInput!]
   or: [UserWhereInput!]
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -597,7 +597,7 @@ input UserWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -607,7 +607,7 @@ input UserWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -622,7 +622,7 @@ input UserWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  
+
   """email field predicates"""
   email: String
   emailNEQ: String
@@ -637,7 +637,7 @@ input UserWhereInput {
   emailHasSuffix: String
   emailEqualFold: String
   emailContainsFold: String
-  
+
   """password field predicates"""
   password: String
   passwordNEQ: String
@@ -652,7 +652,7 @@ input UserWhereInput {
   passwordHasSuffix: String
   passwordEqualFold: String
   passwordContainsFold: String
-  
+
   """last_login field predicates"""
   lastLogin: Time
   lastLoginNEQ: Time
@@ -662,7 +662,7 @@ input UserWhereInput {
   lastLoginGTE: Time
   lastLoginLT: Time
   lastLoginLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -672,7 +672,7 @@ input UserWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """images edge predicates"""
   hasImages: Boolean
   hasImagesWith: [ImageWhereInput!]
@@ -686,7 +686,7 @@ input ImageWhereInput {
   not: ImageWhereInput
   and: [ImageWhereInput!]
   or: [ImageWhereInput!]
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -696,7 +696,7 @@ input ImageWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -706,7 +706,7 @@ input ImageWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """message field predicates"""
   message: String
   messageNEQ: String
@@ -721,7 +721,7 @@ input ImageWhereInput {
   messageHasSuffix: String
   messageEqualFold: String
   messageContainsFold: String
-  
+
   """lsb_used field predicates"""
   lsbUsed: Int
   lsbUsedNEQ: Int
@@ -731,13 +731,13 @@ input ImageWhereInput {
   lsbUsedGTE: Int
   lsbUsedLT: Int
   lsbUsedLTE: Int
-  
+
   """channel field predicates"""
   channel: Channel
   channelNEQ: Channel
   channelIn: [Channel!]
   channelNotIn: [Channel!]
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -747,7 +747,7 @@ input ImageWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """user edge predicates"""
   hasUser: Boolean
   hasUserWith: [UserWhereInput!]

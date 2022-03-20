@@ -7,8 +7,8 @@ import (
 	"entgo.io/ent/schema/field"
 	entMixin "entgo.io/ent/schema/mixin"
 
-	"github.com/kucera-lukas/stegoer/ent/mixin"
-	"github.com/kucera-lukas/stegoer/pkg/const/globalid"
+	"github.com/kucera-lukas/stegoer/server/ent/mixin"
+	"github.com/kucera-lukas/stegoer/server/pkg/const/globalid"
 )
 
 const (

@@ -8,13 +8,13 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/kucera-lukas/stegoer/ent"
-	"github.com/kucera-lukas/stegoer/ent/schema"
-	"github.com/kucera-lukas/stegoer/graph/generated"
-	"github.com/kucera-lukas/stegoer/pkg/entity/model"
-	"github.com/kucera-lukas/stegoer/pkg/infrastructure/middleware"
-	"github.com/kucera-lukas/stegoer/pkg/steganography"
-	"github.com/kucera-lukas/stegoer/pkg/util"
+	"github.com/kucera-lukas/stegoer/server/ent"
+	"github.com/kucera-lukas/stegoer/server/ent/schema"
+	"github.com/kucera-lukas/stegoer/server/graph/generated"
+	"github.com/kucera-lukas/stegoer/server/pkg/entity/model"
+	"github.com/kucera-lukas/stegoer/server/pkg/infrastructure/middleware"
+	"github.com/kucera-lukas/stegoer/server/pkg/steganography"
+	"github.com/kucera-lukas/stegoer/server/pkg/util"
 )
 
 func (r *mutationResolver) EncodeImage(ctx context.Context, input generated.EncodeImageInput) (*generated.EncodeImagePayload, error) {
