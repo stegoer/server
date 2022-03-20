@@ -9,12 +9,12 @@ import (
 	"sync"
 	"time"
 
+	"entgo.io/ent"
+
 	"github.com/stegoer/server/ent/image"
 	"github.com/stegoer/server/ent/predicate"
 	"github.com/stegoer/server/ent/schema/ulid"
 	"github.com/stegoer/server/ent/user"
-
-	"entgo.io/ent"
 )
 
 const (

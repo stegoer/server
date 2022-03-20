@@ -7,15 +7,14 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/stegoer/server/ent/migrate"
-	"github.com/stegoer/server/ent/schema/ulid"
-
-	"github.com/stegoer/server/ent/image"
-	"github.com/stegoer/server/ent/user"
-
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+
+	"github.com/stegoer/server/ent/image"
+	"github.com/stegoer/server/ent/migrate"
+	"github.com/stegoer/server/ent/schema/ulid"
+	"github.com/stegoer/server/ent/user"
 )
 
 // Client is the client that holds all ent builders.

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+
 	"github.com/stegoer/server/ent/schema/ulid"
 	"github.com/stegoer/server/ent/user"
 )

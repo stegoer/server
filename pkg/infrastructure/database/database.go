@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	_ "github.com/lib/pq" // so we can use dialect.Postgres
+
 	"github.com/stegoer/server/ent"
 	"github.com/stegoer/server/pkg/infrastructure/env"
 	"github.com/stegoer/server/pkg/infrastructure/log"

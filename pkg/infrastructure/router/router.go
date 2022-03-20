@@ -6,6 +6,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
+
 	"github.com/stegoer/server/ent"
 	"github.com/stegoer/server/pkg/infrastructure/env"
 	"github.com/stegoer/server/pkg/infrastructure/log"

@@ -1,4 +1,11 @@
 repos:
+  - repo: local
+    hooks:
+      - id: make-fmt
+        name: Make fmt
+        entry: make fmt
+        language: system
+        files: \.go$
   - repo: https://github.com/golangci/golangci-lint
     rev: v1.45.0
     hooks:

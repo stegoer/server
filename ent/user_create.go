@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+
 	"github.com/stegoer/server/ent/image"
 	"github.com/stegoer/server/ent/schema/ulid"
 	"github.com/stegoer/server/ent/user"

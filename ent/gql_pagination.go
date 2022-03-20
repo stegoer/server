@@ -14,11 +14,12 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/errcode"
+	"github.com/vektah/gqlparser/v2/gqlerror"
+	"github.com/vmihailenco/msgpack/v5"
+
 	"github.com/stegoer/server/ent/image"
 	"github.com/stegoer/server/ent/schema/ulid"
 	"github.com/stegoer/server/ent/user"
-	"github.com/vektah/gqlparser/v2/gqlerror"
-	"github.com/vmihailenco/msgpack/v5"
 )
 
 // OrderDirection defines the directions in which to order a list of items.
