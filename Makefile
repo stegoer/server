@@ -47,7 +47,7 @@ $(MIGRATE):
 	curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.1/migrate.linux-amd64.tar.gz | tar xvz migrate
 	mv migrate bin/migrate
 
-.PHONY: describe serve-doc gen fmt lint tidy test cover ci dev db-init makemigrations migrate-all migrate-up migrate-down build clean help
+.PHONY: describe serve-doc gen fmt lint tidy test cover dev db-init makemigrations migrate-all migrate-up migrate-down build clean help
 
 default: help
 
@@ -82,13 +82,6 @@ cover:  ## Run tests with coverage.
 	@echo "running tests with coverage"
 	go test -race -coverprofile=cover.out -coverpkg=./... ./...
 	go tool cover -html=cover.out -o cover.html
-
-ci:  ## Run continuous integration.
-	@make tidy
-	@make fmt
-	@make lint
-	# @make test
-	# @make cover
 
 dev: $(AIR) ## Start development server.
 	@echo "starting development server via air..."

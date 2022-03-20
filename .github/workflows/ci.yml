@@ -20,3 +20,11 @@ jobs:
         uses: golangci/golangci-lint-action@v2
         with:
           version: latest
+
+      - name: Make fmt
+        run: make fmt
+
+      - name: Exit If Git Diff
+        run: |
+          chmod +x ./scripts/exit_if_diff.sh
+          ./scripts/exit_if_diff.sh
