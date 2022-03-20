@@ -18,12 +18,6 @@ repos:
     hooks:
       - id: prettier
         files: \.(js|ts|jsx|tsx|css|less|html|json|markdown|md|yaml|yml)$
-  - repo: https://github.com/golangci/golangci-lint
-    rev: v1.45.0
-    hooks:
-      - id: golangci-lint
-        name: golangci-lint
-        files: \.go$
   - repo: local
     hooks:
       - id: make-fmt
