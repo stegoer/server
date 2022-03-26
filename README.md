@@ -4,12 +4,15 @@
 [![Continuous Integration](https://github.com/stegoer/server/actions/workflows/ci.yml/badge.svg)](https://github.com/stegoer/server/actions/workflows/ci.yml)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/stegoer/server/main.svg)](https://results.pre-commit.ci/latest/github/stegoer/server/main)
 [![Go Reference](https://pkg.go.dev/badge/github.com/stegoer/server.svg)](https://pkg.go.dev/github.com/stegoer/server)
+[![Go Report Card](https://goreportcard.com/badge/github.com/stegoer/server)](https://goreportcard.com/report/github.com/stegoer/server)
 
 Server is using Go, Postgres, GraphQL and Redis.
 
 ---
 
 Server endpoint: https://stegoer-server.herokuapp.com/
+
+Source code: https://github.com/stegoer/server
 
 ---
 

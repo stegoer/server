@@ -1,23 +1,11 @@
 package steganography
 
 import (
-	"bytes"
-	"fmt"
-	"image"
 	"image/color"
-	"image/draw"
-	"image/png"
-	"io"
 
 	entImage "github.com/stegoer/server/ent/image"
 	"github.com/stegoer/server/pkg/util"
 )
-
-type ImageData struct {
-	NRGBA  *image.NRGBA
-	Width  int
-	Height int
-}
 
 type ChannelType byte
 
@@ -73,13 +61,13 @@ func (pd *PixelData) SetBlue(value byte) {
 }
 
 func NRGBAPixels(
-	data ImageData,
+	data util.ImageData,
 	channel entImage.Channel,
 	resultChan chan PixelData,
 ) {
-	red := util.IncludesRedChannel(channel)
-	green := util.IncludesGreenChannel(channel)
-	blue := util.IncludesBlueChannel(channel)
+	red := IncludesRedChannel(channel)
+	green := IncludesGreenChannel(channel)
+	blue := IncludesBlueChannel(channel)
 
 	for width := 0; width < data.Width; width++ {
 		for height := 0; height < data.Height; height++ {
@@ -109,53 +97,4 @@ func NRGBAPixels(
 	}
 
 	close(resultChan)
-}
-
-// FileToImageData reads file and returns ImageData.
-func FileToImageData(file io.Reader) (ImageData, error) {
-	img, err := ReadImageFile(file)
-	if err != nil {
-		return ImageData{NRGBA: nil, Width: 0, Height: 0}, err
-	}
-
-	nrgba, width, height := ImageToNRGBA(img)
-
-	return ImageData{
-		NRGBA:  nrgba,
-		Width:  width,
-		Height: height,
-	}, nil
-}
-
-// ReadImageFile reads given file and returns image.Image.
-func ReadImageFile(file io.Reader) (image.Image, error) {
-	img, _, err := image.Decode(file)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode image file: %w", err)
-	}
-
-	return img, nil
-}
-
-// ImageToNRGBA converts image.Image to image.NRGBA.
-func ImageToNRGBA(img image.Image) (*image.NRGBA, int, int) {
-	bounds := img.Bounds()
-
-	width, height := bounds.Dx(), bounds.Dy()
-	ret := image.NewNRGBA(image.Rect(0, 0, width, height))
-
-	draw.Draw(ret, ret.Bounds(), img, bounds.Min, draw.Src)
-
-	return ret, width, height
-}
-
-// EncodeNRGBA encodes given nrgba image into a bytes.Buffer.
-func EncodeNRGBA(nrgba *image.NRGBA) (*bytes.Buffer, error) {
-	imgBuffer := new(bytes.Buffer)
-
-	if err := png.Encode(imgBuffer, nrgba); err != nil {
-		return nil, fmt.Errorf("error encoding NRGBA image: %w", err)
-	}
-
-	return imgBuffer, nil
 }

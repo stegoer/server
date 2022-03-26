@@ -2,41 +2,62 @@ package steganography
 
 import (
 	"bytes"
+	"encoding/binary"
 	"fmt"
 
 	"github.com/stegoer/server/graph/generated"
+	"github.com/stegoer/server/pkg/cryptography"
+	"github.com/stegoer/server/pkg/infrastructure/env"
 	"github.com/stegoer/server/pkg/util"
 )
 
-const bitSize = 8
+const bitLength = 8
 
 // Encode encodes a message into the given graphql.Upload file based on input.
-func Encode(input generated.EncodeImageInput) (*bytes.Buffer, error) {
-	data, err := FileToImageData(input.File.File)
-	if err != nil {
-		return nil, err
-	}
-
-	messageLength := len(input.Message)
-
-	if messageLength > maxEncodeSize(data, input) {
+func Encode(config *env.Config, input generated.EncodeImageInput) (*bytes.Buffer, error) {
+	if !ValidateLSB(input.LsbUsed) {
 		return nil, fmt.Errorf(
-			"image isn't big enough for a message of length %d",
-			messageLength,
+			"%d is not a valid number of least significant bits used",
+			input.LsbUsed,
 		)
 	}
+
+	data, err := util.FileToImageData(input.File.File)
+	if err != nil {
+		return nil, fmt.Errorf("encode: %w", err)
+	}
+
+	encryptedMsg, err := cryptography.Encrypt(
+		[]byte(input.Message),
+		[]byte(config.EncryptionKey),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("encode: %w", err)
+	}
+
+	messageLength := len(encryptedMsg)
+
+	if bitLength+messageLength > maxBytesToEncode(data, input) {
+		return nil, fmt.Errorf(
+			"encode: image isn't big enough for a message of length %d",
+			bitLength*messageLength,
+		)
+	}
+
+	bitChannel := make(chan byte)
+	go util.ByteArrToBits(
+		append(
+			intToUint64Bytes(messageLength),
+			encryptedMsg...,
+		),
+		bitChannel,
+	)
 
 	pixelDataChannel := make(chan PixelData)
 	go NRGBAPixels(data, input.Channel, pixelDataChannel)
 
-	bitChannel := make(chan byte)
-	go util.ByteArrToBits(
-		append(splitToBytes(messageLength), []byte(input.Message)...),
-		bitChannel,
-	)
-
 	lsbPosChannel := make(chan byte)
-	go util.LSBPositions(byte(input.LsbUsed), lsbPosChannel)
+	go LSBPositions(byte(input.LsbUsed), lsbPosChannel)
 
 pixelIterator:
 	for pixelData := range pixelDataChannel {
@@ -62,7 +83,7 @@ pixelIterator:
 		data.NRGBA.SetNRGBA(pixelData.Width, pixelData.Height, *pixelData.Color)
 	}
 
-	imgBuffer, err := EncodeNRGBA(data.NRGBA)
+	imgBuffer, err := util.EncodeNRGBA(data.NRGBA)
 	if err != nil {
 		return nil, fmt.Errorf("encode: %w", err)
 	}
@@ -70,26 +91,23 @@ pixelIterator:
 	return imgBuffer, nil
 }
 
-// maxEncodeSize calculates a maximum encode size
+// maxBytesToEncode calculates a maximum amount of bytes which can be encoded
 // based on the bounds of given image.NRGBA and generated.EncodeImageInput.
-func maxEncodeSize(data ImageData, input generated.EncodeImageInput) int {
-	channelCount := util.ChannelCount(input.Channel)
+func maxBytesToEncode(
+	data util.ImageData,
+	input generated.EncodeImageInput,
+) int {
+	channelCount := ChannelCount(input.Channel)
 
-	return (data.Width * data.Height * channelCount) / (bitSize / input.LsbUsed)
+	return (data.Width * data.Height * channelCount * input.LsbUsed) / bitLength
 }
 
-// splitToBytes given an unsigned integer,
-// will split this integer into its four bytes.
-func splitToBytes(num int) []byte {
-	one := byte(num >> bitSize * 3) //nolint:gomnd
+// intToUint64Bytes turns int to []byte representing uint64.
+func intToUint64Bytes(num int) []byte {
+	b := make([]byte, bitLength)
+	binary.LittleEndian.PutUint64(b, uint64(num))
 
-	mask := 255
-
-	two := byte((num >> bitSize * 2) & mask) //nolint:gomnd
-	three := byte((num >> bitSize) & mask)
-	four := byte(num & mask)
-
-	return []byte{one, two, three, four}
+	return b
 }
 
 func getUpdatedByte(msgBit byte, value byte, lsbPos byte) byte {

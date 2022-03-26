@@ -6,31 +6,16 @@ package resolver
 import (
 	"context"
 	"encoding/base64"
-	"fmt"
 
 	"github.com/stegoer/server/ent"
-	"github.com/stegoer/server/ent/schema"
 	"github.com/stegoer/server/graph/generated"
 	"github.com/stegoer/server/pkg/entity/model"
 	"github.com/stegoer/server/pkg/infrastructure/middleware"
 	"github.com/stegoer/server/pkg/steganography"
-	"github.com/stegoer/server/pkg/util"
 )
 
 func (r *mutationResolver) EncodeImage(ctx context.Context, input generated.EncodeImageInput) (*generated.EncodeImagePayload, error) {
-	if !util.ValidLSBUsed(input.LsbUsed) {
-		return nil, model.NewValidationError(
-			ctx,
-			fmt.Sprintf(
-				"%d is out of the range [%d : %d] for least significant bit amount",
-				input.LsbUsed,
-				schema.LsbMin,
-				schema.LsbMax,
-			),
-		)
-	}
-
-	imgBuffer, err := steganography.Encode(input)
+	imgBuffer, err := steganography.Encode(r.config, input)
 	if err != nil {
 		return nil, model.NewValidationError(ctx, err.Error())
 	}
@@ -55,7 +40,7 @@ func (r *mutationResolver) EncodeImage(ctx context.Context, input generated.Enco
 }
 
 func (r *mutationResolver) DecodeImage(ctx context.Context, input generated.DecodeImageInput) (*generated.DecodeImagePayload, error) {
-	message, err := steganography.Decode(input)
+	message, err := steganography.Decode(r.config, input)
 	if err != nil {
 		return nil, model.NewValidationError(ctx, err.Error())
 	}

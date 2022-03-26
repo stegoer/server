@@ -9,31 +9,32 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Environment string
+type environment string
+
+// Config represents the environment configuration.
+type Config struct {
+	Env           environment `mapstructure:"ENV"`
+	Debug         bool        `mapstructure:"DEBUG"`
+	Port          int         `mapstructure:"PORT"`
+	SecretKey     string      `mapstructure:"SECRET_KEY"`
+	EncryptionKey string      `mapstructure:"ENCRYPTION_KEY"`
+	DatabaseURL   string      `mapstructure:"DATABASE_URL"`
+	RedisURL      string      `mapstructure:"REDIS_URL"`
+}
 
 const (
 	configPath = "."
 
-	Development Environment = "DEVELOPMENT"
-	Production  Environment = "PRODUCTION"
+	development environment = "DEVELOPMENT"
+	production  environment = "PRODUCTION"
 )
 
-// Config represents the env configuration.
-type Config struct {
-	Env         Environment `mapstructure:"ENV"`
-	Debug       bool        `mapstructure:"DEBUG"`
-	Port        int         `mapstructure:"PORT"`
-	SecretKey   string      `mapstructure:"SECRET_KEY"`
-	DatabaseURL string      `mapstructure:"DATABASE_URL"`
-	RedisURL    string      `mapstructure:"REDIS_URL"`
-}
-
 func (c *Config) IsDevelopment() bool {
-	return c.Env == Development
+	return c.Env == development
 }
 
 func (c *Config) IsProduction() bool {
-	return c.Env == Production
+	return c.Env == production
 }
 
 // MustLoad ensures that a new env.Config struct is loaded and panics if not.
@@ -88,10 +89,24 @@ func setConfig(path string) error {
 }
 
 func setDefault() {
-	viper.SetDefault("ENV", Development)
+	viper.SetDefault("ENV", development)
 	viper.SetDefault("DEBUG", false)
-	viper.SetDefault("PORT", os.Getenv("PORT"))
-	viper.SetDefault("SECRET_KEY", os.Getenv("SECRET_KEY"))
-	viper.SetDefault("DATABASE_URL", os.Getenv("DATABASE_URL"))
-	viper.SetDefault("REDIS_URL", os.Getenv("REDIS_URL"))
+
+	for _, key := range getEnvDefaultKeys() {
+		setEnvDefault(key)
+	}
+}
+
+func setEnvDefault(key string) {
+	viper.SetDefault(key, os.Getenv(key))
+}
+
+func getEnvDefaultKeys() []string {
+	return []string{
+		"PORT",
+		"SECRET_KEY",
+		"ENCRYPTION_KEY",
+		"DATABASE_URL",
+		"REDIS_URL",
+	}
 }
