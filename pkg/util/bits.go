@@ -2,7 +2,7 @@ package util
 
 const bitLen = 8
 
-// ByteArrToBits turns given string into bits and sends it over a channel.
+// ByteArrToBits turns given byteArr into bits and sends it over a channel.
 func ByteArrToBits(byteArr []byte, resultChan chan byte) {
 	var position byte
 
@@ -48,4 +48,18 @@ func BoolToRune(b bool) rune {
 	}
 
 	return '0'
+}
+
+// BoolToBit turns a bool into a bit.
+func BoolToBit(b bool) byte {
+	if b {
+		return 1
+	}
+
+	return 0
+}
+
+// BitToBool turns a bit inti bool
+func BitToBool(b byte) bool {
+	return b != 0
 }

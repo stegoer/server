@@ -6,8 +6,8 @@ import (
 
 	"github.com/stegoer/server/ent"
 	"github.com/stegoer/server/pkg/adapter/repository"
-	"github.com/stegoer/server/pkg/entity/model"
 	"github.com/stegoer/server/pkg/infrastructure/log"
+	"github.com/stegoer/server/pkg/model"
 	"github.com/stegoer/server/pkg/util"
 )
 

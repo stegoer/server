@@ -3,34 +3,34 @@ package controller
 import (
 	"context"
 
-	"github.com/stegoer/server/graph/generated"
-	"github.com/stegoer/server/pkg/entity/model"
+	model2 "github.com/stegoer/server/pkg/model"
 )
 
 // Image controller interface.
 type Image interface {
 	Get(
 		ctx context.Context,
-		entUser model.User,
-		id *model.ID,
-	) (*model.Image, error)
+		entUser model2.User,
+		id *model2.ID,
+	) (*model2.Image, error)
 	List(
 		ctx context.Context,
-		entUser model.User,
-		after *model.Cursor,
+		entUser model2.User,
+		after *model2.Cursor,
 		first *int,
-		before *model.Cursor,
+		before *model2.Cursor,
 		last *int,
-		where *model.ImageWhereInput,
-		orderBy *model.ImageOrderInput,
-	) (*model.ImageConnection, error)
+		where *model2.ImageWhereInput,
+		orderBy *model2.ImageOrderInput,
+	) (*model2.ImageConnection, error)
 	Create(
 		ctx context.Context,
-		entUser model.User,
-		input generated.EncodeImageInput,
-	) (*model.Image, error)
+		entUser model2.User,
+		filename string,
+		content string,
+	) (*model2.Image, error)
 	Count(
 		ctx context.Context,
-		entUser model.User,
+		entUser model2.User,
 	) (int, error)
 }

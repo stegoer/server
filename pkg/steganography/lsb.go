@@ -1,6 +1,9 @@
 package steganography
 
-import "github.com/stegoer/server/ent/schema"
+const (
+	lsbMin = 1
+	lsbMax = 8
+)
 
 // LSBPositions infinitely sends the least significant bit positions.
 func LSBPositions(used byte, resultChan chan byte) {
@@ -19,5 +22,5 @@ func LSBPositions(used byte, resultChan chan byte) {
 
 // ValidateLSB validates that the number n is within the LSB range.
 func ValidateLSB(n int) bool {
-	return !(n > schema.LsbMax || n < schema.LsbMin)
+	return !(n > lsbMax || n < lsbMin)
 }

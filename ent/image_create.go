@@ -51,21 +51,15 @@ func (ic *ImageCreate) SetNillableUpdatedAt(t *time.Time) *ImageCreate {
 	return ic
 }
 
-// SetMessage sets the "message" field.
-func (ic *ImageCreate) SetMessage(s string) *ImageCreate {
-	ic.mutation.SetMessage(s)
+// SetFileName sets the "file_name" field.
+func (ic *ImageCreate) SetFileName(s string) *ImageCreate {
+	ic.mutation.SetFileName(s)
 	return ic
 }
 
-// SetLsbUsed sets the "lsb_used" field.
-func (ic *ImageCreate) SetLsbUsed(i int) *ImageCreate {
-	ic.mutation.SetLsbUsed(i)
-	return ic
-}
-
-// SetChannel sets the "channel" field.
-func (ic *ImageCreate) SetChannel(i image.Channel) *ImageCreate {
-	ic.mutation.SetChannel(i)
+// SetContent sets the "content" field.
+func (ic *ImageCreate) SetContent(s string) *ImageCreate {
+	ic.mutation.SetContent(s)
 	return ic
 }
 
@@ -195,28 +189,20 @@ func (ic *ImageCreate) check() error {
 	if _, ok := ic.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Image.updated_at"`)}
 	}
-	if _, ok := ic.mutation.Message(); !ok {
-		return &ValidationError{Name: "message", err: errors.New(`ent: missing required field "Image.message"`)}
+	if _, ok := ic.mutation.FileName(); !ok {
+		return &ValidationError{Name: "file_name", err: errors.New(`ent: missing required field "Image.file_name"`)}
 	}
-	if v, ok := ic.mutation.Message(); ok {
-		if err := image.MessageValidator(v); err != nil {
-			return &ValidationError{Name: "message", err: fmt.Errorf(`ent: validator failed for field "Image.message": %w`, err)}
+	if v, ok := ic.mutation.FileName(); ok {
+		if err := image.FileNameValidator(v); err != nil {
+			return &ValidationError{Name: "file_name", err: fmt.Errorf(`ent: validator failed for field "Image.file_name": %w`, err)}
 		}
 	}
-	if _, ok := ic.mutation.LsbUsed(); !ok {
-		return &ValidationError{Name: "lsb_used", err: errors.New(`ent: missing required field "Image.lsb_used"`)}
+	if _, ok := ic.mutation.Content(); !ok {
+		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Image.content"`)}
 	}
-	if v, ok := ic.mutation.LsbUsed(); ok {
-		if err := image.LsbUsedValidator(v); err != nil {
-			return &ValidationError{Name: "lsb_used", err: fmt.Errorf(`ent: validator failed for field "Image.lsb_used": %w`, err)}
-		}
-	}
-	if _, ok := ic.mutation.Channel(); !ok {
-		return &ValidationError{Name: "channel", err: errors.New(`ent: missing required field "Image.channel"`)}
-	}
-	if v, ok := ic.mutation.Channel(); ok {
-		if err := image.ChannelValidator(v); err != nil {
-			return &ValidationError{Name: "channel", err: fmt.Errorf(`ent: validator failed for field "Image.channel": %w`, err)}
+	if v, ok := ic.mutation.Content(); ok {
+		if err := image.ContentValidator(v); err != nil {
+			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "Image.content": %w`, err)}
 		}
 	}
 	return nil
@@ -271,29 +257,21 @@ func (ic *ImageCreate) createSpec() (*Image, *sqlgraph.CreateSpec) {
 		})
 		_node.UpdatedAt = value
 	}
-	if value, ok := ic.mutation.Message(); ok {
+	if value, ok := ic.mutation.FileName(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: image.FieldMessage,
+			Column: image.FieldFileName,
 		})
-		_node.Message = value
+		_node.FileName = value
 	}
-	if value, ok := ic.mutation.LsbUsed(); ok {
+	if value, ok := ic.mutation.Content(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: image.FieldLsbUsed,
+			Column: image.FieldContent,
 		})
-		_node.LsbUsed = value
-	}
-	if value, ok := ic.mutation.Channel(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: image.FieldChannel,
-		})
-		_node.Channel = value
+		_node.Content = value
 	}
 	if nodes := ic.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

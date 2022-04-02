@@ -3,7 +3,7 @@ package steganography
 import (
 	"image/color"
 
-	entImage "github.com/stegoer/server/ent/image"
+	"github.com/stegoer/server/pkg/model"
 	"github.com/stegoer/server/pkg/util"
 )
 
@@ -48,6 +48,20 @@ func (pd PixelData) GetBlue() byte {
 	return pd.Color.B
 }
 
+func (pd PixelData) GetChannelValue(channel ChannelType) byte {
+	switch {
+	case channel.IsRed():
+		return pd.GetRed()
+	case channel.IsGreen():
+		return pd.GetGreen()
+	case channel.IsBlue():
+		return pd.GetBlue()
+	default:
+		// should be unreachable
+		return 0
+	}
+}
+
 func (pd *PixelData) SetRed(value byte) {
 	pd.Color.R = value
 }
@@ -60,19 +74,42 @@ func (pd *PixelData) SetBlue(value byte) {
 	pd.Color.B = value
 }
 
+func (pd PixelData) SetChannelValue(
+	channel ChannelType,
+	value byte,
+	lsbPos byte,
+) {
+	switch {
+	case channel.IsRed():
+		pd.SetRed(util.GetUpdatedByte(value, pd.GetRed(), lsbPos))
+	case channel.IsGreen():
+		pd.SetGreen(util.GetUpdatedByte(value, pd.GetGreen(), lsbPos))
+	case channel.IsBlue():
+		pd.SetBlue(util.GetUpdatedByte(value, pd.GetBlue(), lsbPos))
+	}
+}
+
 func NRGBAPixels(
 	data util.ImageData,
-	channel entImage.Channel,
+	pixelOffset int,
+	channel model.Channel,
 	resultChan chan PixelData,
 ) {
-	red := IncludesRedChannel(channel)
-	green := IncludesGreenChannel(channel)
-	blue := IncludesBlueChannel(channel)
+	var pixelCount int
+
+	red := channel.IncludesRed()
+	green := channel.IncludesGreen()
+	blue := channel.IncludesBlue()
 
 	for width := 0; width < data.Width; width++ {
 		for height := 0; height < data.Height; height++ {
-			channels := make([]ChannelType, 0, channelTypeSliceCapacity)
+			pixelCount++
 
+			if pixelCount <= pixelOffset {
+				continue
+			}
+
+			channels := make([]ChannelType, 0, channelTypeSliceCapacity)
 			nrgbaColor := data.NRGBA.NRGBAAt(width, height)
 
 			if red {

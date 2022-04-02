@@ -18,8 +18,8 @@ import (
 	"github.com/vektah/gqlparser/v2/ast"
 
 	"github.com/stegoer/server/ent"
-	"github.com/stegoer/server/ent/image"
 	"github.com/stegoer/server/ent/schema/ulid"
+	"github.com/stegoer/server/pkg/model"
 )
 
 // region    ************************** generated!.gotpl **************************
@@ -40,6 +40,7 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Image() ImageResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
 	User() UserResolver
@@ -59,12 +60,11 @@ type ComplexityRoot struct {
 	}
 
 	DecodeImagePayload struct {
-		Message func(childComplexity int) int
+		Data func(childComplexity int) int
 	}
 
 	EncodeImagePayload struct {
-		File  func(childComplexity int) int
-		Image func(childComplexity int) int
+		File func(childComplexity int) int
 	}
 
 	FileType struct {
@@ -73,11 +73,9 @@ type ComplexityRoot struct {
 	}
 
 	Image struct {
-		Channel   func(childComplexity int) int
 		CreatedAt func(childComplexity int) int
+		File      func(childComplexity int) int
 		ID        func(childComplexity int) int
-		LsbUsed   func(childComplexity int) int
-		Message   func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 	}
 
@@ -141,6 +139,9 @@ type ComplexityRoot struct {
 	}
 }
 
+type ImageResolver interface {
+	File(ctx context.Context, obj *ent.Image) (*FileType, error)
+}
 type MutationResolver interface {
 	EncodeImage(ctx context.Context, input EncodeImageInput) (*EncodeImagePayload, error)
 	DecodeImage(ctx context.Context, input DecodeImageInput) (*DecodeImagePayload, error)
@@ -200,12 +201,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CreateUserPayload.User(childComplexity), true
 
-	case "DecodeImagePayload.message":
-		if e.complexity.DecodeImagePayload.Message == nil {
+	case "DecodeImagePayload.data":
+		if e.complexity.DecodeImagePayload.Data == nil {
 			break
 		}
 
-		return e.complexity.DecodeImagePayload.Message(childComplexity), true
+		return e.complexity.DecodeImagePayload.Data(childComplexity), true
 
 	case "EncodeImagePayload.file":
 		if e.complexity.EncodeImagePayload.File == nil {
@@ -213,13 +214,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.EncodeImagePayload.File(childComplexity), true
-
-	case "EncodeImagePayload.image":
-		if e.complexity.EncodeImagePayload.Image == nil {
-			break
-		}
-
-		return e.complexity.EncodeImagePayload.Image(childComplexity), true
 
 	case "FileType.content":
 		if e.complexity.FileType.Content == nil {
@@ -235,13 +229,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.FileType.Name(childComplexity), true
 
-	case "Image.channel":
-		if e.complexity.Image.Channel == nil {
-			break
-		}
-
-		return e.complexity.Image.Channel(childComplexity), true
-
 	case "Image.createdAt":
 		if e.complexity.Image.CreatedAt == nil {
 			break
@@ -249,26 +236,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Image.CreatedAt(childComplexity), true
 
+	case "Image.file":
+		if e.complexity.Image.File == nil {
+			break
+		}
+
+		return e.complexity.Image.File(childComplexity), true
+
 	case "Image.id":
 		if e.complexity.Image.ID == nil {
 			break
 		}
 
 		return e.complexity.Image.ID(childComplexity), true
-
-	case "Image.lsbUsed":
-		if e.complexity.Image.LsbUsed == nil {
-			break
-		}
-
-		return e.complexity.Image.LsbUsed(childComplexity), true
-
-	case "Image.message":
-		if e.complexity.Image.Message == nil {
-			break
-		}
-
-		return e.complexity.Image.Message(childComplexity), true
 
 	case "Image.updatedAt":
 		if e.complexity.Image.UpdatedAt == nil {
@@ -707,36 +687,35 @@ input ImageWhereInput {
   updatedAtLT: Time
   updatedAtLTE: Time
 
-  """message field predicates"""
-  message: String
-  messageNEQ: String
-  messageIn: [String!]
-  messageNotIn: [String!]
-  messageGT: String
-  messageGTE: String
-  messageLT: String
-  messageLTE: String
-  messageContains: String
-  messageHasPrefix: String
-  messageHasSuffix: String
-  messageEqualFold: String
-  messageContainsFold: String
+  """file_name field predicates"""
+  fileName: String
+  fileNameNEQ: String
+  fileNameIn: [String!]
+  fileNameNotIn: [String!]
+  fileNameGT: String
+  fileNameGTE: String
+  fileNameLT: String
+  fileNameLTE: String
+  fileNameContains: String
+  fileNameHasPrefix: String
+  fileNameHasSuffix: String
+  fileNameEqualFold: String
+  fileNameContainsFold: String
 
-  """lsb_used field predicates"""
-  lsbUsed: Int
-  lsbUsedNEQ: Int
-  lsbUsedIn: [Int!]
-  lsbUsedNotIn: [Int!]
-  lsbUsedGT: Int
-  lsbUsedGTE: Int
-  lsbUsedLT: Int
-  lsbUsedLTE: Int
-
-  """channel field predicates"""
-  channel: Channel
-  channelNEQ: Channel
-  channelIn: [Channel!]
-  channelNotIn: [Channel!]
+  """content field predicates"""
+  content: String
+  contentNEQ: String
+  contentIn: [String!]
+  contentNotIn: [String!]
+  contentGT: String
+  contentGTE: String
+  contentLT: String
+  contentLTE: String
+  contentContains: String
+  contentHasPrefix: String
+  contentHasSuffix: String
+  contentEqualFold: String
+  contentContainsFold: String
 
   """id field predicates"""
   id: ID
@@ -774,23 +753,21 @@ input ImageOrder {
 }
 
 input EncodeImageInput {
-  message: String!
+  data: String!
+  encryptionKey: String
   lsbUsed: Int!
   channel: Channel!
-  file: Upload!
+  upload: Upload!
 }
 
 input DecodeImageInput {
-  lsbUsed: Int!
-  channel: Channel!
-  file: Upload!
+  encryptionKey: String
+  upload: Upload!
 }
 
 type Image implements Node {
   id: ID!
-  message: String!
-  lsbUsed: Int!
-  channel: Channel!
+  file: FileType!
   createdAt: Time!
   updatedAt: Time!
 }
@@ -807,12 +784,11 @@ type ImagesConnection {
 }
 
 type EncodeImagePayload {
-  image: Image!
   file: FileType!
 }
 
 type DecodeImagePayload {
-  message: String!
+  data: String!
 }
 
 extend type Query {
@@ -946,7 +922,7 @@ func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, 
 	var arg0 NewUser
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewUser2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐNewUser(ctx, tmp)
+		arg0, err = ec.unmarshalNNewUser2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐNewUser(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -961,7 +937,7 @@ func (ec *executionContext) field_Mutation_decodeImage_args(ctx context.Context,
 	var arg0 DecodeImageInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNDecodeImageInput2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐDecodeImageInput(ctx, tmp)
+		arg0, err = ec.unmarshalNDecodeImageInput2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐDecodeImageInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -976,7 +952,7 @@ func (ec *executionContext) field_Mutation_encodeImage_args(ctx context.Context,
 	var arg0 EncodeImageInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNEncodeImageInput2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐEncodeImageInput(ctx, tmp)
+		arg0, err = ec.unmarshalNEncodeImageInput2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐEncodeImageInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -991,7 +967,7 @@ func (ec *executionContext) field_Mutation_login_args(ctx context.Context, rawAr
 	var arg0 Login
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNLogin2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐLogin(ctx, tmp)
+		arg0, err = ec.unmarshalNLogin2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐLogin(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1006,7 +982,7 @@ func (ec *executionContext) field_Mutation_refreshToken_args(ctx context.Context
 	var arg0 RefreshTokenInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNRefreshTokenInput2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐRefreshTokenInput(ctx, tmp)
+		arg0, err = ec.unmarshalNRefreshTokenInput2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐRefreshTokenInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1021,7 +997,7 @@ func (ec *executionContext) field_Mutation_updateUser_args(ctx context.Context, 
 	var arg0 UpdateUser
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateUser2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐUpdateUser(ctx, tmp)
+		arg0, err = ec.unmarshalNUpdateUser2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐUpdateUser(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1051,7 +1027,7 @@ func (ec *executionContext) field_Query_images_args(ctx context.Context, rawArgs
 	var arg0 *ent.Cursor
 	if tmp, ok := rawArgs["after"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐCursor(ctx, tmp)
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐCursor(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1069,7 +1045,7 @@ func (ec *executionContext) field_Query_images_args(ctx context.Context, rawArgs
 	var arg2 *ent.Cursor
 	if tmp, ok := rawArgs["before"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
-		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐCursor(ctx, tmp)
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐCursor(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1087,7 +1063,7 @@ func (ec *executionContext) field_Query_images_args(ctx context.Context, rawArgs
 	var arg4 *ent.ImageWhereInput
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg4, err = ec.unmarshalOImageWhereInput2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImageWhereInput(ctx, tmp)
+		arg4, err = ec.unmarshalOImageWhereInput2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImageWhereInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1096,7 +1072,7 @@ func (ec *executionContext) field_Query_images_args(ctx context.Context, rawArgs
 	var arg5 *ent.ImageOrder
 	if tmp, ok := rawArgs["orderBy"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg5, err = ec.unmarshalOImageOrder2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImageOrder(ctx, tmp)
+		arg5, err = ec.unmarshalOImageOrder2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImageOrder(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1245,7 +1221,7 @@ func (ec *executionContext) _CreateUserPayload_user(ctx context.Context, field g
 	}
 	res := resTmp.(*ent.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _CreateUserPayload_auth(ctx context.Context, field graphql.CollectedField, obj *CreateUserPayload) (ret graphql.Marshaler) {
@@ -1280,10 +1256,10 @@ func (ec *executionContext) _CreateUserPayload_auth(ctx context.Context, field g
 	}
 	res := resTmp.(*Auth)
 	fc.Result = res
-	return ec.marshalNAuth2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐAuth(ctx, field.Selections, res)
+	return ec.marshalNAuth2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐAuth(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _DecodeImagePayload_message(ctx context.Context, field graphql.CollectedField, obj *DecodeImagePayload) (ret graphql.Marshaler) {
+func (ec *executionContext) _DecodeImagePayload_data(ctx context.Context, field graphql.CollectedField, obj *DecodeImagePayload) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1301,7 +1277,7 @@ func (ec *executionContext) _DecodeImagePayload_message(ctx context.Context, fie
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Message, nil
+		return obj.Data, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1316,41 +1292,6 @@ func (ec *executionContext) _DecodeImagePayload_message(ctx context.Context, fie
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _EncodeImagePayload_image(ctx context.Context, field graphql.CollectedField, obj *EncodeImagePayload) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "EncodeImagePayload",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Image, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*ent.Image)
-	fc.Result = res
-	return ec.marshalNImage2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _EncodeImagePayload_file(ctx context.Context, field graphql.CollectedField, obj *EncodeImagePayload) (ret graphql.Marshaler) {
@@ -1385,7 +1326,7 @@ func (ec *executionContext) _EncodeImagePayload_file(ctx context.Context, field 
 	}
 	res := resTmp.(*FileType)
 	fc.Result = res
-	return ec.marshalNFileType2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐFileType(ctx, field.Selections, res)
+	return ec.marshalNFileType2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐFileType(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _FileType_name(ctx context.Context, field graphql.CollectedField, obj *FileType) (ret graphql.Marshaler) {
@@ -1490,10 +1431,10 @@ func (ec *executionContext) _Image_id(ctx context.Context, field graphql.Collect
 	}
 	res := resTmp.(ulid.ID)
 	fc.Result = res
-	return ec.marshalNID2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Image_message(ctx context.Context, field graphql.CollectedField, obj *ent.Image) (ret graphql.Marshaler) {
+func (ec *executionContext) _Image_file(ctx context.Context, field graphql.CollectedField, obj *ent.Image) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1504,14 +1445,14 @@ func (ec *executionContext) _Image_message(ctx context.Context, field graphql.Co
 		Object:     "Image",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Message, nil
+		return ec.resolvers.Image().File(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1523,79 +1464,9 @@ func (ec *executionContext) _Image_message(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*FileType)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Image_lsbUsed(ctx context.Context, field graphql.CollectedField, obj *ent.Image) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Image",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.LsbUsed, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Image_channel(ctx context.Context, field graphql.CollectedField, obj *ent.Image) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Image",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Channel, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(image.Channel)
-	fc.Result = res
-	return ec.marshalNChannel2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋimageᚐChannel(ctx, field.Selections, res)
+	return ec.marshalNFileType2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐFileType(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Image_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.Image) (ret graphql.Marshaler) {
@@ -1700,7 +1571,7 @@ func (ec *executionContext) _ImageEdge_node(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*ent.Image)
 	fc.Result = res
-	return ec.marshalNImage2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImage(ctx, field.Selections, res)
+	return ec.marshalNImage2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _ImageEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.ImageEdge) (ret graphql.Marshaler) {
@@ -1735,7 +1606,7 @@ func (ec *executionContext) _ImageEdge_cursor(ctx context.Context, field graphql
 	}
 	res := resTmp.(ent.Cursor)
 	fc.Result = res
-	return ec.marshalNCursor2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐCursor(ctx, field.Selections, res)
+	return ec.marshalNCursor2githubᚗcomᚋstegoerᚋserverᚋentᚐCursor(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _ImagesConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ImagesConnection) (ret graphql.Marshaler) {
@@ -1805,7 +1676,7 @@ func (ec *executionContext) _ImagesConnection_pageInfo(ctx context.Context, fiel
 	}
 	res := resTmp.(*ent.PageInfo)
 	fc.Result = res
-	return ec.marshalNPageInfo2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐPageInfo(ctx, field.Selections, res)
+	return ec.marshalNPageInfo2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐPageInfo(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _ImagesConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ImagesConnection) (ret graphql.Marshaler) {
@@ -1840,7 +1711,7 @@ func (ec *executionContext) _ImagesConnection_edges(ctx context.Context, field g
 	}
 	res := resTmp.([]*ent.ImageEdge)
 	fc.Result = res
-	return ec.marshalNImageEdge2ᚕᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImageEdgeᚄ(ctx, field.Selections, res)
+	return ec.marshalNImageEdge2ᚕᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImageEdgeᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _LoginPayload_user(ctx context.Context, field graphql.CollectedField, obj *LoginPayload) (ret graphql.Marshaler) {
@@ -1875,7 +1746,7 @@ func (ec *executionContext) _LoginPayload_user(ctx context.Context, field graphq
 	}
 	res := resTmp.(*ent.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _LoginPayload_auth(ctx context.Context, field graphql.CollectedField, obj *LoginPayload) (ret graphql.Marshaler) {
@@ -1910,7 +1781,7 @@ func (ec *executionContext) _LoginPayload_auth(ctx context.Context, field graphq
 	}
 	res := resTmp.(*Auth)
 	fc.Result = res
-	return ec.marshalNAuth2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐAuth(ctx, field.Selections, res)
+	return ec.marshalNAuth2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐAuth(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_encodeImage(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1952,7 +1823,7 @@ func (ec *executionContext) _Mutation_encodeImage(ctx context.Context, field gra
 	}
 	res := resTmp.(*EncodeImagePayload)
 	fc.Result = res
-	return ec.marshalNEncodeImagePayload2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐEncodeImagePayload(ctx, field.Selections, res)
+	return ec.marshalNEncodeImagePayload2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐEncodeImagePayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_decodeImage(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1994,7 +1865,7 @@ func (ec *executionContext) _Mutation_decodeImage(ctx context.Context, field gra
 	}
 	res := resTmp.(*DecodeImagePayload)
 	fc.Result = res
-	return ec.marshalNDecodeImagePayload2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐDecodeImagePayload(ctx, field.Selections, res)
+	return ec.marshalNDecodeImagePayload2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐDecodeImagePayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2036,7 +1907,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	}
 	res := resTmp.(*CreateUserPayload)
 	fc.Result = res
-	return ec.marshalNCreateUserPayload2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐCreateUserPayload(ctx, field.Selections, res)
+	return ec.marshalNCreateUserPayload2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐCreateUserPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_updateUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2078,7 +1949,7 @@ func (ec *executionContext) _Mutation_updateUser(ctx context.Context, field grap
 	}
 	res := resTmp.(*UpdateUserPayload)
 	fc.Result = res
-	return ec.marshalNUpdateUserPayload2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐUpdateUserPayload(ctx, field.Selections, res)
+	return ec.marshalNUpdateUserPayload2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐUpdateUserPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_login(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2120,7 +1991,7 @@ func (ec *executionContext) _Mutation_login(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*LoginPayload)
 	fc.Result = res
-	return ec.marshalNLoginPayload2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐLoginPayload(ctx, field.Selections, res)
+	return ec.marshalNLoginPayload2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐLoginPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_refreshToken(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2162,7 +2033,7 @@ func (ec *executionContext) _Mutation_refreshToken(ctx context.Context, field gr
 	}
 	res := resTmp.(*RefreshTokenPayload)
 	fc.Result = res
-	return ec.marshalNRefreshTokenPayload2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐRefreshTokenPayload(ctx, field.Selections, res)
+	return ec.marshalNRefreshTokenPayload2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐRefreshTokenPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _OverviewPayload_user(ctx context.Context, field graphql.CollectedField, obj *OverviewPayload) (ret graphql.Marshaler) {
@@ -2197,7 +2068,7 @@ func (ec *executionContext) _OverviewPayload_user(ctx context.Context, field gra
 	}
 	res := resTmp.(*ent.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PageInfo_hasNextPage(ctx context.Context, field graphql.CollectedField, obj *ent.PageInfo) (ret graphql.Marshaler) {
@@ -2299,7 +2170,7 @@ func (ec *executionContext) _PageInfo_startCursor(ctx context.Context, field gra
 	}
 	res := resTmp.(*ent.Cursor)
 	fc.Result = res
-	return ec.marshalOCursor2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐCursor(ctx, field.Selections, res)
+	return ec.marshalOCursor2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐCursor(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PageInfo_endCursor(ctx context.Context, field graphql.CollectedField, obj *ent.PageInfo) (ret graphql.Marshaler) {
@@ -2331,7 +2202,7 @@ func (ec *executionContext) _PageInfo_endCursor(ctx context.Context, field graph
 	}
 	res := resTmp.(*ent.Cursor)
 	fc.Result = res
-	return ec.marshalOCursor2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐCursor(ctx, field.Selections, res)
+	return ec.marshalOCursor2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐCursor(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_images(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2373,7 +2244,7 @@ func (ec *executionContext) _Query_images(ctx context.Context, field graphql.Col
 	}
 	res := resTmp.(*ImagesConnection)
 	fc.Result = res
-	return ec.marshalNImagesConnection2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐImagesConnection(ctx, field.Selections, res)
+	return ec.marshalNImagesConnection2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐImagesConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_overview(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2408,7 +2279,7 @@ func (ec *executionContext) _Query_overview(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*OverviewPayload)
 	fc.Result = res
-	return ec.marshalNOverviewPayload2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐOverviewPayload(ctx, field.Selections, res)
+	return ec.marshalNOverviewPayload2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐOverviewPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2514,7 +2385,7 @@ func (ec *executionContext) _RefreshTokenPayload_user(ctx context.Context, field
 	}
 	res := resTmp.(*ent.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _RefreshTokenPayload_auth(ctx context.Context, field graphql.CollectedField, obj *RefreshTokenPayload) (ret graphql.Marshaler) {
@@ -2549,7 +2420,7 @@ func (ec *executionContext) _RefreshTokenPayload_auth(ctx context.Context, field
 	}
 	res := resTmp.(*Auth)
 	fc.Result = res
-	return ec.marshalNAuth2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐAuth(ctx, field.Selections, res)
+	return ec.marshalNAuth2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐAuth(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _UpdateUserPayload_user(ctx context.Context, field graphql.CollectedField, obj *UpdateUserPayload) (ret graphql.Marshaler) {
@@ -2584,7 +2455,7 @@ func (ec *executionContext) _UpdateUserPayload_user(ctx context.Context, field g
 	}
 	res := resTmp.(*ent.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *ent.User) (ret graphql.Marshaler) {
@@ -2619,7 +2490,7 @@ func (ec *executionContext) _User_id(ctx context.Context, field graphql.Collecte
 	}
 	res := resTmp.(ulid.ID)
 	fc.Result = res
-	return ec.marshalNID2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _User_username(ctx context.Context, field graphql.CollectedField, obj *ent.User) (ret graphql.Marshaler) {
@@ -3992,27 +3863,19 @@ func (ec *executionContext) unmarshalInputDecodeImageInput(ctx context.Context, 
 
 	for k, v := range asMap {
 		switch k {
-		case "lsbUsed":
+		case "encryptionKey":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lsbUsed"))
-			it.LsbUsed, err = ec.unmarshalNInt2int(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("encryptionKey"))
+			it.EncryptionKey, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "channel":
+		case "upload":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("channel"))
-			it.Channel, err = ec.unmarshalNChannel2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋimageᚐChannel(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "file":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("file"))
-			it.File, err = ec.unmarshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("upload"))
+			it.Upload, err = ec.unmarshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4031,11 +3894,19 @@ func (ec *executionContext) unmarshalInputEncodeImageInput(ctx context.Context, 
 
 	for k, v := range asMap {
 		switch k {
-		case "message":
+		case "data":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("message"))
-			it.Message, err = ec.unmarshalNString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("data"))
+			it.Data, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "encryptionKey":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("encryptionKey"))
+			it.EncryptionKey, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4051,15 +3922,15 @@ func (ec *executionContext) unmarshalInputEncodeImageInput(ctx context.Context, 
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("channel"))
-			it.Channel, err = ec.unmarshalNChannel2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋimageᚐChannel(ctx, v)
+			it.Channel, err = ec.unmarshalNChannel2githubᚗcomᚋstegoerᚋserverᚋpkgᚋmodelᚐChannel(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "file":
+		case "upload":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("file"))
-			it.File, err = ec.unmarshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("upload"))
+			it.Upload, err = ec.unmarshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4082,7 +3953,7 @@ func (ec *executionContext) unmarshalInputImageOrder(ctx context.Context, obj in
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direction"))
-			it.Direction, err = ec.unmarshalNOrderDirection2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐOrderDirection(ctx, v)
+			it.Direction, err = ec.unmarshalNOrderDirection2githubᚗcomᚋstegoerᚋserverᚋentᚐOrderDirection(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4090,7 +3961,7 @@ func (ec *executionContext) unmarshalInputImageOrder(ctx context.Context, obj in
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
-			it.Field, err = ec.unmarshalOImageOrderField2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImageOrderField(ctx, v)
+			it.Field, err = ec.unmarshalOImageOrderField2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImageOrderField(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4113,7 +3984,7 @@ func (ec *executionContext) unmarshalInputImageWhereInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
-			it.Not, err = ec.unmarshalOImageWhereInput2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImageWhereInput(ctx, v)
+			it.Not, err = ec.unmarshalOImageWhereInput2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImageWhereInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4121,7 +3992,7 @@ func (ec *executionContext) unmarshalInputImageWhereInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
-			it.And, err = ec.unmarshalOImageWhereInput2ᚕᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImageWhereInputᚄ(ctx, v)
+			it.And, err = ec.unmarshalOImageWhereInput2ᚕᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImageWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4129,7 +4000,7 @@ func (ec *executionContext) unmarshalInputImageWhereInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
-			it.Or, err = ec.unmarshalOImageWhereInput2ᚕᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImageWhereInputᚄ(ctx, v)
+			it.Or, err = ec.unmarshalOImageWhereInput2ᚕᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImageWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4261,203 +4132,211 @@ func (ec *executionContext) unmarshalInputImageWhereInput(ctx context.Context, o
 			if err != nil {
 				return it, err
 			}
-		case "message":
+		case "fileName":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("message"))
-			it.Message, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fileName"))
+			it.FileName, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "messageNEQ":
+		case "fileNameNEQ":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("messageNEQ"))
-			it.MessageNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fileNameNEQ"))
+			it.FileNameNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "messageIn":
+		case "fileNameIn":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("messageIn"))
-			it.MessageIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fileNameIn"))
+			it.FileNameIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "messageNotIn":
+		case "fileNameNotIn":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("messageNotIn"))
-			it.MessageNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fileNameNotIn"))
+			it.FileNameNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "messageGT":
+		case "fileNameGT":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("messageGT"))
-			it.MessageGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fileNameGT"))
+			it.FileNameGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "messageGTE":
+		case "fileNameGTE":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("messageGTE"))
-			it.MessageGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fileNameGTE"))
+			it.FileNameGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "messageLT":
+		case "fileNameLT":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("messageLT"))
-			it.MessageLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fileNameLT"))
+			it.FileNameLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "messageLTE":
+		case "fileNameLTE":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("messageLTE"))
-			it.MessageLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fileNameLTE"))
+			it.FileNameLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "messageContains":
+		case "fileNameContains":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("messageContains"))
-			it.MessageContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fileNameContains"))
+			it.FileNameContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "messageHasPrefix":
+		case "fileNameHasPrefix":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("messageHasPrefix"))
-			it.MessageHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fileNameHasPrefix"))
+			it.FileNameHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "messageHasSuffix":
+		case "fileNameHasSuffix":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("messageHasSuffix"))
-			it.MessageHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fileNameHasSuffix"))
+			it.FileNameHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "messageEqualFold":
+		case "fileNameEqualFold":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("messageEqualFold"))
-			it.MessageEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fileNameEqualFold"))
+			it.FileNameEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "messageContainsFold":
+		case "fileNameContainsFold":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("messageContainsFold"))
-			it.MessageContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fileNameContainsFold"))
+			it.FileNameContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "lsbUsed":
+		case "content":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lsbUsed"))
-			it.LsbUsed, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("content"))
+			it.Content, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "lsbUsedNEQ":
+		case "contentNEQ":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lsbUsedNEQ"))
-			it.LsbUsedNEQ, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contentNEQ"))
+			it.ContentNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "lsbUsedIn":
+		case "contentIn":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lsbUsedIn"))
-			it.LsbUsedIn, err = ec.unmarshalOInt2ᚕintᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contentIn"))
+			it.ContentIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "lsbUsedNotIn":
+		case "contentNotIn":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lsbUsedNotIn"))
-			it.LsbUsedNotIn, err = ec.unmarshalOInt2ᚕintᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contentNotIn"))
+			it.ContentNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "lsbUsedGT":
+		case "contentGT":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lsbUsedGT"))
-			it.LsbUsedGT, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contentGT"))
+			it.ContentGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "lsbUsedGTE":
+		case "contentGTE":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lsbUsedGTE"))
-			it.LsbUsedGTE, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contentGTE"))
+			it.ContentGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "lsbUsedLT":
+		case "contentLT":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lsbUsedLT"))
-			it.LsbUsedLT, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contentLT"))
+			it.ContentLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "lsbUsedLTE":
+		case "contentLTE":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lsbUsedLTE"))
-			it.LsbUsedLTE, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contentLTE"))
+			it.ContentLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "channel":
+		case "contentContains":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("channel"))
-			it.Channel, err = ec.unmarshalOChannel2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋimageᚐChannel(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contentContains"))
+			it.ContentContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "channelNEQ":
+		case "contentHasPrefix":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("channelNEQ"))
-			it.ChannelNEQ, err = ec.unmarshalOChannel2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋimageᚐChannel(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contentHasPrefix"))
+			it.ContentHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "channelIn":
+		case "contentHasSuffix":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("channelIn"))
-			it.ChannelIn, err = ec.unmarshalOChannel2ᚕgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋimageᚐChannelᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contentHasSuffix"))
+			it.ContentHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "channelNotIn":
+		case "contentEqualFold":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("channelNotIn"))
-			it.ChannelNotIn, err = ec.unmarshalOChannel2ᚕgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋimageᚐChannelᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contentEqualFold"))
+			it.ContentEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "contentContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contentContainsFold"))
+			it.ContentContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4465,7 +4344,7 @@ func (ec *executionContext) unmarshalInputImageWhereInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalOID2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx, v)
+			it.ID, err = ec.unmarshalOID2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4473,7 +4352,7 @@ func (ec *executionContext) unmarshalInputImageWhereInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
-			it.IDNEQ, err = ec.unmarshalOID2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx, v)
+			it.IDNEQ, err = ec.unmarshalOID2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4481,7 +4360,7 @@ func (ec *executionContext) unmarshalInputImageWhereInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
-			it.IDIn, err = ec.unmarshalOID2ᚕgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			it.IDIn, err = ec.unmarshalOID2ᚕgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4489,7 +4368,7 @@ func (ec *executionContext) unmarshalInputImageWhereInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
-			it.IDNotIn, err = ec.unmarshalOID2ᚕgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			it.IDNotIn, err = ec.unmarshalOID2ᚕgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4497,7 +4376,7 @@ func (ec *executionContext) unmarshalInputImageWhereInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
-			it.IDGT, err = ec.unmarshalOID2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx, v)
+			it.IDGT, err = ec.unmarshalOID2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4505,7 +4384,7 @@ func (ec *executionContext) unmarshalInputImageWhereInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
-			it.IDGTE, err = ec.unmarshalOID2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx, v)
+			it.IDGTE, err = ec.unmarshalOID2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4513,7 +4392,7 @@ func (ec *executionContext) unmarshalInputImageWhereInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
-			it.IDLT, err = ec.unmarshalOID2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx, v)
+			it.IDLT, err = ec.unmarshalOID2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4521,7 +4400,7 @@ func (ec *executionContext) unmarshalInputImageWhereInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
-			it.IDLTE, err = ec.unmarshalOID2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx, v)
+			it.IDLTE, err = ec.unmarshalOID2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4537,7 +4416,7 @@ func (ec *executionContext) unmarshalInputImageWhereInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasUserWith"))
-			it.HasUserWith, err = ec.unmarshalOUserWhereInput2ᚕᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐUserWhereInputᚄ(ctx, v)
+			it.HasUserWith, err = ec.unmarshalOUserWhereInput2ᚕᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐUserWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4692,7 +4571,7 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
-			it.Not, err = ec.unmarshalOUserWhereInput2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐUserWhereInput(ctx, v)
+			it.Not, err = ec.unmarshalOUserWhereInput2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐUserWhereInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4700,7 +4579,7 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
-			it.And, err = ec.unmarshalOUserWhereInput2ᚕᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐUserWhereInputᚄ(ctx, v)
+			it.And, err = ec.unmarshalOUserWhereInput2ᚕᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐUserWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4708,7 +4587,7 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
-			it.Or, err = ec.unmarshalOUserWhereInput2ᚕᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐUserWhereInputᚄ(ctx, v)
+			it.Or, err = ec.unmarshalOUserWhereInput2ᚕᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐUserWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5220,7 +5099,7 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalOID2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx, v)
+			it.ID, err = ec.unmarshalOID2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5228,7 +5107,7 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
-			it.IDNEQ, err = ec.unmarshalOID2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx, v)
+			it.IDNEQ, err = ec.unmarshalOID2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5236,7 +5115,7 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
-			it.IDIn, err = ec.unmarshalOID2ᚕgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			it.IDIn, err = ec.unmarshalOID2ᚕgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5244,7 +5123,7 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
-			it.IDNotIn, err = ec.unmarshalOID2ᚕgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			it.IDNotIn, err = ec.unmarshalOID2ᚕgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5252,7 +5131,7 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
-			it.IDGT, err = ec.unmarshalOID2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx, v)
+			it.IDGT, err = ec.unmarshalOID2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5260,7 +5139,7 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
-			it.IDGTE, err = ec.unmarshalOID2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx, v)
+			it.IDGTE, err = ec.unmarshalOID2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5268,7 +5147,7 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
-			it.IDLT, err = ec.unmarshalOID2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx, v)
+			it.IDLT, err = ec.unmarshalOID2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5276,7 +5155,7 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
-			it.IDLTE, err = ec.unmarshalOID2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx, v)
+			it.IDLTE, err = ec.unmarshalOID2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5292,7 +5171,7 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasImagesWith"))
-			it.HasImagesWith, err = ec.unmarshalOImageWhereInput2ᚕᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImageWhereInputᚄ(ctx, v)
+			it.HasImagesWith, err = ec.unmarshalOImageWhereInput2ᚕᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImageWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5416,9 +5295,9 @@ func (ec *executionContext) _DecodeImagePayload(ctx context.Context, sel ast.Sel
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("DecodeImagePayload")
-		case "message":
+		case "data":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._DecodeImagePayload_message(ctx, field, obj)
+				return ec._DecodeImagePayload_data(ctx, field, obj)
 			}
 
 			out.Values[i] = innerFunc(ctx)
@@ -5447,16 +5326,6 @@ func (ec *executionContext) _EncodeImagePayload(ctx context.Context, sel ast.Sel
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("EncodeImagePayload")
-		case "image":
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._EncodeImagePayload_image(ctx, field, obj)
-			}
-
-			out.Values[i] = innerFunc(ctx)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "file":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._EncodeImagePayload_file(ctx, field, obj)
@@ -5537,38 +5406,27 @@ func (ec *executionContext) _Image(ctx context.Context, sel ast.SelectionSet, ob
 			out.Values[i] = innerFunc(ctx)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
-		case "message":
+		case "file":
+			field := field
+
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Image_message(ctx, field, obj)
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Image_file(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
 			}
 
-			out.Values[i] = innerFunc(ctx)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "lsbUsed":
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Image_lsbUsed(ctx, field, obj)
-			}
-
-			out.Values[i] = innerFunc(ctx)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "channel":
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Image_channel(ctx, field, obj)
-			}
-
-			out.Values[i] = innerFunc(ctx)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+			})
 		case "createdAt":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Image_createdAt(ctx, field, obj)
@@ -5577,7 +5435,7 @@ func (ec *executionContext) _Image(ctx context.Context, sel ast.SelectionSet, ob
 			out.Values[i] = innerFunc(ctx)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "updatedAt":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -5587,7 +5445,7 @@ func (ec *executionContext) _Image(ctx context.Context, sel ast.SelectionSet, ob
 			out.Values[i] = innerFunc(ctx)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -6584,7 +6442,7 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalNAuth2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐAuth(ctx context.Context, sel ast.SelectionSet, v *Auth) graphql.Marshaler {
+func (ec *executionContext) marshalNAuth2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐAuth(ctx context.Context, sel ast.SelectionSet, v *Auth) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6609,21 +6467,27 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNChannel2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋimageᚐChannel(ctx context.Context, v interface{}) (image.Channel, error) {
-	var res image.Channel
-	err := res.UnmarshalGQL(v)
+func (ec *executionContext) unmarshalNChannel2githubᚗcomᚋstegoerᚋserverᚋpkgᚋmodelᚐChannel(ctx context.Context, v interface{}) (model.Channel, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := model.Channel(tmp)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNChannel2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋimageᚐChannel(ctx context.Context, sel ast.SelectionSet, v image.Channel) graphql.Marshaler {
-	return v
+func (ec *executionContext) marshalNChannel2githubᚗcomᚋstegoerᚋserverᚋpkgᚋmodelᚐChannel(ctx context.Context, sel ast.SelectionSet, v model.Channel) graphql.Marshaler {
+	res := graphql.MarshalString(string(v))
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
 }
 
-func (ec *executionContext) marshalNCreateUserPayload2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐCreateUserPayload(ctx context.Context, sel ast.SelectionSet, v CreateUserPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNCreateUserPayload2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐCreateUserPayload(ctx context.Context, sel ast.SelectionSet, v CreateUserPayload) graphql.Marshaler {
 	return ec._CreateUserPayload(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCreateUserPayload2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐCreateUserPayload(ctx context.Context, sel ast.SelectionSet, v *CreateUserPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNCreateUserPayload2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐCreateUserPayload(ctx context.Context, sel ast.SelectionSet, v *CreateUserPayload) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6633,26 +6497,26 @@ func (ec *executionContext) marshalNCreateUserPayload2ᚖgithubᚗcomᚋkucera�
 	return ec._CreateUserPayload(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNCursor2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐCursor(ctx context.Context, v interface{}) (ent.Cursor, error) {
+func (ec *executionContext) unmarshalNCursor2githubᚗcomᚋstegoerᚋserverᚋentᚐCursor(ctx context.Context, v interface{}) (ent.Cursor, error) {
 	var res ent.Cursor
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNCursor2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐCursor(ctx context.Context, sel ast.SelectionSet, v ent.Cursor) graphql.Marshaler {
+func (ec *executionContext) marshalNCursor2githubᚗcomᚋstegoerᚋserverᚋentᚐCursor(ctx context.Context, sel ast.SelectionSet, v ent.Cursor) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) unmarshalNDecodeImageInput2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐDecodeImageInput(ctx context.Context, v interface{}) (DecodeImageInput, error) {
+func (ec *executionContext) unmarshalNDecodeImageInput2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐDecodeImageInput(ctx context.Context, v interface{}) (DecodeImageInput, error) {
 	res, err := ec.unmarshalInputDecodeImageInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNDecodeImagePayload2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐDecodeImagePayload(ctx context.Context, sel ast.SelectionSet, v DecodeImagePayload) graphql.Marshaler {
+func (ec *executionContext) marshalNDecodeImagePayload2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐDecodeImagePayload(ctx context.Context, sel ast.SelectionSet, v DecodeImagePayload) graphql.Marshaler {
 	return ec._DecodeImagePayload(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNDecodeImagePayload2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐDecodeImagePayload(ctx context.Context, sel ast.SelectionSet, v *DecodeImagePayload) graphql.Marshaler {
+func (ec *executionContext) marshalNDecodeImagePayload2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐDecodeImagePayload(ctx context.Context, sel ast.SelectionSet, v *DecodeImagePayload) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6662,16 +6526,16 @@ func (ec *executionContext) marshalNDecodeImagePayload2ᚖgithubᚗcomᚋkucera�
 	return ec._DecodeImagePayload(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNEncodeImageInput2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐEncodeImageInput(ctx context.Context, v interface{}) (EncodeImageInput, error) {
+func (ec *executionContext) unmarshalNEncodeImageInput2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐEncodeImageInput(ctx context.Context, v interface{}) (EncodeImageInput, error) {
 	res, err := ec.unmarshalInputEncodeImageInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNEncodeImagePayload2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐEncodeImagePayload(ctx context.Context, sel ast.SelectionSet, v EncodeImagePayload) graphql.Marshaler {
+func (ec *executionContext) marshalNEncodeImagePayload2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐEncodeImagePayload(ctx context.Context, sel ast.SelectionSet, v EncodeImagePayload) graphql.Marshaler {
 	return ec._EncodeImagePayload(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNEncodeImagePayload2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐEncodeImagePayload(ctx context.Context, sel ast.SelectionSet, v *EncodeImagePayload) graphql.Marshaler {
+func (ec *executionContext) marshalNEncodeImagePayload2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐEncodeImagePayload(ctx context.Context, sel ast.SelectionSet, v *EncodeImagePayload) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6681,7 +6545,11 @@ func (ec *executionContext) marshalNEncodeImagePayload2ᚖgithubᚗcomᚋkucera�
 	return ec._EncodeImagePayload(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNFileType2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐFileType(ctx context.Context, sel ast.SelectionSet, v *FileType) graphql.Marshaler {
+func (ec *executionContext) marshalNFileType2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐFileType(ctx context.Context, sel ast.SelectionSet, v FileType) graphql.Marshaler {
+	return ec._FileType(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNFileType2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐFileType(ctx context.Context, sel ast.SelectionSet, v *FileType) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6691,17 +6559,17 @@ func (ec *executionContext) marshalNFileType2ᚖgithubᚗcomᚋkuceraᚑlukasᚋ
 	return ec._FileType(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNID2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx context.Context, v interface{}) (ulid.ID, error) {
+func (ec *executionContext) unmarshalNID2githubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx context.Context, v interface{}) (ulid.ID, error) {
 	var res ulid.ID
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNID2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx context.Context, sel ast.SelectionSet, v ulid.ID) graphql.Marshaler {
+func (ec *executionContext) marshalNID2githubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx context.Context, sel ast.SelectionSet, v ulid.ID) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) marshalNImage2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImage(ctx context.Context, sel ast.SelectionSet, v *ent.Image) graphql.Marshaler {
+func (ec *executionContext) marshalNImage2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImage(ctx context.Context, sel ast.SelectionSet, v *ent.Image) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6711,7 +6579,7 @@ func (ec *executionContext) marshalNImage2ᚖgithubᚗcomᚋkuceraᚑlukasᚋste
 	return ec._Image(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNImageEdge2ᚕᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImageEdgeᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.ImageEdge) graphql.Marshaler {
+func (ec *executionContext) marshalNImageEdge2ᚕᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImageEdgeᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.ImageEdge) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -6735,7 +6603,7 @@ func (ec *executionContext) marshalNImageEdge2ᚕᚖgithubᚗcomᚋkuceraᚑluka
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNImageEdge2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImageEdge(ctx, sel, v[i])
+			ret[i] = ec.marshalNImageEdge2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImageEdge(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -6755,7 +6623,7 @@ func (ec *executionContext) marshalNImageEdge2ᚕᚖgithubᚗcomᚋkuceraᚑluka
 	return ret
 }
 
-func (ec *executionContext) marshalNImageEdge2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImageEdge(ctx context.Context, sel ast.SelectionSet, v *ent.ImageEdge) graphql.Marshaler {
+func (ec *executionContext) marshalNImageEdge2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImageEdge(ctx context.Context, sel ast.SelectionSet, v *ent.ImageEdge) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6765,16 +6633,16 @@ func (ec *executionContext) marshalNImageEdge2ᚖgithubᚗcomᚋkuceraᚑlukas�
 	return ec._ImageEdge(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNImageWhereInput2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImageWhereInput(ctx context.Context, v interface{}) (*ent.ImageWhereInput, error) {
+func (ec *executionContext) unmarshalNImageWhereInput2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImageWhereInput(ctx context.Context, v interface{}) (*ent.ImageWhereInput, error) {
 	res, err := ec.unmarshalInputImageWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNImagesConnection2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐImagesConnection(ctx context.Context, sel ast.SelectionSet, v ImagesConnection) graphql.Marshaler {
+func (ec *executionContext) marshalNImagesConnection2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐImagesConnection(ctx context.Context, sel ast.SelectionSet, v ImagesConnection) graphql.Marshaler {
 	return ec._ImagesConnection(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNImagesConnection2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐImagesConnection(ctx context.Context, sel ast.SelectionSet, v *ImagesConnection) graphql.Marshaler {
+func (ec *executionContext) marshalNImagesConnection2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐImagesConnection(ctx context.Context, sel ast.SelectionSet, v *ImagesConnection) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6799,16 +6667,16 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) unmarshalNLogin2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐLogin(ctx context.Context, v interface{}) (Login, error) {
+func (ec *executionContext) unmarshalNLogin2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐLogin(ctx context.Context, v interface{}) (Login, error) {
 	res, err := ec.unmarshalInputLogin(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNLoginPayload2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐLoginPayload(ctx context.Context, sel ast.SelectionSet, v LoginPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNLoginPayload2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐLoginPayload(ctx context.Context, sel ast.SelectionSet, v LoginPayload) graphql.Marshaler {
 	return ec._LoginPayload(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNLoginPayload2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐLoginPayload(ctx context.Context, sel ast.SelectionSet, v *LoginPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNLoginPayload2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐLoginPayload(ctx context.Context, sel ast.SelectionSet, v *LoginPayload) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6818,26 +6686,26 @@ func (ec *executionContext) marshalNLoginPayload2ᚖgithubᚗcomᚋkuceraᚑluka
 	return ec._LoginPayload(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNNewUser2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐNewUser(ctx context.Context, v interface{}) (NewUser, error) {
+func (ec *executionContext) unmarshalNNewUser2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐNewUser(ctx context.Context, v interface{}) (NewUser, error) {
 	res, err := ec.unmarshalInputNewUser(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNOrderDirection2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐOrderDirection(ctx context.Context, v interface{}) (ent.OrderDirection, error) {
+func (ec *executionContext) unmarshalNOrderDirection2githubᚗcomᚋstegoerᚋserverᚋentᚐOrderDirection(ctx context.Context, v interface{}) (ent.OrderDirection, error) {
 	var res ent.OrderDirection
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNOrderDirection2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐOrderDirection(ctx context.Context, sel ast.SelectionSet, v ent.OrderDirection) graphql.Marshaler {
+func (ec *executionContext) marshalNOrderDirection2githubᚗcomᚋstegoerᚋserverᚋentᚐOrderDirection(ctx context.Context, sel ast.SelectionSet, v ent.OrderDirection) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) marshalNOverviewPayload2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐOverviewPayload(ctx context.Context, sel ast.SelectionSet, v OverviewPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNOverviewPayload2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐOverviewPayload(ctx context.Context, sel ast.SelectionSet, v OverviewPayload) graphql.Marshaler {
 	return ec._OverviewPayload(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNOverviewPayload2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐOverviewPayload(ctx context.Context, sel ast.SelectionSet, v *OverviewPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNOverviewPayload2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐOverviewPayload(ctx context.Context, sel ast.SelectionSet, v *OverviewPayload) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6847,7 +6715,7 @@ func (ec *executionContext) marshalNOverviewPayload2ᚖgithubᚗcomᚋkuceraᚑl
 	return ec._OverviewPayload(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNPageInfo2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐPageInfo(ctx context.Context, sel ast.SelectionSet, v *ent.PageInfo) graphql.Marshaler {
+func (ec *executionContext) marshalNPageInfo2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐPageInfo(ctx context.Context, sel ast.SelectionSet, v *ent.PageInfo) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6857,16 +6725,16 @@ func (ec *executionContext) marshalNPageInfo2ᚖgithubᚗcomᚋkuceraᚑlukasᚋ
 	return ec._PageInfo(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNRefreshTokenInput2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐRefreshTokenInput(ctx context.Context, v interface{}) (RefreshTokenInput, error) {
+func (ec *executionContext) unmarshalNRefreshTokenInput2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐRefreshTokenInput(ctx context.Context, v interface{}) (RefreshTokenInput, error) {
 	res, err := ec.unmarshalInputRefreshTokenInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNRefreshTokenPayload2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐRefreshTokenPayload(ctx context.Context, sel ast.SelectionSet, v RefreshTokenPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNRefreshTokenPayload2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐRefreshTokenPayload(ctx context.Context, sel ast.SelectionSet, v RefreshTokenPayload) graphql.Marshaler {
 	return ec._RefreshTokenPayload(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNRefreshTokenPayload2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐRefreshTokenPayload(ctx context.Context, sel ast.SelectionSet, v *RefreshTokenPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNRefreshTokenPayload2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐRefreshTokenPayload(ctx context.Context, sel ast.SelectionSet, v *RefreshTokenPayload) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6906,16 +6774,16 @@ func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel as
 	return res
 }
 
-func (ec *executionContext) unmarshalNUpdateUser2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐUpdateUser(ctx context.Context, v interface{}) (UpdateUser, error) {
+func (ec *executionContext) unmarshalNUpdateUser2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐUpdateUser(ctx context.Context, v interface{}) (UpdateUser, error) {
 	res, err := ec.unmarshalInputUpdateUser(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNUpdateUserPayload2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐUpdateUserPayload(ctx context.Context, sel ast.SelectionSet, v UpdateUserPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNUpdateUserPayload2githubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐUpdateUserPayload(ctx context.Context, sel ast.SelectionSet, v UpdateUserPayload) graphql.Marshaler {
 	return ec._UpdateUserPayload(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNUpdateUserPayload2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋgraphᚋgeneratedᚐUpdateUserPayload(ctx context.Context, sel ast.SelectionSet, v *UpdateUserPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNUpdateUserPayload2ᚖgithubᚗcomᚋstegoerᚋserverᚋgraphᚋgeneratedᚐUpdateUserPayload(ctx context.Context, sel ast.SelectionSet, v *UpdateUserPayload) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6940,7 +6808,7 @@ func (ec *executionContext) marshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋg
 	return res
 }
 
-func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐUser(ctx context.Context, sel ast.SelectionSet, v *ent.User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐUser(ctx context.Context, sel ast.SelectionSet, v *ent.User) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6950,7 +6818,7 @@ func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋkuceraᚑlukasᚋsteg
 	return ec._User(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNUserWhereInput2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐUserWhereInput(ctx context.Context, v interface{}) (*ent.UserWhereInput, error) {
+func (ec *executionContext) unmarshalNUserWhereInput2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐUserWhereInput(ctx context.Context, v interface{}) (*ent.UserWhereInput, error) {
 	res, err := ec.unmarshalInputUserWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
@@ -7234,90 +7102,7 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
-func (ec *executionContext) unmarshalOChannel2ᚕgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋimageᚐChannelᚄ(ctx context.Context, v interface{}) ([]image.Channel, error) {
-	if v == nil {
-		return nil, nil
-	}
-	var vSlice []interface{}
-	if v != nil {
-		vSlice = graphql.CoerceList(v)
-	}
-	var err error
-	res := make([]image.Channel, len(vSlice))
-	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNChannel2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋimageᚐChannel(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
-}
-
-func (ec *executionContext) marshalOChannel2ᚕgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋimageᚐChannelᚄ(ctx context.Context, sel ast.SelectionSet, v []image.Channel) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNChannel2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋimageᚐChannel(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
-func (ec *executionContext) unmarshalOChannel2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋimageᚐChannel(ctx context.Context, v interface{}) (*image.Channel, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res := new(image.Channel)
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOChannel2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋimageᚐChannel(ctx context.Context, sel ast.SelectionSet, v *image.Channel) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return v
-}
-
-func (ec *executionContext) unmarshalOCursor2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐCursor(ctx context.Context, v interface{}) (*ent.Cursor, error) {
+func (ec *executionContext) unmarshalOCursor2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐCursor(ctx context.Context, v interface{}) (*ent.Cursor, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -7326,14 +7111,14 @@ func (ec *executionContext) unmarshalOCursor2ᚖgithubᚗcomᚋkuceraᚑlukasᚋ
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOCursor2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐCursor(ctx context.Context, sel ast.SelectionSet, v *ent.Cursor) graphql.Marshaler {
+func (ec *executionContext) marshalOCursor2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐCursor(ctx context.Context, sel ast.SelectionSet, v *ent.Cursor) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return v
 }
 
-func (ec *executionContext) unmarshalOID2ᚕgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐIDᚄ(ctx context.Context, v interface{}) ([]ulid.ID, error) {
+func (ec *executionContext) unmarshalOID2ᚕgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐIDᚄ(ctx context.Context, v interface{}) ([]ulid.ID, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -7345,7 +7130,7 @@ func (ec *executionContext) unmarshalOID2ᚕgithubᚗcomᚋkuceraᚑlukasᚋsteg
 	res := make([]ulid.ID, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNID2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNID2githubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -7353,13 +7138,13 @@ func (ec *executionContext) unmarshalOID2ᚕgithubᚗcomᚋkuceraᚑlukasᚋsteg
 	return res, nil
 }
 
-func (ec *executionContext) marshalOID2ᚕgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐIDᚄ(ctx context.Context, sel ast.SelectionSet, v []ulid.ID) graphql.Marshaler {
+func (ec *executionContext) marshalOID2ᚕgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐIDᚄ(ctx context.Context, sel ast.SelectionSet, v []ulid.ID) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	ret := make(graphql.Array, len(v))
 	for i := range v {
-		ret[i] = ec.marshalNID2githubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx, sel, v[i])
+		ret[i] = ec.marshalNID2githubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx, sel, v[i])
 	}
 
 	for _, e := range ret {
@@ -7371,7 +7156,7 @@ func (ec *executionContext) marshalOID2ᚕgithubᚗcomᚋkuceraᚑlukasᚋstegoe
 	return ret
 }
 
-func (ec *executionContext) unmarshalOID2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx context.Context, v interface{}) (*ulid.ID, error) {
+func (ec *executionContext) unmarshalOID2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx context.Context, v interface{}) (*ulid.ID, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -7380,14 +7165,14 @@ func (ec *executionContext) unmarshalOID2ᚖgithubᚗcomᚋkuceraᚑlukasᚋsteg
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOID2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚋschemaᚋulidᚐID(ctx context.Context, sel ast.SelectionSet, v *ulid.ID) graphql.Marshaler {
+func (ec *executionContext) marshalOID2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx context.Context, sel ast.SelectionSet, v *ulid.ID) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return v
 }
 
-func (ec *executionContext) unmarshalOImageOrder2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImageOrder(ctx context.Context, v interface{}) (*ent.ImageOrder, error) {
+func (ec *executionContext) unmarshalOImageOrder2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImageOrder(ctx context.Context, v interface{}) (*ent.ImageOrder, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -7395,7 +7180,7 @@ func (ec *executionContext) unmarshalOImageOrder2ᚖgithubᚗcomᚋkuceraᚑluka
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOImageOrderField2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImageOrderField(ctx context.Context, v interface{}) (*ent.ImageOrderField, error) {
+func (ec *executionContext) unmarshalOImageOrderField2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImageOrderField(ctx context.Context, v interface{}) (*ent.ImageOrderField, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -7404,14 +7189,14 @@ func (ec *executionContext) unmarshalOImageOrderField2ᚖgithubᚗcomᚋkucera�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOImageOrderField2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImageOrderField(ctx context.Context, sel ast.SelectionSet, v *ent.ImageOrderField) graphql.Marshaler {
+func (ec *executionContext) marshalOImageOrderField2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImageOrderField(ctx context.Context, sel ast.SelectionSet, v *ent.ImageOrderField) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return v
 }
 
-func (ec *executionContext) unmarshalOImageWhereInput2ᚕᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImageWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.ImageWhereInput, error) {
+func (ec *executionContext) unmarshalOImageWhereInput2ᚕᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImageWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.ImageWhereInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -7423,7 +7208,7 @@ func (ec *executionContext) unmarshalOImageWhereInput2ᚕᚖgithubᚗcomᚋkucer
 	res := make([]*ent.ImageWhereInput, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNImageWhereInput2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImageWhereInput(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNImageWhereInput2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImageWhereInput(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -7431,50 +7216,12 @@ func (ec *executionContext) unmarshalOImageWhereInput2ᚕᚖgithubᚗcomᚋkucer
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalOImageWhereInput2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐImageWhereInput(ctx context.Context, v interface{}) (*ent.ImageWhereInput, error) {
+func (ec *executionContext) unmarshalOImageWhereInput2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImageWhereInput(ctx context.Context, v interface{}) (*ent.ImageWhereInput, error) {
 	if v == nil {
 		return nil, nil
 	}
 	res, err := ec.unmarshalInputImageWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalOInt2ᚕintᚄ(ctx context.Context, v interface{}) ([]int, error) {
-	if v == nil {
-		return nil, nil
-	}
-	var vSlice []interface{}
-	if v != nil {
-		vSlice = graphql.CoerceList(v)
-	}
-	var err error
-	res := make([]int, len(vSlice))
-	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNInt2int(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
-}
-
-func (ec *executionContext) marshalOInt2ᚕintᚄ(ctx context.Context, sel ast.SelectionSet, v []int) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	for i := range v {
-		ret[i] = ec.marshalNInt2int(ctx, sel, v[i])
-	}
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
 }
 
 func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
@@ -7601,7 +7348,7 @@ func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel
 	return res
 }
 
-func (ec *executionContext) unmarshalOUserWhereInput2ᚕᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐUserWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.UserWhereInput, error) {
+func (ec *executionContext) unmarshalOUserWhereInput2ᚕᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐUserWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.UserWhereInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -7613,7 +7360,7 @@ func (ec *executionContext) unmarshalOUserWhereInput2ᚕᚖgithubᚗcomᚋkucera
 	res := make([]*ent.UserWhereInput, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNUserWhereInput2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐUserWhereInput(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNUserWhereInput2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐUserWhereInput(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -7621,7 +7368,7 @@ func (ec *executionContext) unmarshalOUserWhereInput2ᚕᚖgithubᚗcomᚋkucera
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalOUserWhereInput2ᚖgithubᚗcomᚋkuceraᚑlukasᚋstegoerᚋentᚐUserWhereInput(ctx context.Context, v interface{}) (*ent.UserWhereInput, error) {
+func (ec *executionContext) unmarshalOUserWhereInput2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐUserWhereInput(ctx context.Context, v interface{}) (*ent.UserWhereInput, error) {
 	if v == nil {
 		return nil, nil
 	}

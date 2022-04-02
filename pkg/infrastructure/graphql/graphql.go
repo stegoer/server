@@ -15,10 +15,10 @@ import (
 	"github.com/stegoer/server/ent"
 	"github.com/stegoer/server/pkg/adapter/controller"
 	"github.com/stegoer/server/pkg/adapter/resolver"
-	"github.com/stegoer/server/pkg/entity/model"
 	"github.com/stegoer/server/pkg/infrastructure/apq"
 	"github.com/stegoer/server/pkg/infrastructure/env"
 	"github.com/stegoer/server/pkg/infrastructure/log"
+	"github.com/stegoer/server/pkg/model"
 )
 
 const complexityLimit = 1000

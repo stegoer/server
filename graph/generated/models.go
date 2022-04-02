@@ -8,7 +8,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 
 	"github.com/stegoer/server/ent"
-	"github.com/stegoer/server/ent/image"
+	"github.com/stegoer/server/pkg/model"
 )
 
 type Auth struct {
@@ -22,25 +22,24 @@ type CreateUserPayload struct {
 }
 
 type DecodeImageInput struct {
-	LsbUsed int            `json:"lsbUsed"`
-	Channel image.Channel  `json:"channel"`
-	File    graphql.Upload `json:"file"`
+	EncryptionKey *string        `json:"encryptionKey"`
+	Upload        graphql.Upload `json:"upload"`
 }
 
 type DecodeImagePayload struct {
-	Message string `json:"message"`
+	Data string `json:"data"`
 }
 
 type EncodeImageInput struct {
-	Message string         `json:"message"`
-	LsbUsed int            `json:"lsbUsed"`
-	Channel image.Channel  `json:"channel"`
-	File    graphql.Upload `json:"file"`
+	Data          string         `json:"data"`
+	EncryptionKey *string        `json:"encryptionKey"`
+	LsbUsed       int            `json:"lsbUsed"`
+	Channel       model.Channel  `json:"channel"`
+	Upload        graphql.Upload `json:"upload"`
 }
 
 type EncodeImagePayload struct {
-	Image *ent.Image `json:"image"`
-	File  *FileType  `json:"file"`
+	File *FileType `json:"file"`
 }
 
 type FileType struct {

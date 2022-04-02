@@ -1,6 +1,6 @@
 // cryptopasta - basic cryptography examples
 //
-// Written in 2015 by George Tankersley <george.tankersley@gmail.com>
+// Written in 2015 by George Tankersley <george.tankersley@gmail.com> - modified
 //
 // To the extent possible under law, the author(s) have dedicated all copyright
 // and related and neighboring rights to this software to the public domain
@@ -21,12 +21,29 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
+)
+
+// encryptionKey used to encrypt and decrypt data.
+var encryptionKey = []byte( //nolint:gochecknoglobals
+	os.Getenv("ENCRYPTION_KEY"),
 )
 
 // Encrypt encrypts data using 256-bit AES-GCM.  This both hides the content of
 // the data and provides a check that it hasn't been altered. Output takes the
 // form nonce|ciphertext|tag where '|' indicates concatenation.
-func Encrypt(plaintext []byte, key []byte) (ciphertext []byte, err error) {
+func Encrypt(plainText []byte, plainKey *string) ([]byte, error) {
+	return encrypt(plainText, getKey(plainKey))
+}
+
+// Decrypt decrypts data using 256-bit AES-GCM. This both hides the content of
+// the data and provides a check that it hasn't been altered. Expects input
+// form nonce|ciphertext|tag where '|' indicates concatenation.
+func Decrypt(cipherText []byte, plainKey *string) ([]byte, error) {
+	return decrypt(cipherText, getKey(plainKey))
+}
+
+func encrypt(plainText []byte, key []byte) (ciphertext []byte, err error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, fmt.Errorf("enrypt: %w", err)
@@ -44,13 +61,10 @@ func Encrypt(plaintext []byte, key []byte) (ciphertext []byte, err error) {
 		return nil, fmt.Errorf("enrypt: %w", err)
 	}
 
-	return gcm.Seal(nonce, nonce, plaintext, nil), nil
+	return gcm.Seal(nonce, nonce, plainText, nil), nil
 }
 
-// Decrypt decrypts data using 256-bit AES-GCM.  This both hides the content of
-// the data and provides a check that it hasn't been altered. Expects input
-// form nonce|ciphertext|tag where '|' indicates concatenation.
-func Decrypt(ciphertext []byte, key []byte) ([]byte, error) {
+func decrypt(ciphertext []byte, key []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, fmt.Errorf("decrypt: %w", err)
@@ -75,4 +89,16 @@ func Decrypt(ciphertext []byte, key []byte) ([]byte, error) {
 	}
 
 	return plainText, nil
+}
+
+func getKey(plainKey *string) []byte {
+	var key []byte
+
+	if plainKey == nil {
+		key = encryptionKey
+	} else {
+		key = []byte(*plainKey)
+	}
+
+	return key
 }

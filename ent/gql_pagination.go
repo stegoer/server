@@ -449,13 +449,33 @@ var (
 			}
 		},
 	}
-	// ImageOrderFieldChannel orders Image by channel.
-	ImageOrderFieldChannel = &ImageOrderField{
-		field: image.FieldChannel,
+	// ImageOrderFieldFileName orders Image by file_name.
+	ImageOrderFieldFileName = &ImageOrderField{
+		field: image.FieldFileName,
 		toCursor: func(i *Image) Cursor {
 			return Cursor{
 				ID:    i.ID,
-				Value: i.Channel,
+				Value: i.FileName,
+			}
+		},
+	}
+	// ImageOrderFieldContent orders Image by content.
+	ImageOrderFieldContent = &ImageOrderField{
+		field: image.FieldContent,
+		toCursor: func(i *Image) Cursor {
+			return Cursor{
+				ID:    i.ID,
+				Value: i.Content,
+			}
+		},
+	}
+	// ImageOrderFieldID orders Image by id.
+	ImageOrderFieldID = &ImageOrderField{
+		field: image.FieldID,
+		toCursor: func(i *Image) Cursor {
+			return Cursor{
+				ID:    i.ID,
+				Value: i.ID,
 			}
 		},
 	}
@@ -469,8 +489,12 @@ func (f ImageOrderField) String() string {
 		str = "CREATED_AT"
 	case image.FieldUpdatedAt:
 		str = "UPDATED_AT"
-	case image.FieldChannel:
-		str = "CHANNEL"
+	case image.FieldFileName:
+		str = "FILE_NAME"
+	case image.FieldContent:
+		str = "CONTENT"
+	case image.FieldID:
+		str = "ID"
 	}
 	return str
 }
@@ -491,8 +515,12 @@ func (f *ImageOrderField) UnmarshalGQL(v interface{}) error {
 		*f = *ImageOrderFieldCreatedAt
 	case "UPDATED_AT":
 		*f = *ImageOrderFieldUpdatedAt
-	case "CHANNEL":
-		*f = *ImageOrderFieldChannel
+	case "FILE_NAME":
+		*f = *ImageOrderFieldFileName
+	case "CONTENT":
+		*f = *ImageOrderFieldContent
+	case "ID":
+		*f = *ImageOrderFieldID
 	default:
 		return fmt.Errorf("%s is not a valid ImageOrderField", str)
 	}
@@ -757,6 +785,16 @@ var (
 			}
 		},
 	}
+	// UserOrderFieldID orders User by id.
+	UserOrderFieldID = &UserOrderField{
+		field: user.FieldID,
+		toCursor: func(u *User) Cursor {
+			return Cursor{
+				ID:    u.ID,
+				Value: u.ID,
+			}
+		},
+	}
 )
 
 // String implement fmt.Stringer interface.
@@ -769,6 +807,8 @@ func (f UserOrderField) String() string {
 		str = "UPDATED_AT"
 	case user.FieldLastLogin:
 		str = "LAST_LOGIN"
+	case user.FieldID:
+		str = "ID"
 	}
 	return str
 }
@@ -791,6 +831,8 @@ func (f *UserOrderField) UnmarshalGQL(v interface{}) error {
 		*f = *UserOrderFieldUpdatedAt
 	case "LAST_LOGIN":
 		*f = *UserOrderFieldLastLogin
+	case "ID":
+		*f = *UserOrderFieldID
 	default:
 		return fmt.Errorf("%s is not a valid UserOrderField", str)
 	}

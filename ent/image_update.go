@@ -37,28 +37,15 @@ func (iu *ImageUpdate) SetUpdatedAt(t time.Time) *ImageUpdate {
 	return iu
 }
 
-// SetMessage sets the "message" field.
-func (iu *ImageUpdate) SetMessage(s string) *ImageUpdate {
-	iu.mutation.SetMessage(s)
+// SetFileName sets the "file_name" field.
+func (iu *ImageUpdate) SetFileName(s string) *ImageUpdate {
+	iu.mutation.SetFileName(s)
 	return iu
 }
 
-// SetLsbUsed sets the "lsb_used" field.
-func (iu *ImageUpdate) SetLsbUsed(i int) *ImageUpdate {
-	iu.mutation.ResetLsbUsed()
-	iu.mutation.SetLsbUsed(i)
-	return iu
-}
-
-// AddLsbUsed adds i to the "lsb_used" field.
-func (iu *ImageUpdate) AddLsbUsed(i int) *ImageUpdate {
-	iu.mutation.AddLsbUsed(i)
-	return iu
-}
-
-// SetChannel sets the "channel" field.
-func (iu *ImageUpdate) SetChannel(i image.Channel) *ImageUpdate {
-	iu.mutation.SetChannel(i)
+// SetContent sets the "content" field.
+func (iu *ImageUpdate) SetContent(s string) *ImageUpdate {
+	iu.mutation.SetContent(s)
 	return iu
 }
 
@@ -163,19 +150,14 @@ func (iu *ImageUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (iu *ImageUpdate) check() error {
-	if v, ok := iu.mutation.Message(); ok {
-		if err := image.MessageValidator(v); err != nil {
-			return &ValidationError{Name: "message", err: fmt.Errorf(`ent: validator failed for field "Image.message": %w`, err)}
+	if v, ok := iu.mutation.FileName(); ok {
+		if err := image.FileNameValidator(v); err != nil {
+			return &ValidationError{Name: "file_name", err: fmt.Errorf(`ent: validator failed for field "Image.file_name": %w`, err)}
 		}
 	}
-	if v, ok := iu.mutation.LsbUsed(); ok {
-		if err := image.LsbUsedValidator(v); err != nil {
-			return &ValidationError{Name: "lsb_used", err: fmt.Errorf(`ent: validator failed for field "Image.lsb_used": %w`, err)}
-		}
-	}
-	if v, ok := iu.mutation.Channel(); ok {
-		if err := image.ChannelValidator(v); err != nil {
-			return &ValidationError{Name: "channel", err: fmt.Errorf(`ent: validator failed for field "Image.channel": %w`, err)}
+	if v, ok := iu.mutation.Content(); ok {
+		if err := image.ContentValidator(v); err != nil {
+			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "Image.content": %w`, err)}
 		}
 	}
 	return nil
@@ -206,32 +188,18 @@ func (iu *ImageUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: image.FieldUpdatedAt,
 		})
 	}
-	if value, ok := iu.mutation.Message(); ok {
+	if value, ok := iu.mutation.FileName(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: image.FieldMessage,
+			Column: image.FieldFileName,
 		})
 	}
-	if value, ok := iu.mutation.LsbUsed(); ok {
+	if value, ok := iu.mutation.Content(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: image.FieldLsbUsed,
-		})
-	}
-	if value, ok := iu.mutation.AddedLsbUsed(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: image.FieldLsbUsed,
-		})
-	}
-	if value, ok := iu.mutation.Channel(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: image.FieldChannel,
+			Column: image.FieldContent,
 		})
 	}
 	if iu.mutation.UserCleared() {
@@ -294,28 +262,15 @@ func (iuo *ImageUpdateOne) SetUpdatedAt(t time.Time) *ImageUpdateOne {
 	return iuo
 }
 
-// SetMessage sets the "message" field.
-func (iuo *ImageUpdateOne) SetMessage(s string) *ImageUpdateOne {
-	iuo.mutation.SetMessage(s)
+// SetFileName sets the "file_name" field.
+func (iuo *ImageUpdateOne) SetFileName(s string) *ImageUpdateOne {
+	iuo.mutation.SetFileName(s)
 	return iuo
 }
 
-// SetLsbUsed sets the "lsb_used" field.
-func (iuo *ImageUpdateOne) SetLsbUsed(i int) *ImageUpdateOne {
-	iuo.mutation.ResetLsbUsed()
-	iuo.mutation.SetLsbUsed(i)
-	return iuo
-}
-
-// AddLsbUsed adds i to the "lsb_used" field.
-func (iuo *ImageUpdateOne) AddLsbUsed(i int) *ImageUpdateOne {
-	iuo.mutation.AddLsbUsed(i)
-	return iuo
-}
-
-// SetChannel sets the "channel" field.
-func (iuo *ImageUpdateOne) SetChannel(i image.Channel) *ImageUpdateOne {
-	iuo.mutation.SetChannel(i)
+// SetContent sets the "content" field.
+func (iuo *ImageUpdateOne) SetContent(s string) *ImageUpdateOne {
+	iuo.mutation.SetContent(s)
 	return iuo
 }
 
@@ -427,19 +382,14 @@ func (iuo *ImageUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (iuo *ImageUpdateOne) check() error {
-	if v, ok := iuo.mutation.Message(); ok {
-		if err := image.MessageValidator(v); err != nil {
-			return &ValidationError{Name: "message", err: fmt.Errorf(`ent: validator failed for field "Image.message": %w`, err)}
+	if v, ok := iuo.mutation.FileName(); ok {
+		if err := image.FileNameValidator(v); err != nil {
+			return &ValidationError{Name: "file_name", err: fmt.Errorf(`ent: validator failed for field "Image.file_name": %w`, err)}
 		}
 	}
-	if v, ok := iuo.mutation.LsbUsed(); ok {
-		if err := image.LsbUsedValidator(v); err != nil {
-			return &ValidationError{Name: "lsb_used", err: fmt.Errorf(`ent: validator failed for field "Image.lsb_used": %w`, err)}
-		}
-	}
-	if v, ok := iuo.mutation.Channel(); ok {
-		if err := image.ChannelValidator(v); err != nil {
-			return &ValidationError{Name: "channel", err: fmt.Errorf(`ent: validator failed for field "Image.channel": %w`, err)}
+	if v, ok := iuo.mutation.Content(); ok {
+		if err := image.ContentValidator(v); err != nil {
+			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "Image.content": %w`, err)}
 		}
 	}
 	return nil
@@ -487,32 +437,18 @@ func (iuo *ImageUpdateOne) sqlSave(ctx context.Context) (_node *Image, err error
 			Column: image.FieldUpdatedAt,
 		})
 	}
-	if value, ok := iuo.mutation.Message(); ok {
+	if value, ok := iuo.mutation.FileName(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: image.FieldMessage,
+			Column: image.FieldFileName,
 		})
 	}
-	if value, ok := iuo.mutation.LsbUsed(); ok {
+	if value, ok := iuo.mutation.Content(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: image.FieldLsbUsed,
-		})
-	}
-	if value, ok := iuo.mutation.AddedLsbUsed(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: image.FieldLsbUsed,
-		})
-	}
-	if value, ok := iuo.mutation.Channel(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: image.FieldChannel,
+			Column: image.FieldContent,
 		})
 	}
 	if iuo.mutation.UserCleared() {
