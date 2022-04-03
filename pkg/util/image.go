@@ -33,9 +33,12 @@ func FileToImageData(file io.Reader) (ImageData, error) {
 
 // ReadImageFile reads given file and returns image.Image.
 func ReadImageFile(file io.Reader) (image.Image, error) {
-	img, _, err := image.Decode(file)
+	img, format, err := image.Decode(file)
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode image file: %w", err)
+	} else if format != "png" {
+		return nil, fmt.Errorf("unsupported image format: %s", format)
 	}
 
 	return img, nil
