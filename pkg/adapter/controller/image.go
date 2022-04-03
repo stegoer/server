@@ -3,34 +3,34 @@ package controller
 import (
 	"context"
 
-	model2 "github.com/stegoer/server/pkg/model"
+	"github.com/stegoer/server/pkg/model"
 )
 
 // Image controller interface.
 type Image interface {
 	Get(
 		ctx context.Context,
-		entUser model2.User,
-		id *model2.ID,
-	) (*model2.Image, error)
+		entUser model.User,
+		id *model.ID,
+	) (*model.Image, error)
 	List(
 		ctx context.Context,
-		entUser model2.User,
-		after *model2.Cursor,
+		entUser model.User,
+		after *model.Cursor,
 		first *int,
-		before *model2.Cursor,
+		before *model.Cursor,
 		last *int,
-		where *model2.ImageWhereInput,
-		orderBy *model2.ImageOrderInput,
-	) (*model2.ImageConnection, error)
+		where *model.ImageWhereInput,
+		orderBy *model.ImageOrderInput,
+	) (*model.ImageConnection, error)
 	Create(
 		ctx context.Context,
-		entUser model2.User,
+		entUser model.User,
 		filename string,
 		content string,
-	) (*model2.Image, error)
+	) (*model.Image, error)
 	Count(
 		ctx context.Context,
-		entUser model2.User,
+		entUser model.User,
 	) (int, error)
 }
