@@ -3,8 +3,7 @@ package controller
 import (
 	"context"
 
-	"github.com/stegoer/server/graph/generated"
-	"github.com/stegoer/server/pkg/entity/model"
+	"github.com/stegoer/server/pkg/model"
 )
 
 // Image controller interface.
@@ -27,7 +26,8 @@ type Image interface {
 	Create(
 		ctx context.Context,
 		entUser model.User,
-		input generated.EncodeImageInput,
+		filename string,
+		content string,
 	) (*model.Image, error)
 	Count(
 		ctx context.Context,

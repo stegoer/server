@@ -3,9 +3,6 @@
 package image
 
 import (
-	"fmt"
-	"io"
-	"strconv"
 	"time"
 
 	"github.com/stegoer/server/ent/schema/ulid"
@@ -20,12 +17,10 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldMessage holds the string denoting the message field in the database.
-	FieldMessage = "message"
-	// FieldLsbUsed holds the string denoting the lsb_used field in the database.
-	FieldLsbUsed = "lsb_used"
-	// FieldChannel holds the string denoting the channel field in the database.
-	FieldChannel = "channel"
+	// FieldFileName holds the string denoting the file_name field in the database.
+	FieldFileName = "file_name"
+	// FieldContent holds the string denoting the content field in the database.
+	FieldContent = "content"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// Table holds the table name of the image in the database.
@@ -44,9 +39,8 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
-	FieldMessage,
-	FieldLsbUsed,
-	FieldChannel,
+	FieldFileName,
+	FieldContent,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "images"
@@ -77,56 +71,10 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// MessageValidator is a validator for the "message" field. It is called by the builders before save.
-	MessageValidator func(string) error
-	// LsbUsedValidator is a validator for the "lsb_used" field. It is called by the builders before save.
-	LsbUsedValidator func(int) error
+	// FileNameValidator is a validator for the "file_name" field. It is called by the builders before save.
+	FileNameValidator func(string) error
+	// ContentValidator is a validator for the "content" field. It is called by the builders before save.
+	ContentValidator func(string) error
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() ulid.ID
 )
-
-// Channel defines the type for the "channel" enum field.
-type Channel string
-
-// Channel values.
-const (
-	ChannelRed          Channel = "RED"
-	ChannelGreen        Channel = "GREEN"
-	ChannelBlue         Channel = "BLUE"
-	ChannelRedGreen     Channel = "RED_GREEN"
-	ChannelRedBlue      Channel = "RED_BLUE"
-	ChannelGreenBlue    Channel = "GREEN_BLUE"
-	ChannelRedGreenBlue Channel = "RED_GREEN_BLUE"
-)
-
-func (c Channel) String() string {
-	return string(c)
-}
-
-// ChannelValidator is a validator for the "channel" field enum values. It is called by the builders before save.
-func ChannelValidator(c Channel) error {
-	switch c {
-	case ChannelRed, ChannelGreen, ChannelBlue, ChannelRedGreen, ChannelRedBlue, ChannelGreenBlue, ChannelRedGreenBlue:
-		return nil
-	default:
-		return fmt.Errorf("image: invalid enum value for channel field: %q", c)
-	}
-}
-
-// MarshalGQL implements graphql.Marshaler interface.
-func (c Channel) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(c.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (c *Channel) UnmarshalGQL(val interface{}) error {
-	str, ok := val.(string)
-	if !ok {
-		return fmt.Errorf("enum %T must be a string", val)
-	}
-	*c = Channel(str)
-	if err := ChannelValidator(*c); err != nil {
-		return fmt.Errorf("%s is not a valid Channel", str)
-	}
-	return nil
-}

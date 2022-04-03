@@ -13,9 +13,8 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "message", Type: field.TypeString},
-		{Name: "lsb_used", Type: field.TypeInt},
-		{Name: "channel", Type: field.TypeEnum, Enums: []string{"RED", "GREEN", "BLUE", "RED_GREEN", "RED_BLUE", "GREEN_BLUE", "RED_GREEN_BLUE"}},
+		{Name: "file_name", Type: field.TypeString},
+		{Name: "content", Type: field.TypeString},
 		{Name: "user_id", Type: field.TypeString, Nullable: true},
 	}
 	// ImagesTable holds the schema information for the "images" table.
@@ -26,7 +25,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "images_users_images",
-				Columns:    []*schema.Column{ImagesColumns[6]},
+				Columns:    []*schema.Column{ImagesColumns[5]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

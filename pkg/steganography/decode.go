@@ -2,72 +2,89 @@ package steganography
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 
+	"github.com/stegoer/server/ent"
 	"github.com/stegoer/server/graph/generated"
+	"github.com/stegoer/server/pkg/cryptography"
+	"github.com/stegoer/server/pkg/model"
 	"github.com/stegoer/server/pkg/util"
 )
 
-const (
-	bitLength = 8
-)
+func ValidateDecodeInput(
+	ctx context.Context,
+	user *ent.User,
+	input generated.DecodeImageInput,
+) *model.Error {
+	if user == nil && input.EncryptionKey != nil {
+		return model.NewAuthorizationError(
+			ctx,
+			"decode: unauthorized users can't specify encryption key",
+		)
+	}
 
-// Decode decodes a message from the given graphql.Upload file.
-//nolint:cyclop
+	return nil
+}
+
+// Decode decodes a message from the given generated.DecodeImageInput input.
 func Decode(input generated.DecodeImageInput) (string, error) {
-	var (
-		msgLength    int
-		binaryBuffer bytes.Buffer
-	)
+	var binaryBuffer bytes.Buffer
 
-	data, err := FileToImageData(input.File.File)
+	data, err := util.FileToImageData(input.Upload.File)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("decode: %w", err)
+	}
+
+	metadata, err := MetadataFromImageData(data)
+	if err != nil {
+		return "", fmt.Errorf("decode: %w", err)
 	}
 
 	pixelDataChannel := make(chan PixelData)
-	go NRGBAPixels(data, input.Channel, pixelDataChannel)
+	go NRGBAPixels(
+		data,
+		pixelDataOffset,
+		metadata.GetChannel(),
+		pixelDataChannel,
+	)
 
 	lsbPosChannel := make(chan byte)
-	go util.LSBPositions(byte(input.LsbUsed), lsbPosChannel)
+	go LSBPositions(metadata.lsbUsed, lsbPosChannel)
+
+	expectedBinaryLength := metadata.GetBinaryLength()
 
 	for pixelData := range pixelDataChannel {
 		for _, pixelChannel := range pixelData.Channels {
-			var value byte
-
-			switch {
-			case pixelChannel.IsRed():
-				value = pixelData.GetRed()
-			case pixelChannel.IsGreen():
-				value = pixelData.GetGreen()
-			case pixelChannel.IsBlue():
-				value = pixelData.GetBlue()
-			}
-
+			value := pixelData.GetChannelValue(pixelChannel)
 			lsbPos := <-lsbPosChannel
 			hasBit := util.HasBit(value, lsbPos)
 
 			binaryBuffer.WriteRune(util.BoolToRune(hasBit))
 
-			// get encoded message length
-			if msgLength == 0 && binaryBuffer.Len() == 32 {
-				msgLength, err = util.BinaryBufferToInt(&binaryBuffer)
-				if err != nil {
-					return "", fmt.Errorf("decode: %w", err)
-				}
-
-				binaryBuffer.Reset()
-			} else if msgLength != 0 && binaryBuffer.Len() == bitLength*msgLength {
-				msg, err := util.BinaryBufferToString(&binaryBuffer)
-				if err != nil {
-					return "", fmt.Errorf("decode: %w", err)
-				}
-
-				return msg, nil
+			if binaryBuffer.Len() == expectedBinaryLength {
+				return decodeData(&binaryBuffer, input.EncryptionKey)
 			}
 		}
 	}
 
 	return "", errors.New("decode: no message found")
+}
+
+func decodeData(
+	binaryBuffer *bytes.Buffer,
+	encryptionKey *string,
+) (string, error) {
+	byteSlice, err := util.BinaryBufferToBytes(binaryBuffer)
+	if err != nil {
+		return "", fmt.Errorf("decode: %w", err)
+	}
+
+	data, err := cryptography.Decrypt(byteSlice, encryptionKey)
+	if err != nil {
+		return "", fmt.Errorf("decode: %w", err)
+	}
+
+	return string(data), nil
 }

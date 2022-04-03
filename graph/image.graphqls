@@ -19,23 +19,21 @@ input ImageOrder {
 }
 
 input EncodeImageInput {
-  message: String!
+  data: String!
+  encryptionKey: String
   lsbUsed: Int!
   channel: Channel!
-  file: Upload!
+  upload: Upload!
 }
 
 input DecodeImageInput {
-  lsbUsed: Int!
-  channel: Channel!
-  file: Upload!
+  encryptionKey: String
+  upload: Upload!
 }
 
 type Image implements Node {
   id: ID!
-  message: String!
-  lsbUsed: Int!
-  channel: Channel!
+  file: FileType!
   createdAt: Time!
   updatedAt: Time!
 }
@@ -52,12 +50,11 @@ type ImagesConnection {
 }
 
 type EncodeImagePayload {
-  image: Image!
   file: FileType!
 }
 
 type DecodeImagePayload {
-  message: String!
+  data: String!
 }
 
 extend type Query {

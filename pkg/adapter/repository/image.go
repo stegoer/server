@@ -5,9 +5,8 @@ import (
 
 	"github.com/stegoer/server/ent"
 	"github.com/stegoer/server/ent/image"
-	"github.com/stegoer/server/graph/generated"
 	"github.com/stegoer/server/pkg/adapter/controller"
-	"github.com/stegoer/server/pkg/entity/model"
+	"github.com/stegoer/server/pkg/model"
 )
 
 // NewImageRepository returns implementation of the controller.Image interface.
@@ -63,14 +62,14 @@ func (r *imageRepository) List(ctx context.Context,
 func (r *imageRepository) Create(
 	ctx context.Context,
 	entUser model.User,
-	input generated.EncodeImageInput,
+	filename string,
+	content string,
 ) (*model.Image, error) {
 	entImage, err := r.client.
 		Image.
 		Create().
-		SetMessage(input.Message).
-		SetLsbUsed(input.LsbUsed).
-		SetChannel(input.Channel).
+		SetFileName(filename).
+		SetContent(content).
 		SetUser(&entUser).
 		Save(ctx)
 	if err != nil {

@@ -11,11 +11,6 @@ import (
 	"github.com/stegoer/server/pkg/const/globalid"
 )
 
-const (
-	LsbMin = 1
-	LsbMax = 8
-)
-
 // Image holds the schema definition for the Image entity.
 type Image struct {
 	ent.Schema
@@ -29,23 +24,14 @@ type ImageMixin struct {
 // Fields of the Image.
 func (Image) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("message").
+		field.String("file_name").
 			Sensitive().
-			NotEmpty(),
-		field.Int("lsb_used").
-			Range(LsbMin, LsbMax),
-		field.Enum("channel").
-			NamedValues(
-				"Red", "RED",
-				"Green", "GREEN",
-				"Blue", "BLUE",
-				"RedGreen", "RED_GREEN",
-				"RedBlue", "RED_BLUE",
-				"GreenBlue", "GREEN_BLUE",
-				"RedGreenBlue", "RED_GREEN_BLUE",
-			).Annotations(
-			entgql.OrderField("CHANNEL"),
-		),
+			NotEmpty().
+			Annotations(entgql.OrderField("FILE_NAME")),
+		field.String("content").
+			Sensitive().
+			NotEmpty().
+			Annotations(entgql.OrderField("CONTENT")),
 	}
 }
 

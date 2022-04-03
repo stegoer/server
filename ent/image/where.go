@@ -109,17 +109,17 @@ func UpdatedAt(v time.Time) predicate.Image {
 	})
 }
 
-// Message applies equality check predicate on the "message" field. It's identical to MessageEQ.
-func Message(v string) predicate.Image {
+// FileName applies equality check predicate on the "file_name" field. It's identical to FileNameEQ.
+func FileName(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldMessage), v))
+		s.Where(sql.EQ(s.C(FieldFileName), v))
 	})
 }
 
-// LsbUsed applies equality check predicate on the "lsb_used" field. It's identical to LsbUsedEQ.
-func LsbUsed(v int) predicate.Image {
+// Content applies equality check predicate on the "content" field. It's identical to ContentEQ.
+func Content(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLsbUsed), v))
+		s.Where(sql.EQ(s.C(FieldContent), v))
 	})
 }
 
@@ -275,22 +275,22 @@ func UpdatedAtLTE(v time.Time) predicate.Image {
 	})
 }
 
-// MessageEQ applies the EQ predicate on the "message" field.
-func MessageEQ(v string) predicate.Image {
+// FileNameEQ applies the EQ predicate on the "file_name" field.
+func FileNameEQ(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldMessage), v))
+		s.Where(sql.EQ(s.C(FieldFileName), v))
 	})
 }
 
-// MessageNEQ applies the NEQ predicate on the "message" field.
-func MessageNEQ(v string) predicate.Image {
+// FileNameNEQ applies the NEQ predicate on the "file_name" field.
+func FileNameNEQ(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldMessage), v))
+		s.Where(sql.NEQ(s.C(FieldFileName), v))
 	})
 }
 
-// MessageIn applies the In predicate on the "message" field.
-func MessageIn(vs ...string) predicate.Image {
+// FileNameIn applies the In predicate on the "file_name" field.
+func FileNameIn(vs ...string) predicate.Image {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -302,12 +302,12 @@ func MessageIn(vs ...string) predicate.Image {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldMessage), v...))
+		s.Where(sql.In(s.C(FieldFileName), v...))
 	})
 }
 
-// MessageNotIn applies the NotIn predicate on the "message" field.
-func MessageNotIn(vs ...string) predicate.Image {
+// FileNameNotIn applies the NotIn predicate on the "file_name" field.
+func FileNameNotIn(vs ...string) predicate.Image {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -319,89 +319,89 @@ func MessageNotIn(vs ...string) predicate.Image {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldMessage), v...))
+		s.Where(sql.NotIn(s.C(FieldFileName), v...))
 	})
 }
 
-// MessageGT applies the GT predicate on the "message" field.
-func MessageGT(v string) predicate.Image {
+// FileNameGT applies the GT predicate on the "file_name" field.
+func FileNameGT(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldMessage), v))
+		s.Where(sql.GT(s.C(FieldFileName), v))
 	})
 }
 
-// MessageGTE applies the GTE predicate on the "message" field.
-func MessageGTE(v string) predicate.Image {
+// FileNameGTE applies the GTE predicate on the "file_name" field.
+func FileNameGTE(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldMessage), v))
+		s.Where(sql.GTE(s.C(FieldFileName), v))
 	})
 }
 
-// MessageLT applies the LT predicate on the "message" field.
-func MessageLT(v string) predicate.Image {
+// FileNameLT applies the LT predicate on the "file_name" field.
+func FileNameLT(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldMessage), v))
+		s.Where(sql.LT(s.C(FieldFileName), v))
 	})
 }
 
-// MessageLTE applies the LTE predicate on the "message" field.
-func MessageLTE(v string) predicate.Image {
+// FileNameLTE applies the LTE predicate on the "file_name" field.
+func FileNameLTE(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldMessage), v))
+		s.Where(sql.LTE(s.C(FieldFileName), v))
 	})
 }
 
-// MessageContains applies the Contains predicate on the "message" field.
-func MessageContains(v string) predicate.Image {
+// FileNameContains applies the Contains predicate on the "file_name" field.
+func FileNameContains(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldMessage), v))
+		s.Where(sql.Contains(s.C(FieldFileName), v))
 	})
 }
 
-// MessageHasPrefix applies the HasPrefix predicate on the "message" field.
-func MessageHasPrefix(v string) predicate.Image {
+// FileNameHasPrefix applies the HasPrefix predicate on the "file_name" field.
+func FileNameHasPrefix(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldMessage), v))
+		s.Where(sql.HasPrefix(s.C(FieldFileName), v))
 	})
 }
 
-// MessageHasSuffix applies the HasSuffix predicate on the "message" field.
-func MessageHasSuffix(v string) predicate.Image {
+// FileNameHasSuffix applies the HasSuffix predicate on the "file_name" field.
+func FileNameHasSuffix(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldMessage), v))
+		s.Where(sql.HasSuffix(s.C(FieldFileName), v))
 	})
 }
 
-// MessageEqualFold applies the EqualFold predicate on the "message" field.
-func MessageEqualFold(v string) predicate.Image {
+// FileNameEqualFold applies the EqualFold predicate on the "file_name" field.
+func FileNameEqualFold(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldMessage), v))
+		s.Where(sql.EqualFold(s.C(FieldFileName), v))
 	})
 }
 
-// MessageContainsFold applies the ContainsFold predicate on the "message" field.
-func MessageContainsFold(v string) predicate.Image {
+// FileNameContainsFold applies the ContainsFold predicate on the "file_name" field.
+func FileNameContainsFold(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldMessage), v))
+		s.Where(sql.ContainsFold(s.C(FieldFileName), v))
 	})
 }
 
-// LsbUsedEQ applies the EQ predicate on the "lsb_used" field.
-func LsbUsedEQ(v int) predicate.Image {
+// ContentEQ applies the EQ predicate on the "content" field.
+func ContentEQ(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLsbUsed), v))
+		s.Where(sql.EQ(s.C(FieldContent), v))
 	})
 }
 
-// LsbUsedNEQ applies the NEQ predicate on the "lsb_used" field.
-func LsbUsedNEQ(v int) predicate.Image {
+// ContentNEQ applies the NEQ predicate on the "content" field.
+func ContentNEQ(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLsbUsed), v))
+		s.Where(sql.NEQ(s.C(FieldContent), v))
 	})
 }
 
-// LsbUsedIn applies the In predicate on the "lsb_used" field.
-func LsbUsedIn(vs ...int) predicate.Image {
+// ContentIn applies the In predicate on the "content" field.
+func ContentIn(vs ...string) predicate.Image {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -413,12 +413,12 @@ func LsbUsedIn(vs ...int) predicate.Image {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldLsbUsed), v...))
+		s.Where(sql.In(s.C(FieldContent), v...))
 	})
 }
 
-// LsbUsedNotIn applies the NotIn predicate on the "lsb_used" field.
-func LsbUsedNotIn(vs ...int) predicate.Image {
+// ContentNotIn applies the NotIn predicate on the "content" field.
+func ContentNotIn(vs ...string) predicate.Image {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -430,83 +430,70 @@ func LsbUsedNotIn(vs ...int) predicate.Image {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldLsbUsed), v...))
+		s.Where(sql.NotIn(s.C(FieldContent), v...))
 	})
 }
 
-// LsbUsedGT applies the GT predicate on the "lsb_used" field.
-func LsbUsedGT(v int) predicate.Image {
+// ContentGT applies the GT predicate on the "content" field.
+func ContentGT(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLsbUsed), v))
+		s.Where(sql.GT(s.C(FieldContent), v))
 	})
 }
 
-// LsbUsedGTE applies the GTE predicate on the "lsb_used" field.
-func LsbUsedGTE(v int) predicate.Image {
+// ContentGTE applies the GTE predicate on the "content" field.
+func ContentGTE(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLsbUsed), v))
+		s.Where(sql.GTE(s.C(FieldContent), v))
 	})
 }
 
-// LsbUsedLT applies the LT predicate on the "lsb_used" field.
-func LsbUsedLT(v int) predicate.Image {
+// ContentLT applies the LT predicate on the "content" field.
+func ContentLT(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLsbUsed), v))
+		s.Where(sql.LT(s.C(FieldContent), v))
 	})
 }
 
-// LsbUsedLTE applies the LTE predicate on the "lsb_used" field.
-func LsbUsedLTE(v int) predicate.Image {
+// ContentLTE applies the LTE predicate on the "content" field.
+func ContentLTE(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLsbUsed), v))
+		s.Where(sql.LTE(s.C(FieldContent), v))
 	})
 }
 
-// ChannelEQ applies the EQ predicate on the "channel" field.
-func ChannelEQ(v Channel) predicate.Image {
+// ContentContains applies the Contains predicate on the "content" field.
+func ContentContains(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldChannel), v))
+		s.Where(sql.Contains(s.C(FieldContent), v))
 	})
 }
 
-// ChannelNEQ applies the NEQ predicate on the "channel" field.
-func ChannelNEQ(v Channel) predicate.Image {
+// ContentHasPrefix applies the HasPrefix predicate on the "content" field.
+func ContentHasPrefix(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldChannel), v))
+		s.Where(sql.HasPrefix(s.C(FieldContent), v))
 	})
 }
 
-// ChannelIn applies the In predicate on the "channel" field.
-func ChannelIn(vs ...Channel) predicate.Image {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
+// ContentHasSuffix applies the HasSuffix predicate on the "content" field.
+func ContentHasSuffix(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldChannel), v...))
+		s.Where(sql.HasSuffix(s.C(FieldContent), v))
 	})
 }
 
-// ChannelNotIn applies the NotIn predicate on the "channel" field.
-func ChannelNotIn(vs ...Channel) predicate.Image {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
+// ContentEqualFold applies the EqualFold predicate on the "content" field.
+func ContentEqualFold(v string) predicate.Image {
 	return predicate.Image(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldChannel), v...))
+		s.Where(sql.EqualFold(s.C(FieldContent), v))
+	})
+}
+
+// ContentContainsFold applies the ContainsFold predicate on the "content" field.
+func ContentContainsFold(v string) predicate.Image {
+	return predicate.Image(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldContent), v))
 	})
 }
 

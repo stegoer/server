@@ -7,9 +7,7 @@ input UserWhereInput {
   and: [UserWhereInput!]
   or: [UserWhereInput!]
 
-  """
-  created_at field predicates
-  """
+  """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
   createdAtIn: [Time!]
@@ -19,9 +17,7 @@ input UserWhereInput {
   createdAtLT: Time
   createdAtLTE: Time
 
-  """
-  updated_at field predicates
-  """
+  """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
   updatedAtIn: [Time!]
@@ -31,9 +27,7 @@ input UserWhereInput {
   updatedAtLT: Time
   updatedAtLTE: Time
 
-  """
-  name field predicates
-  """
+  """name field predicates"""
   name: String
   nameNEQ: String
   nameIn: [String!]
@@ -48,9 +42,7 @@ input UserWhereInput {
   nameEqualFold: String
   nameContainsFold: String
 
-  """
-  email field predicates
-  """
+  """email field predicates"""
   email: String
   emailNEQ: String
   emailIn: [String!]
@@ -65,9 +57,7 @@ input UserWhereInput {
   emailEqualFold: String
   emailContainsFold: String
 
-  """
-  password field predicates
-  """
+  """password field predicates"""
   password: String
   passwordNEQ: String
   passwordIn: [String!]
@@ -82,9 +72,7 @@ input UserWhereInput {
   passwordEqualFold: String
   passwordContainsFold: String
 
-  """
-  last_login field predicates
-  """
+  """last_login field predicates"""
   lastLogin: Time
   lastLoginNEQ: Time
   lastLoginIn: [Time!]
@@ -94,9 +82,7 @@ input UserWhereInput {
   lastLoginLT: Time
   lastLoginLTE: Time
 
-  """
-  id field predicates
-  """
+  """id field predicates"""
   id: ID
   idNEQ: ID
   idIn: [ID!]
@@ -106,9 +92,7 @@ input UserWhereInput {
   idLT: ID
   idLTE: ID
 
-  """
-  images edge predicates
-  """
+  """images edge predicates"""
   hasImages: Boolean
   hasImagesWith: [ImageWhereInput!]
 }
@@ -122,9 +106,7 @@ input ImageWhereInput {
   and: [ImageWhereInput!]
   or: [ImageWhereInput!]
 
-  """
-  created_at field predicates
-  """
+  """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
   createdAtIn: [Time!]
@@ -134,9 +116,7 @@ input ImageWhereInput {
   createdAtLT: Time
   createdAtLTE: Time
 
-  """
-  updated_at field predicates
-  """
+  """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
   updatedAtIn: [Time!]
@@ -146,46 +126,37 @@ input ImageWhereInput {
   updatedAtLT: Time
   updatedAtLTE: Time
 
-  """
-  message field predicates
-  """
-  message: String
-  messageNEQ: String
-  messageIn: [String!]
-  messageNotIn: [String!]
-  messageGT: String
-  messageGTE: String
-  messageLT: String
-  messageLTE: String
-  messageContains: String
-  messageHasPrefix: String
-  messageHasSuffix: String
-  messageEqualFold: String
-  messageContainsFold: String
+  """file_name field predicates"""
+  fileName: String
+  fileNameNEQ: String
+  fileNameIn: [String!]
+  fileNameNotIn: [String!]
+  fileNameGT: String
+  fileNameGTE: String
+  fileNameLT: String
+  fileNameLTE: String
+  fileNameContains: String
+  fileNameHasPrefix: String
+  fileNameHasSuffix: String
+  fileNameEqualFold: String
+  fileNameContainsFold: String
 
-  """
-  lsb_used field predicates
-  """
-  lsbUsed: Int
-  lsbUsedNEQ: Int
-  lsbUsedIn: [Int!]
-  lsbUsedNotIn: [Int!]
-  lsbUsedGT: Int
-  lsbUsedGTE: Int
-  lsbUsedLT: Int
-  lsbUsedLTE: Int
+  """content field predicates"""
+  content: String
+  contentNEQ: String
+  contentIn: [String!]
+  contentNotIn: [String!]
+  contentGT: String
+  contentGTE: String
+  contentLT: String
+  contentLTE: String
+  contentContains: String
+  contentHasPrefix: String
+  contentHasSuffix: String
+  contentEqualFold: String
+  contentContainsFold: String
 
-  """
-  channel field predicates
-  """
-  channel: Channel
-  channelNEQ: Channel
-  channelIn: [Channel!]
-  channelNotIn: [Channel!]
-
-  """
-  id field predicates
-  """
+  """id field predicates"""
   id: ID
   idNEQ: ID
   idIn: [ID!]
@@ -195,9 +166,7 @@ input ImageWhereInput {
   idLT: ID
   idLTE: ID
 
-  """
-  user edge predicates
-  """
+  """user edge predicates"""
   hasUser: Boolean
   hasUserWith: [UserWhereInput!]
 }

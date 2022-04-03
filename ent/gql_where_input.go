@@ -48,36 +48,35 @@ type ImageWhereInput struct {
 	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
 	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
 
-	// "message" field predicates.
-	Message             *string  `json:"message,omitempty"`
-	MessageNEQ          *string  `json:"messageNEQ,omitempty"`
-	MessageIn           []string `json:"messageIn,omitempty"`
-	MessageNotIn        []string `json:"messageNotIn,omitempty"`
-	MessageGT           *string  `json:"messageGT,omitempty"`
-	MessageGTE          *string  `json:"messageGTE,omitempty"`
-	MessageLT           *string  `json:"messageLT,omitempty"`
-	MessageLTE          *string  `json:"messageLTE,omitempty"`
-	MessageContains     *string  `json:"messageContains,omitempty"`
-	MessageHasPrefix    *string  `json:"messageHasPrefix,omitempty"`
-	MessageHasSuffix    *string  `json:"messageHasSuffix,omitempty"`
-	MessageEqualFold    *string  `json:"messageEqualFold,omitempty"`
-	MessageContainsFold *string  `json:"messageContainsFold,omitempty"`
+	// "file_name" field predicates.
+	FileName             *string  `json:"fileName,omitempty"`
+	FileNameNEQ          *string  `json:"fileNameNEQ,omitempty"`
+	FileNameIn           []string `json:"fileNameIn,omitempty"`
+	FileNameNotIn        []string `json:"fileNameNotIn,omitempty"`
+	FileNameGT           *string  `json:"fileNameGT,omitempty"`
+	FileNameGTE          *string  `json:"fileNameGTE,omitempty"`
+	FileNameLT           *string  `json:"fileNameLT,omitempty"`
+	FileNameLTE          *string  `json:"fileNameLTE,omitempty"`
+	FileNameContains     *string  `json:"fileNameContains,omitempty"`
+	FileNameHasPrefix    *string  `json:"fileNameHasPrefix,omitempty"`
+	FileNameHasSuffix    *string  `json:"fileNameHasSuffix,omitempty"`
+	FileNameEqualFold    *string  `json:"fileNameEqualFold,omitempty"`
+	FileNameContainsFold *string  `json:"fileNameContainsFold,omitempty"`
 
-	// "lsb_used" field predicates.
-	LsbUsed      *int  `json:"lsbUsed,omitempty"`
-	LsbUsedNEQ   *int  `json:"lsbUsedNEQ,omitempty"`
-	LsbUsedIn    []int `json:"lsbUsedIn,omitempty"`
-	LsbUsedNotIn []int `json:"lsbUsedNotIn,omitempty"`
-	LsbUsedGT    *int  `json:"lsbUsedGT,omitempty"`
-	LsbUsedGTE   *int  `json:"lsbUsedGTE,omitempty"`
-	LsbUsedLT    *int  `json:"lsbUsedLT,omitempty"`
-	LsbUsedLTE   *int  `json:"lsbUsedLTE,omitempty"`
-
-	// "channel" field predicates.
-	Channel      *image.Channel  `json:"channel,omitempty"`
-	ChannelNEQ   *image.Channel  `json:"channelNEQ,omitempty"`
-	ChannelIn    []image.Channel `json:"channelIn,omitempty"`
-	ChannelNotIn []image.Channel `json:"channelNotIn,omitempty"`
+	// "content" field predicates.
+	Content             *string  `json:"content,omitempty"`
+	ContentNEQ          *string  `json:"contentNEQ,omitempty"`
+	ContentIn           []string `json:"contentIn,omitempty"`
+	ContentNotIn        []string `json:"contentNotIn,omitempty"`
+	ContentGT           *string  `json:"contentGT,omitempty"`
+	ContentGTE          *string  `json:"contentGTE,omitempty"`
+	ContentLT           *string  `json:"contentLT,omitempty"`
+	ContentLTE          *string  `json:"contentLTE,omitempty"`
+	ContentContains     *string  `json:"contentContains,omitempty"`
+	ContentHasPrefix    *string  `json:"contentHasPrefix,omitempty"`
+	ContentHasSuffix    *string  `json:"contentHasSuffix,omitempty"`
+	ContentEqualFold    *string  `json:"contentEqualFold,omitempty"`
+	ContentContainsFold *string  `json:"contentContainsFold,omitempty"`
 
 	// "user" edge predicates.
 	HasUser     *bool             `json:"hasUser,omitempty"`
@@ -215,80 +214,83 @@ func (i *ImageWhereInput) P() (predicate.Image, error) {
 	if i.UpdatedAtLTE != nil {
 		predicates = append(predicates, image.UpdatedAtLTE(*i.UpdatedAtLTE))
 	}
-	if i.Message != nil {
-		predicates = append(predicates, image.MessageEQ(*i.Message))
+	if i.FileName != nil {
+		predicates = append(predicates, image.FileNameEQ(*i.FileName))
 	}
-	if i.MessageNEQ != nil {
-		predicates = append(predicates, image.MessageNEQ(*i.MessageNEQ))
+	if i.FileNameNEQ != nil {
+		predicates = append(predicates, image.FileNameNEQ(*i.FileNameNEQ))
 	}
-	if len(i.MessageIn) > 0 {
-		predicates = append(predicates, image.MessageIn(i.MessageIn...))
+	if len(i.FileNameIn) > 0 {
+		predicates = append(predicates, image.FileNameIn(i.FileNameIn...))
 	}
-	if len(i.MessageNotIn) > 0 {
-		predicates = append(predicates, image.MessageNotIn(i.MessageNotIn...))
+	if len(i.FileNameNotIn) > 0 {
+		predicates = append(predicates, image.FileNameNotIn(i.FileNameNotIn...))
 	}
-	if i.MessageGT != nil {
-		predicates = append(predicates, image.MessageGT(*i.MessageGT))
+	if i.FileNameGT != nil {
+		predicates = append(predicates, image.FileNameGT(*i.FileNameGT))
 	}
-	if i.MessageGTE != nil {
-		predicates = append(predicates, image.MessageGTE(*i.MessageGTE))
+	if i.FileNameGTE != nil {
+		predicates = append(predicates, image.FileNameGTE(*i.FileNameGTE))
 	}
-	if i.MessageLT != nil {
-		predicates = append(predicates, image.MessageLT(*i.MessageLT))
+	if i.FileNameLT != nil {
+		predicates = append(predicates, image.FileNameLT(*i.FileNameLT))
 	}
-	if i.MessageLTE != nil {
-		predicates = append(predicates, image.MessageLTE(*i.MessageLTE))
+	if i.FileNameLTE != nil {
+		predicates = append(predicates, image.FileNameLTE(*i.FileNameLTE))
 	}
-	if i.MessageContains != nil {
-		predicates = append(predicates, image.MessageContains(*i.MessageContains))
+	if i.FileNameContains != nil {
+		predicates = append(predicates, image.FileNameContains(*i.FileNameContains))
 	}
-	if i.MessageHasPrefix != nil {
-		predicates = append(predicates, image.MessageHasPrefix(*i.MessageHasPrefix))
+	if i.FileNameHasPrefix != nil {
+		predicates = append(predicates, image.FileNameHasPrefix(*i.FileNameHasPrefix))
 	}
-	if i.MessageHasSuffix != nil {
-		predicates = append(predicates, image.MessageHasSuffix(*i.MessageHasSuffix))
+	if i.FileNameHasSuffix != nil {
+		predicates = append(predicates, image.FileNameHasSuffix(*i.FileNameHasSuffix))
 	}
-	if i.MessageEqualFold != nil {
-		predicates = append(predicates, image.MessageEqualFold(*i.MessageEqualFold))
+	if i.FileNameEqualFold != nil {
+		predicates = append(predicates, image.FileNameEqualFold(*i.FileNameEqualFold))
 	}
-	if i.MessageContainsFold != nil {
-		predicates = append(predicates, image.MessageContainsFold(*i.MessageContainsFold))
+	if i.FileNameContainsFold != nil {
+		predicates = append(predicates, image.FileNameContainsFold(*i.FileNameContainsFold))
 	}
-	if i.LsbUsed != nil {
-		predicates = append(predicates, image.LsbUsedEQ(*i.LsbUsed))
+	if i.Content != nil {
+		predicates = append(predicates, image.ContentEQ(*i.Content))
 	}
-	if i.LsbUsedNEQ != nil {
-		predicates = append(predicates, image.LsbUsedNEQ(*i.LsbUsedNEQ))
+	if i.ContentNEQ != nil {
+		predicates = append(predicates, image.ContentNEQ(*i.ContentNEQ))
 	}
-	if len(i.LsbUsedIn) > 0 {
-		predicates = append(predicates, image.LsbUsedIn(i.LsbUsedIn...))
+	if len(i.ContentIn) > 0 {
+		predicates = append(predicates, image.ContentIn(i.ContentIn...))
 	}
-	if len(i.LsbUsedNotIn) > 0 {
-		predicates = append(predicates, image.LsbUsedNotIn(i.LsbUsedNotIn...))
+	if len(i.ContentNotIn) > 0 {
+		predicates = append(predicates, image.ContentNotIn(i.ContentNotIn...))
 	}
-	if i.LsbUsedGT != nil {
-		predicates = append(predicates, image.LsbUsedGT(*i.LsbUsedGT))
+	if i.ContentGT != nil {
+		predicates = append(predicates, image.ContentGT(*i.ContentGT))
 	}
-	if i.LsbUsedGTE != nil {
-		predicates = append(predicates, image.LsbUsedGTE(*i.LsbUsedGTE))
+	if i.ContentGTE != nil {
+		predicates = append(predicates, image.ContentGTE(*i.ContentGTE))
 	}
-	if i.LsbUsedLT != nil {
-		predicates = append(predicates, image.LsbUsedLT(*i.LsbUsedLT))
+	if i.ContentLT != nil {
+		predicates = append(predicates, image.ContentLT(*i.ContentLT))
 	}
-	if i.LsbUsedLTE != nil {
-		predicates = append(predicates, image.LsbUsedLTE(*i.LsbUsedLTE))
+	if i.ContentLTE != nil {
+		predicates = append(predicates, image.ContentLTE(*i.ContentLTE))
 	}
-	if i.Channel != nil {
-		predicates = append(predicates, image.ChannelEQ(*i.Channel))
+	if i.ContentContains != nil {
+		predicates = append(predicates, image.ContentContains(*i.ContentContains))
 	}
-	if i.ChannelNEQ != nil {
-		predicates = append(predicates, image.ChannelNEQ(*i.ChannelNEQ))
+	if i.ContentHasPrefix != nil {
+		predicates = append(predicates, image.ContentHasPrefix(*i.ContentHasPrefix))
 	}
-	if len(i.ChannelIn) > 0 {
-		predicates = append(predicates, image.ChannelIn(i.ChannelIn...))
+	if i.ContentHasSuffix != nil {
+		predicates = append(predicates, image.ContentHasSuffix(*i.ContentHasSuffix))
 	}
-	if len(i.ChannelNotIn) > 0 {
-		predicates = append(predicates, image.ChannelNotIn(i.ChannelNotIn...))
+	if i.ContentEqualFold != nil {
+		predicates = append(predicates, image.ContentEqualFold(*i.ContentEqualFold))
+	}
+	if i.ContentContainsFold != nil {
+		predicates = append(predicates, image.ContentContainsFold(*i.ContentContainsFold))
 	}
 
 	if i.HasUser != nil {

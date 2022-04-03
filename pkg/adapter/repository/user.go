@@ -9,7 +9,7 @@ import (
 	"github.com/stegoer/server/ent/user"
 	"github.com/stegoer/server/graph/generated"
 	"github.com/stegoer/server/pkg/adapter/controller"
-	"github.com/stegoer/server/pkg/entity/model"
+	"github.com/stegoer/server/pkg/model"
 	"github.com/stegoer/server/pkg/util"
 )
 

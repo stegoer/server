@@ -23,12 +23,10 @@ type Image struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// Message holds the value of the "message" field.
-	Message string `json:"-"`
-	// LsbUsed holds the value of the "lsb_used" field.
-	LsbUsed int `json:"lsb_used,omitempty"`
-	// Channel holds the value of the "channel" field.
-	Channel image.Channel `json:"channel,omitempty"`
+	// FileName holds the value of the "file_name" field.
+	FileName string `json:"-"`
+	// Content holds the value of the "content" field.
+	Content string `json:"-"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ImageQuery when eager-loading is set.
 	Edges   ImageEdges `json:"edges"`
@@ -63,9 +61,7 @@ func (*Image) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case image.FieldLsbUsed:
-			values[i] = new(sql.NullInt64)
-		case image.FieldMessage, image.FieldChannel:
+		case image.FieldFileName, image.FieldContent:
 			values[i] = new(sql.NullString)
 		case image.FieldCreatedAt, image.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -106,23 +102,17 @@ func (i *Image) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				i.UpdatedAt = value.Time
 			}
-		case image.FieldMessage:
+		case image.FieldFileName:
 			if value, ok := values[j].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field message", values[j])
+				return fmt.Errorf("unexpected type %T for field file_name", values[j])
 			} else if value.Valid {
-				i.Message = value.String
+				i.FileName = value.String
 			}
-		case image.FieldLsbUsed:
-			if value, ok := values[j].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field lsb_used", values[j])
-			} else if value.Valid {
-				i.LsbUsed = int(value.Int64)
-			}
-		case image.FieldChannel:
+		case image.FieldContent:
 			if value, ok := values[j].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field channel", values[j])
+				return fmt.Errorf("unexpected type %T for field content", values[j])
 			} else if value.Valid {
-				i.Channel = image.Channel(value.String)
+				i.Content = value.String
 			}
 		case image.ForeignKeys[0]:
 			if value, ok := values[j].(*sql.NullScanner); !ok {
@@ -168,11 +158,8 @@ func (i *Image) String() string {
 	builder.WriteString(i.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
 	builder.WriteString(i.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", message=<sensitive>")
-	builder.WriteString(", lsb_used=")
-	builder.WriteString(fmt.Sprintf("%v", i.LsbUsed))
-	builder.WriteString(", channel=")
-	builder.WriteString(fmt.Sprintf("%v", i.Channel))
+	builder.WriteString(", file_name=<sensitive>")
+	builder.WriteString(", content=<sensitive>")
 	builder.WriteByte(')')
 	return builder.String()
 }

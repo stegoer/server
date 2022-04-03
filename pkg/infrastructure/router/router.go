@@ -13,10 +13,10 @@ import (
 	"github.com/stegoer/server/pkg/infrastructure/middleware"
 )
 
-// Routes of Router.
+// Routes of our mux.Router.
 const (
-	QueryPath      = "/graphql"
-	PlaygroundPath = "/playground"
+	queryPath      = "/graphql"
+	playgroundPath = "/playground"
 )
 
 // New creates new mux router.
@@ -29,22 +29,21 @@ func New(
 	router := mux.NewRouter()
 	router.Use(middleware.Logging, middleware.Jwt(logger, client))
 
-	router.Handle(QueryPath, srv)
+	router.Handle(queryPath, srv)
 
 	var crossOrigin *cors.Cors
 
 	switch config.IsDevelopment() {
 	case true:
 		router.HandleFunc(
-			PlaygroundPath,
-			playground.Handler("GQL Playground", QueryPath),
+			playgroundPath,
+			playground.Handler("GQL Playground", queryPath),
 		)
 
 		crossOrigin = cors.AllowAll()
 	case false:
 		crossOrigin = cors.New(cors.Options{ //nolint:exhaustivestruct
 			AllowedOrigins: []string{"*"},
-			AllowedMethods: []string{"POST"},
 			AllowedHeaders: []string{"Authorization"},
 			Debug:          config.Debug,
 		})
