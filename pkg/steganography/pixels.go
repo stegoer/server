@@ -1,6 +1,8 @@
 package steganography
 
 import (
+	"bytes"
+	"errors"
 	"image/color"
 
 	"github.com/stegoer/server/pkg/model"
@@ -93,6 +95,7 @@ func NRGBAPixels(
 	data util.ImageData,
 	pixelOffset int,
 	channel model.Channel,
+	distributionDivisor int,
 	resultChan chan PixelData,
 ) {
 	var pixelCount int
@@ -105,7 +108,7 @@ func NRGBAPixels(
 		for height := 0; height < data.Height; height++ {
 			pixelCount++
 
-			if pixelCount <= pixelOffset {
+			if pixelCount <= pixelOffset || pixelCount%distributionDivisor != 0 {
 				continue
 			}
 
@@ -134,4 +137,83 @@ func NRGBAPixels(
 	}
 
 	close(resultChan)
+}
+
+func SetNRGBAValues(
+	imageData util.ImageData,
+	encodeData []byte,
+	pixelOffset int,
+	getLsbPosition func() byte,
+	channel model.Channel,
+	distributionDivisor int,
+) {
+	bitChannel := make(chan byte)
+	go util.ByteArrToBits(encodeData, bitChannel)
+
+	pixelDataChannel := make(chan PixelData)
+	go NRGBAPixels(
+		imageData,
+		pixelOffset,
+		channel,
+		distributionDivisor,
+		pixelDataChannel,
+	)
+
+	hasBits := true
+
+	for pixelData := range pixelDataChannel {
+		for _, pixelChannel := range pixelData.Channels {
+			dataBit, ok := <-bitChannel
+			if !ok {
+				hasBits = false
+
+				break
+			}
+
+			pixelData.SetChannelValue(pixelChannel, dataBit, getLsbPosition())
+		}
+
+		imageData.NRGBA.SetNRGBA(pixelData.Width, pixelData.Height, *pixelData.Color)
+
+		if !hasBits {
+			return
+		}
+	}
+}
+
+func GetNRGBAValues(
+	imageData util.ImageData,
+	pixelOffset int,
+	getLsbPosition func() byte,
+	channel model.Channel,
+	distributionDivisor int,
+	bufferLength int,
+) (*bytes.Buffer, error) {
+	var binaryBuffer bytes.Buffer
+
+	pixelDataChannel := make(chan PixelData)
+	go NRGBAPixels(
+		imageData,
+		pixelOffset,
+		channel,
+		distributionDivisor,
+		pixelDataChannel,
+	)
+
+	for pixelData := range pixelDataChannel {
+		for _, pixelChannel := range pixelData.Channels {
+			hasBit := util.HasBit(
+				pixelData.GetChannelValue(pixelChannel),
+				getLsbPosition(),
+			)
+
+			binaryBuffer.WriteRune(util.BoolToRune(hasBit))
+
+			if binaryBuffer.Len() == bufferLength {
+				return &binaryBuffer, nil
+			}
+		}
+	}
+
+	return nil, errors.New("requested NRGBA values not found")
 }

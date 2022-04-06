@@ -9,8 +9,8 @@ import (
 	"github.com/stegoer/server/ent/user"
 	"github.com/stegoer/server/graph/generated"
 	"github.com/stegoer/server/pkg/adapter/controller"
+	"github.com/stegoer/server/pkg/cryptography"
 	"github.com/stegoer/server/pkg/model"
-	"github.com/stegoer/server/pkg/util"
 )
 
 // NewUserRepository returns implementation of the controller.User interface.
@@ -50,7 +50,7 @@ func (r *userRepository) Create(
 	ctx context.Context,
 	input generated.NewUser,
 ) (*model.User, error) {
-	hashedPassword, err := util.HashPassword(input.Password)
+	hashedPassword, err := cryptography.HashPassword(input.Password)
 	if err != nil {
 		return nil, model.NewValidationError(ctx, err.Error())
 	}
@@ -84,7 +84,7 @@ func (r *userRepository) Update(
 	}
 
 	if input.Password != nil {
-		hashedPassword, err := util.HashPassword(*input.Password)
+		hashedPassword, err := cryptography.HashPassword(*input.Password)
 		if err != nil {
 			return nil, model.NewValidationError(ctx, err.Error())
 		}

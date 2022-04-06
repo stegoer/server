@@ -755,8 +755,9 @@ input ImageOrder {
 input EncodeImageInput {
   data: String!
   encryptionKey: String
-  lsbUsed: Int!
-  channel: Channel!
+  lsbUsed: Int! = 1
+  channel: Channel! = RED_GREEN_BLUE
+  evenDistribution: Boolean! = false
   upload: Upload!
 }
 
@@ -3892,6 +3893,16 @@ func (ec *executionContext) unmarshalInputEncodeImageInput(ctx context.Context, 
 		asMap[k] = v
 	}
 
+	if _, present := asMap["lsbUsed"]; !present {
+		asMap["lsbUsed"] = 1
+	}
+	if _, present := asMap["channel"]; !present {
+		asMap["channel"] = "RED_GREEN_BLUE"
+	}
+	if _, present := asMap["evenDistribution"]; !present {
+		asMap["evenDistribution"] = false
+	}
+
 	for k, v := range asMap {
 		switch k {
 		case "data":
@@ -3923,6 +3934,14 @@ func (ec *executionContext) unmarshalInputEncodeImageInput(ctx context.Context, 
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("channel"))
 			it.Channel, err = ec.unmarshalNChannel2githubᚗcomᚋstegoerᚋserverᚋpkgᚋmodelᚐChannel(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "evenDistribution":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("evenDistribution"))
+			it.EvenDistribution, err = ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}

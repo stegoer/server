@@ -8,12 +8,7 @@ func ByteArrToBits(byteArr []byte, resultChan chan byte) {
 
 	for _, b := range byteArr {
 		for position = bitLen; position > 0; position-- {
-			// need to offset starting position by 1
-			if HasBit(b, position-1) {
-				resultChan <- 1
-			} else {
-				resultChan <- 0
-			}
+			resultChan <- BoolToBit(HasBit(b, position-1))
 		}
 	}
 

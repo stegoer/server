@@ -10,11 +10,11 @@ func LSBPositions(used byte, resultChan chan byte) {
 	var position byte
 
 	for position = 0; position <= used; position++ {
-		resultChan <- position
-
 		if position == used {
 			position = 0
 		}
+
+		resultChan <- position
 	}
 
 	close(resultChan)

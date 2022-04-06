@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"math"
 
 	"github.com/stegoer/server/graph/generated"
 	"github.com/stegoer/server/pkg/model"
@@ -11,19 +12,21 @@ import (
 )
 
 const (
-	metadataLength       = 12
-	metadataBinaryLength = metadataLength * bitLength
-	metadataPixelOffset  = 0
-	metadataLsbPos       = 1
+	metadataLength                   = 13
+	metadataBinaryLength             = metadataLength * bitLength
+	metadataPixelOffset              = 0
+	metadataLsbPos              byte = 1
+	metadataDistributionDivisor      = 1
 )
 
 // Metadata represents information which was used to encode data into an image.
 type Metadata struct {
-	length  uint64
-	lsbUsed uint8
-	red     bool
-	green   bool
-	blue    bool
+	length           uint64
+	lsbUsed          byte
+	red              bool
+	green            bool
+	blue             bool
+	evenDistribution bool
 }
 
 func (md Metadata) GetBinaryLength() int {
@@ -61,38 +64,36 @@ func (md Metadata) ToByteArr() []byte {
 			util.BoolToBit(md.red),
 			util.BoolToBit(md.green),
 			util.BoolToBit(md.blue),
+			util.BoolToBit(md.evenDistribution),
 		}...,
 	)
 
 	return result
 }
 
-func (md Metadata) EncodeIntoImageData(data util.ImageData) {
-	bitChannel := make(chan byte)
-	go util.ByteArrToBits(md.ToByteArr(), bitChannel)
+func (md Metadata) GetDistributionDivisor(imageData util.ImageData) int {
+	switch md.evenDistribution {
+	case true:
+		pixelCount := imageData.Width*imageData.Height - pixelDataOffset
+		positionCount := float64(pixelCount * md.GetChannel().Count())
 
-	pixelDataChannel := make(chan PixelData)
-	go NRGBAPixels(
-		data,
-		metadataPixelOffset,
-		model.ChannelRedGreenBlue,
-		pixelDataChannel,
-	)
-
-pixelIterator:
-	for pixelData := range pixelDataChannel {
-		for _, pixelChannel := range pixelData.Channels {
-			dataBit, ok := <-bitChannel
-			// there are no more bits in the bit channel
-			if !ok {
-				break pixelIterator
-			}
-
-			pixelData.SetChannelValue(pixelChannel, dataBit, metadataLsbPos)
-		}
-
-		data.NRGBA.SetNRGBA(pixelData.Width, pixelData.Height, *pixelData.Color)
+		return int(math.Ceil(positionCount / float64(md.length)))
+	default:
+		return 1
 	}
+}
+
+func (md Metadata) EncodeIntoImageData(imageData util.ImageData) {
+	SetNRGBAValues(
+		imageData,
+		md.ToByteArr(),
+		metadataPixelOffset,
+		func() byte {
+			return metadataLsbPos
+		},
+		model.ChannelRedGreenBlue,
+		metadataDistributionDivisor,
+	)
 }
 
 func MetadataFromEncodeInput(
@@ -100,11 +101,12 @@ func MetadataFromEncodeInput(
 	messageLength int,
 ) Metadata {
 	return Metadata{
-		length:  uint64(messageLength),
-		lsbUsed: uint8(input.LsbUsed),
-		red:     input.Channel.IncludesRed(),
-		green:   input.Channel.IncludesGreen(),
-		blue:    input.Channel.IncludesBlue(),
+		length:           uint64(messageLength),
+		lsbUsed:          byte(input.LsbUsed),
+		red:              input.Channel.IncludesRed(),
+		green:            input.Channel.IncludesGreen(),
+		blue:             input.Channel.IncludesBlue(),
+		evenDistribution: input.EvenDistribution,
 	}
 }
 
@@ -121,37 +123,29 @@ func MetadataFromBinaryBuffer(binaryBuffer *bytes.Buffer) (*Metadata, error) {
 	}
 
 	return &Metadata{
-		length:  util.BytesToUint64(byteSlice[0:8]),
-		lsbUsed: byteSlice[8],
-		red:     util.BitToBool(byteSlice[9]),
-		green:   util.BitToBool(byteSlice[10]),
-		blue:    util.BitToBool(byteSlice[11]),
+		length:           util.BytesToUint64(byteSlice[0:8]),
+		lsbUsed:          byteSlice[8],
+		red:              util.BitToBool(byteSlice[9]),
+		green:            util.BitToBool(byteSlice[10]),
+		blue:             util.BitToBool(byteSlice[11]),
+		evenDistribution: util.BitToBool(byteSlice[12]),
 	}, nil
 }
 
-func MetadataFromImageData(data util.ImageData) (*Metadata, error) {
-	var binaryBuffer bytes.Buffer
-
-	pixelDataChannel := make(chan PixelData)
-	go NRGBAPixels(
-		data,
+func MetadataFromImageData(imageData util.ImageData) (*Metadata, error) {
+	binaryBuffer, err := GetNRGBAValues(
+		imageData,
 		metadataPixelOffset,
+		func() byte {
+			return metadataLsbPos
+		},
 		model.ChannelRedGreenBlue,
-		pixelDataChannel,
+		metadataDistributionDivisor,
+		metadataBinaryLength,
 	)
-
-	for pixelData := range pixelDataChannel {
-		for _, pixelChannel := range pixelData.Channels {
-			value := pixelData.GetChannelValue(pixelChannel)
-			hasBit := util.HasBit(value, metadataLsbPos)
-
-			binaryBuffer.WriteRune(util.BoolToRune(hasBit))
-
-			if binaryBuffer.Len() == metadataBinaryLength {
-				return MetadataFromBinaryBuffer(&binaryBuffer)
-			}
-		}
+	if err != nil {
+		return nil, err
 	}
 
-	return nil, errors.New("metadata: not found")
+	return MetadataFromBinaryBuffer(binaryBuffer)
 }

@@ -32,7 +32,7 @@ func (c Channel) IncludesGreen() bool {
 	case ChannelGreen, ChannelRedGreen, ChannelGreenBlue, ChannelRedGreenBlue:
 		return true
 	default:
-		return true
+		return false
 	}
 }
 

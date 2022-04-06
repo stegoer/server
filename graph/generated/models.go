@@ -31,11 +31,12 @@ type DecodeImagePayload struct {
 }
 
 type EncodeImageInput struct {
-	Data          string         `json:"data"`
-	EncryptionKey *string        `json:"encryptionKey"`
-	LsbUsed       int            `json:"lsbUsed"`
-	Channel       model.Channel  `json:"channel"`
-	Upload        graphql.Upload `json:"upload"`
+	Data             string         `json:"data"`
+	EncryptionKey    *string        `json:"encryptionKey"`
+	LsbUsed          int            `json:"lsbUsed"`
+	Channel          model.Channel  `json:"channel"`
+	EvenDistribution bool           `json:"evenDistribution"`
+	Upload           graphql.Upload `json:"upload"`
 }
 
 type EncodeImagePayload struct {

@@ -15,11 +15,6 @@ func BytesToUint64(bytes []byte) uint64 {
 	return binary.LittleEndian.Uint64(bytes)
 }
 
-// BytesToBool turns []byte to bool.
-func BytesToBool(bytes []byte) bool {
-	return BytesToUint64(bytes) != 0
-}
-
 func GetUpdatedByte(newBit byte, value byte, lsbPos byte) byte {
 	hasBit := HasBit(value, lsbPos)
 

@@ -8,6 +8,7 @@ import (
 
 	"github.com/stegoer/server/ent"
 	"github.com/stegoer/server/graph/generated"
+	"github.com/stegoer/server/pkg/cryptography"
 	"github.com/stegoer/server/pkg/infrastructure/middleware"
 	"github.com/stegoer/server/pkg/model"
 	"github.com/stegoer/server/pkg/util"
@@ -47,7 +48,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input generated.Updat
 func (r *mutationResolver) Login(ctx context.Context, input generated.Login) (*generated.LoginPayload, error) {
 	entUser, _ := r.controller.User.GetByEmail(ctx, input.Email)
 
-	if entUser == nil || !util.CheckPasswordHash(
+	if entUser == nil || !cryptography.CheckPasswordHash(
 		input.Password,
 		entUser.Password,
 	) {

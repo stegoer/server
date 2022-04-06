@@ -21,8 +21,9 @@ input ImageOrder {
 input EncodeImageInput {
   data: String!
   encryptionKey: String
-  lsbUsed: Int!
-  channel: Channel!
+  lsbUsed: Int! = 1
+  channel: Channel! = RED_GREEN_BLUE
+  evenDistribution: Boolean! = false
   upload: Upload!
 }
 

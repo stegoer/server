@@ -38,6 +38,13 @@ func ValidateEncodeInput(
 				"encode: unauthorized users can't specify channel",
 			)
 		}
+
+		if input.EvenDistribution {
+			return model.NewAuthorizationError(
+				ctx,
+				"encode: unauthorized users can't use even distribution",
+			)
+		}
 	}
 
 	if !ValidateLSB(input.LsbUsed) {
@@ -56,43 +63,31 @@ func ValidateEncodeInput(
 // Encode encodes a message into the given graphql.Upload file based on input.
 // Returns the image data base64 encoded.
 func Encode(input generated.EncodeImageInput) (string, error) {
-	data, err := util.FileToImageData(input.Upload.File)
+	imageData, err := util.FileToImageData(input.Upload.File)
 	if err != nil {
 		return "", fmt.Errorf("encode: %w", err)
 	}
 
-	encodeData, err := buildData(input, data)
+	encodeData, metadata, err := buildData(input, imageData)
 	if err != nil {
 		return "", err
 	}
 
-	bitChannel := make(chan byte)
-	go util.ByteArrToBits(encodeData, bitChannel)
-
-	pixelDataChannel := make(chan PixelData)
-	go NRGBAPixels(data, pixelDataOffset, input.Channel, pixelDataChannel)
-
 	lsbPosChannel := make(chan byte)
 	go LSBPositions(byte(input.LsbUsed), lsbPosChannel)
 
-pixelIterator:
-	for pixelData := range pixelDataChannel {
-		for _, pixelChannel := range pixelData.Channels {
-			dataBit, ok := <-bitChannel
-			// there are no more bits in the bit channel
-			if !ok {
-				break pixelIterator
-			}
+	SetNRGBAValues(
+		imageData,
+		encodeData,
+		pixelDataOffset,
+		func() byte {
+			return <-lsbPosChannel
+		},
+		input.Channel,
+		metadata.GetDistributionDivisor(imageData),
+	)
 
-			lsbPos := <-lsbPosChannel
-
-			pixelData.SetChannelValue(pixelChannel, dataBit, lsbPos)
-		}
-
-		data.NRGBA.SetNRGBA(pixelData.Width, pixelData.Height, *pixelData.Color)
-	}
-
-	imgBuffer, err := util.EncodeNRGBA(data.NRGBA)
+	imgBuffer, err := util.EncodeNRGBA(imageData.NRGBA)
 	if err != nil {
 		return "", fmt.Errorf("encode: %w", err)
 	}
@@ -103,13 +98,13 @@ pixelIterator:
 func buildData(
 	input generated.EncodeImageInput,
 	imageData util.ImageData,
-) ([]byte, error) {
+) ([]byte, *Metadata, error) {
 	encryptedData, err := cryptography.Encrypt(
 		[]byte(input.Data),
 		input.EncryptionKey,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("encode: %w", err)
+		return nil, nil, fmt.Errorf("encode: %w", err)
 	}
 
 	encryptedLen := len(encryptedData)
@@ -117,17 +112,18 @@ func buildData(
 	if max := maxBytesToEncode(
 		imageData,
 		input,
-	); metadataLength+encryptedLen >= max {
-		return nil, fmt.Errorf(
+	); encryptedLen >= max+metadataLength {
+		return nil, nil, fmt.Errorf(
 			"encode: max data length is %d, got %d",
-			max,
+			max+metadataLength,
 			encryptedLen,
 		)
 	}
 
-	MetadataFromEncodeInput(input, encryptedLen).EncodeIntoImageData(imageData)
+	metadata := MetadataFromEncodeInput(input, encryptedLen)
+	metadata.EncodeIntoImageData(imageData)
 
-	return encryptedData, nil
+	return encryptedData, &metadata, nil
 }
 
 // maxBytesToEncode calculates a maximum amount of bytes which can be encoded
