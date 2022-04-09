@@ -9,10 +9,16 @@ import (
 	"io"
 )
 
+// ImageData represents a data of an image.NRGBA and Width and Height.
 type ImageData struct {
 	NRGBA  *image.NRGBA
 	Width  int
 	Height int
+}
+
+// PixelCount returns the number of pixels of the image represented.
+func (id ImageData) PixelCount() uint64 {
+	return uint64(id.Width * id.Height)
 }
 
 // FileToImageData reads file and returns ImageData.

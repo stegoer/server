@@ -3,7 +3,9 @@ package steganography
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"fmt"
+	"log"
 
 	"github.com/stegoer/server/ent"
 	"github.com/stegoer/server/graph/generated"
@@ -39,15 +41,10 @@ func Decode(input generated.DecodeImageInput) (string, error) {
 		return "", fmt.Errorf("decode: %w", err)
 	}
 
-	lsbPosChannel := make(chan byte)
-	go LSBPositions(metadata.lsbUsed, lsbPosChannel)
-
 	binaryBuffer, err := GetNRGBAValues(
 		imageData,
 		pixelDataOffset,
-		func() byte {
-			return <-lsbPosChannel
-		},
+		metadata.lsbUsed,
 		metadata.GetChannel(),
 		metadata.GetDistributionDivisor(imageData),
 		metadata.GetBinaryLength(),
@@ -68,7 +65,17 @@ func decodeData(
 		return "", fmt.Errorf("decode: %w", err)
 	}
 
-	data, err := cryptography.Decrypt(byteSlice, encryptionKey)
+	decodeSlice := make([]byte, base64.StdEncoding.EncodedLen(len(byteSlice)))
+
+	bytesWritten, err := base64.StdEncoding.Decode(decodeSlice, byteSlice)
+	if err != nil {
+		return "", fmt.Errorf("decode: %w", err)
+	}
+
+	log.Println("raw: ", byteSlice)
+	log.Println("dec: ", decodeSlice[:bytesWritten])
+
+	data, err := cryptography.Decrypt(decodeSlice[:bytesWritten], encryptionKey)
 	if err != nil {
 		return "", fmt.Errorf("decode: %w", err)
 	}

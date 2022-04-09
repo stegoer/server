@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"math"
+	"log"
 
 	"github.com/stegoer/server/graph/generated"
 	"github.com/stegoer/server/pkg/model"
@@ -29,8 +29,8 @@ type Metadata struct {
 	evenDistribution bool
 }
 
-func (md Metadata) GetBinaryLength() int {
-	return int(md.length) * bitLength
+func (md Metadata) GetBinaryLength() uint64 {
+	return md.length * bitLength
 }
 
 func (md Metadata) GetChannel() model.Channel {
@@ -55,6 +55,12 @@ func (md Metadata) GetChannel() model.Channel {
 	}
 }
 
+// PixelsNeeded returns needed pixels for encoding data based on its Metadata.
+func (md Metadata) PixelsNeeded() uint64 {
+	return md.GetBinaryLength() / uint64(
+		md.lsbUsed) / uint64(md.GetChannel().Count())
+}
+
 func (md Metadata) ToByteArr() []byte {
 	result := util.Uint64ToBytes(md.length)
 	result = append(result, md.lsbUsed)
@@ -74,16 +80,18 @@ func (md Metadata) ToByteArr() []byte {
 func (md Metadata) GetDistributionDivisor(imageData util.ImageData) int {
 	switch md.evenDistribution {
 	case true:
-		pixelCount := imageData.Width*imageData.Height - pixelDataOffset
-		positionCount := float64(pixelCount * md.GetChannel().Count())
+		pixelsAvailable := imageData.PixelCount() - pixelDataOffset
 
-		if divisor := int(
-			math.Floor(positionCount / float64(md.GetBinaryLength())),
-		); divisor != 0 {
+		log.Println("pix available: ", pixelsAvailable)
+		log.Println("needed: ", md.PixelsNeeded())
+
+		if divisor := int(pixelsAvailable / md.PixelsNeeded()); divisor > 0 {
+			log.Println("divisor", divisor)
+
 			return divisor
 		}
 
-		return 1
+		fallthrough
 	default:
 		return 1
 	}
@@ -94,9 +102,7 @@ func (md Metadata) EncodeIntoImageData(imageData util.ImageData) {
 		imageData,
 		md.ToByteArr(),
 		metadataPixelOffset,
-		func() byte {
-			return metadataLsbPos
-		},
+		metadataLsbPos,
 		model.ChannelRedGreenBlue,
 		metadataDistributionDivisor,
 	)
@@ -142,9 +148,7 @@ func MetadataFromImageData(imageData util.ImageData) (*Metadata, error) {
 	binaryBuffer, err := GetNRGBAValues(
 		imageData,
 		metadataPixelOffset,
-		func() byte {
-			return metadataLsbPos
-		},
+		metadataLsbPos,
 		model.ChannelRedGreenBlue,
 		metadataDistributionDivisor,
 		metadataBinaryLength,

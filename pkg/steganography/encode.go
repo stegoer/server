@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"log"
 
 	"github.com/stegoer/server/ent"
 	"github.com/stegoer/server/graph/generated"
@@ -47,7 +48,7 @@ func ValidateEncodeInput(
 		}
 	}
 
-	if !ValidateLSB(input.LsbUsed) {
+	if !ValidateLSB(byte(input.LsbUsed)) {
 		return model.NewValidationError(
 			ctx,
 			fmt.Sprintf(
@@ -73,16 +74,11 @@ func Encode(input generated.EncodeImageInput) (string, error) {
 		return "", err
 	}
 
-	lsbPosChannel := make(chan byte)
-	go LSBPositions(byte(input.LsbUsed), lsbPosChannel)
-
 	SetNRGBAValues(
 		imageData,
 		encodeData,
 		pixelDataOffset,
-		func() byte {
-			return <-lsbPosChannel
-		},
+		byte(input.LsbUsed),
 		input.Channel,
 		metadata.GetDistributionDivisor(imageData),
 	)
@@ -92,7 +88,7 @@ func Encode(input generated.EncodeImageInput) (string, error) {
 		return "", fmt.Errorf("encode: %w", err)
 	}
 
-	return base64.RawStdEncoding.EncodeToString(imgBuffer.Bytes()), nil
+	return base64.StdEncoding.EncodeToString(imgBuffer.Bytes()), nil
 }
 
 func buildData(
@@ -107,30 +103,26 @@ func buildData(
 		return nil, nil, fmt.Errorf("encode: %w", err)
 	}
 
-	encryptedLen := len(encryptedData)
+	encodedLen := base64.StdEncoding.EncodedLen(len(encryptedData))
+	encodeSlice := make([]byte, encodedLen)
+	metadata := MetadataFromEncodeInput(input, encodedLen)
+	available := imageData.PixelCount() - pixelDataOffset
+	needed := metadata.PixelsNeeded()
 
-	if max := maxBytesToEncode(
-		imageData,
-		input,
-	) + metadataLength; encryptedLen >= max {
+	if needed > available {
 		return nil, nil, fmt.Errorf(
-			"encode: max data length is %d, got %d",
-			max,
-			encryptedLen,
+			"encode: need %d pixels, but only %d is available with current config",
+			needed,
+			available,
 		)
 	}
 
-	metadata := MetadataFromEncodeInput(input, encryptedLen)
+	// encode everything only after we validate that we'll be able to proceed
+	base64.StdEncoding.Encode(encodeSlice, encryptedData)
 	metadata.EncodeIntoImageData(imageData)
 
-	return encryptedData, &metadata, nil
-}
+	log.Println("raw: ", encryptedData)
+	log.Println("dec: ", encodeSlice)
 
-// maxBytesToEncode calculates a maximum amount of bytes which can be encoded
-// based on the bounds of given image.NRGBA and generated.EncodeImageInput.
-func maxBytesToEncode(
-	data util.ImageData,
-	input generated.EncodeImageInput,
-) int {
-	return (data.Width * data.Height * input.Channel.Count() * input.LsbUsed) / bitLength
+	return encodeSlice, &metadata, nil
 }

@@ -143,7 +143,7 @@ func SetNRGBAValues(
 	imageData util.ImageData,
 	encodeData []byte,
 	pixelOffset int,
-	getLsbPosition func() byte,
+	lsbUsed byte,
 	channel model.Channel,
 	distributionDivisor int,
 ) {
@@ -159,18 +159,26 @@ func SetNRGBAValues(
 		pixelDataChannel,
 	)
 
+	lsbSlice := LSBSlice(lsbUsed)
+
 	hasBits := true
 
 	for pixelData := range pixelDataChannel {
 		for _, pixelChannel := range pixelData.Channels {
-			dataBit, ok := <-bitChannel
-			if !ok {
-				hasBits = false
+			for _, lsbPos := range lsbSlice {
+				dataBit, ok := <-bitChannel
+				if !ok {
+					hasBits = false
 
-				break
+					break
+				}
+
+				pixelData.SetChannelValue(pixelChannel, dataBit, lsbPos)
 			}
 
-			pixelData.SetChannelValue(pixelChannel, dataBit, getLsbPosition())
+			if !hasBits {
+				break
+			}
 		}
 
 		imageData.NRGBA.SetNRGBA(pixelData.Width, pixelData.Height, *pixelData.Color)
@@ -184,10 +192,10 @@ func SetNRGBAValues(
 func GetNRGBAValues(
 	imageData util.ImageData,
 	pixelOffset int,
-	getLsbPosition func() byte,
+	lsbUsed byte,
 	channel model.Channel,
 	distributionDivisor int,
-	bufferLength int,
+	bufferLength uint64,
 ) (*bytes.Buffer, error) {
 	var binaryBuffer bytes.Buffer
 
@@ -200,17 +208,21 @@ func GetNRGBAValues(
 		pixelDataChannel,
 	)
 
+	lsbSlice := LSBSlice(lsbUsed)
+
 	for pixelData := range pixelDataChannel {
 		for _, pixelChannel := range pixelData.Channels {
-			hasBit := util.HasBit(
-				pixelData.GetChannelValue(pixelChannel),
-				getLsbPosition(),
-			)
+			for _, lsbPos := range lsbSlice {
+				hasBit := util.HasBit(
+					pixelData.GetChannelValue(pixelChannel),
+					lsbPos,
+				)
 
-			binaryBuffer.WriteRune(util.BoolToRune(hasBit))
+				binaryBuffer.WriteRune(util.BoolToRune(hasBit))
 
-			if binaryBuffer.Len() == bufferLength {
-				return &binaryBuffer, nil
+				if uint64(binaryBuffer.Len()) == bufferLength {
+					return &binaryBuffer, nil
+				}
 			}
 		}
 	}

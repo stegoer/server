@@ -19,8 +19,7 @@ func BinaryBufferToBytes(binBuffer *bytes.Buffer) ([]byte, error) {
 
 	bufferLen := binBuffer.Len()
 
-	err := validateBufferLength(bufferLen)
-	if err != nil {
+	if err := validateBufferLength(bufferLen); err != nil {
 		return nil, err
 	}
 
