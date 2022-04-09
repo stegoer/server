@@ -7,6 +7,7 @@ import (
 	"context"
 
 	"github.com/stegoer/server/ent"
+	"github.com/stegoer/server/ent/schema/ulid"
 	"github.com/stegoer/server/graph/generated"
 	"github.com/stegoer/server/pkg/infrastructure/middleware"
 	"github.com/stegoer/server/pkg/model"
@@ -74,19 +75,28 @@ func (r *mutationResolver) DecodeImage(ctx context.Context, input generated.Deco
 	return &generated.DecodeImagePayload{Data: data}, nil
 }
 
+func (r *queryResolver) Image(ctx context.Context, id ulid.ID) (*ent.Image, error) {
+	entUser, err := middleware.JwtForContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	entImage, err := r.controller.Image.Get(
+		ctx,
+		*entUser,
+		&id,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return entImage, nil
+}
+
 func (r *queryResolver) Images(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ImageWhereInput, orderBy *ent.ImageOrder) (*generated.ImagesConnection, error) {
 	entUser, err := middleware.JwtForContext(ctx)
 	if err != nil {
-		return &generated.ImagesConnection{
-			TotalCount: 0,
-			PageInfo: &ent.PageInfo{
-				HasNextPage:     false,
-				HasPreviousPage: false,
-				StartCursor:     nil,
-				EndCursor:       nil,
-			},
-			Edges: []*ent.ImageEdge{},
-		}, err
+		return nil, err
 	}
 
 	imageList, err := r.controller.Image.List(
@@ -100,16 +110,7 @@ func (r *queryResolver) Images(ctx context.Context, after *ent.Cursor, first *in
 		orderBy,
 	)
 	if err != nil {
-		return &generated.ImagesConnection{
-			TotalCount: 0,
-			PageInfo: &ent.PageInfo{
-				HasNextPage:     false,
-				HasPreviousPage: false,
-				StartCursor:     nil,
-				EndCursor:       nil,
-			},
-			Edges: []*ent.ImageEdge{},
-		}, err
+		return nil, err
 	}
 
 	return &generated.ImagesConnection{

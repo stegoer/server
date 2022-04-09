@@ -116,6 +116,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		Image    func(childComplexity int, id ulid.ID) int
 		Images   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ImageWhereInput, orderBy *ent.ImageOrder) int
 		Overview func(childComplexity int) int
 	}
@@ -151,6 +152,7 @@ type MutationResolver interface {
 	RefreshToken(ctx context.Context, input RefreshTokenInput) (*RefreshTokenPayload, error)
 }
 type QueryResolver interface {
+	Image(ctx context.Context, id ulid.ID) (*ent.Image, error)
 	Images(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ImageWhereInput, orderBy *ent.ImageOrder) (*ImagesConnection, error)
 	Overview(ctx context.Context) (*OverviewPayload, error)
 }
@@ -412,6 +414,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PageInfo.StartCursor(childComplexity), true
+
+	case "Query.image":
+		if e.complexity.Query.Image == nil {
+			break
+		}
+
+		args, err := ec.field_Query_image_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Image(childComplexity, args["id"].(ulid.ID)), true
 
 	case "Query.images":
 		if e.complexity.Query.Images == nil {
@@ -793,6 +807,7 @@ type DecodeImagePayload {
 }
 
 extend type Query {
+  image(id: ID!): Image!
   images(
     after: Cursor
     first: Int
@@ -1019,6 +1034,21 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_image_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2githubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -2204,6 +2234,48 @@ func (ec *executionContext) _PageInfo_endCursor(ctx context.Context, field graph
 	res := resTmp.(*ent.Cursor)
 	fc.Result = res
 	return ec.marshalOCursor2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐCursor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_image(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_image_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Image(rctx, args["id"].(ulid.ID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Image)
+	fc.Result = res
+	return ec.marshalNImage2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_images(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -5805,6 +5877,29 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "image":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_image(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
 		case "images":
 			field := field
 
@@ -6586,6 +6681,10 @@ func (ec *executionContext) unmarshalNID2githubᚗcomᚋstegoerᚋserverᚋent�
 
 func (ec *executionContext) marshalNID2githubᚗcomᚋstegoerᚋserverᚋentᚋschemaᚋulidᚐID(ctx context.Context, sel ast.SelectionSet, v ulid.ID) graphql.Marshaler {
 	return v
+}
+
+func (ec *executionContext) marshalNImage2githubᚗcomᚋstegoerᚋserverᚋentᚐImage(ctx context.Context, sel ast.SelectionSet, v ent.Image) graphql.Marshaler {
+	return ec._Image(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNImage2ᚖgithubᚗcomᚋstegoerᚋserverᚋentᚐImage(ctx context.Context, sel ast.SelectionSet, v *ent.Image) graphql.Marshaler {

@@ -77,7 +77,13 @@ func (md Metadata) GetDistributionDivisor(imageData util.ImageData) int {
 		pixelCount := imageData.Width*imageData.Height - pixelDataOffset
 		positionCount := float64(pixelCount * md.GetChannel().Count())
 
-		return int(math.Ceil(positionCount / float64(md.length)))
+		if divisor := int(
+			math.Floor(positionCount / float64(md.GetBinaryLength())),
+		); divisor != 0 {
+			return divisor
+		}
+
+		return 1
 	default:
 		return 1
 	}

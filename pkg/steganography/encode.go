@@ -112,10 +112,10 @@ func buildData(
 	if max := maxBytesToEncode(
 		imageData,
 		input,
-	); encryptedLen >= max+metadataLength {
+	) + metadataLength; encryptedLen >= max {
 		return nil, nil, fmt.Errorf(
 			"encode: max data length is %d, got %d",
-			max+metadataLength,
+			max,
 			encryptedLen,
 		)
 	}

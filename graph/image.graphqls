@@ -59,6 +59,7 @@ type DecodeImagePayload {
 }
 
 extend type Query {
+  image(id: ID!): Image!
   images(
     after: Cursor
     first: Int

@@ -96,7 +96,7 @@ func (r *mutationResolver) RefreshToken(ctx context.Context, input generated.Ref
 func (r *queryResolver) Overview(ctx context.Context) (*generated.OverviewPayload, error) {
 	entUser, err := middleware.JwtForContext(ctx)
 	if err != nil {
-		return &generated.OverviewPayload{User: nil}, err
+		return nil, err
 	}
 
 	return &generated.OverviewPayload{User: entUser}, nil
