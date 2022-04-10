@@ -118,8 +118,9 @@ func (r *mutationResolver) DecodeImage(ctx context.Context, input gqlgen.DecodeI
 		return nil, util.NewValidationError(
 			ctx,
 			fmt.Sprintf(
-				"no encoded data found in the image file %s",
+				"no encoded data found in the image file %s: %v",
 				input.Upload.Filename,
+				err,
 			),
 		)
 	}
