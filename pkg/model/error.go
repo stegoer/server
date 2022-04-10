@@ -7,6 +7,7 @@ import (
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
+// ErrorCode represents an error code.
 type ErrorCode string
 
 const (
