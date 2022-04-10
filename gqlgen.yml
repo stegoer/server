@@ -1,11 +1,11 @@
 # Where are all the schema files located? globs are supported eg  src/**/*.graphqls
 schema:
-  - graph/**/*.graphqls
+  - graphql/*.graphqls
 
 # Where should the generated server code go?
 exec:
-  filename: graph/generated/server_code.go
-  package: generated
+  filename: gqlgen/server_code.go
+  package: gqlgen
 
 # Uncomment to enable federation
 # federation:
@@ -14,8 +14,8 @@ exec:
 
 # Where should any generated models go?
 model:
-  filename: graph/generated/models.go
-  package: generated
+  filename: gqlgen/models.go
+  package: gqlgen
 
 # Where should the resolver implementations go?
 resolver:
@@ -38,7 +38,6 @@ skip_mod_tidy: true
 # gqlgen will search for any type names in the schema in these go packages
 # if they match it will use them, otherwise it will generate them.
 autobind:
-  - github.com/stegoer/server/pkg/model
   - github.com/stegoer/server/ent
 
 # This section declares type mapping between the GraphQL and go type systems
@@ -49,7 +48,7 @@ autobind:
 models:
   ID:
     model:
-      - github.com/stegoer/server/pkg/model.ID
+      - github.com/stegoer/server/ent/schema/ulid.ID
   Int:
     model:
       - github.com/99designs/gqlgen/graphql.Int
@@ -60,7 +59,7 @@ models:
       - github.com/99designs/gqlgen/graphql.String
   Node:
     model:
-      - github.com/stegoer/server/pkg/model.Node
+      - github.com/stegoer/server/ent.Noder
   Channel:
     model:
-      - github.com/stegoer/server/pkg/model.Channel
+      - github.com/stegoer/server/pkg/util.Channel

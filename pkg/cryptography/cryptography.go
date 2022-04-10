@@ -1,14 +1,4 @@
-// cryptopasta - basic cryptography examples
-//
-// Written in 2015 by George Tankersley <george.tankersley@gmail.com> - modified
-//
-// To the extent possible under law, the author(s) have dedicated all copyright
-// and related and neighboring rights to this software to the public domain
-// worldwide. This software is distributed without any warranty.
-//
-// You should have received a copy of the CC0 Public Domain Dedication along
-// with this software.
-// If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+// inspired by https://github.com/gtank/cryptopasta/blob/master/encrypt.go
 
 // Package cryptography provides symmetric authenticated encryption
 // using 256-bit AES-GCM with a random nonce.

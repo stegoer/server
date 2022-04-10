@@ -6,42 +6,49 @@ import (
 	"fmt"
 
 	"github.com/stegoer/server/ent"
-	"github.com/stegoer/server/graph/generated"
+	"github.com/stegoer/server/gqlgen"
 	"github.com/stegoer/server/pkg/cryptography"
-	"github.com/stegoer/server/pkg/model"
 	"github.com/stegoer/server/pkg/util"
 )
 
+// ValidateEncodeInput validates the generated.EncodeImageInput.
 func ValidateEncodeInput(
 	ctx context.Context,
 	user *ent.User,
-	input generated.EncodeImageInput,
-) *model.Error {
+	input gqlgen.EncodeImageInput,
+) error {
 	if user == nil {
 		if input.EncryptionKey != nil {
-			return model.NewAuthorizationError(
+			return util.NewAuthorizationError(
 				ctx,
 				"encode: unauthorized users can't specify encryption key",
 			)
 		}
 
 		if input.LsbUsed != 1 {
-			return model.NewAuthorizationError(
+			return util.NewAuthorizationError(
 				ctx,
 				"encode: unauthorized users can't specify least significant bits",
 			)
 		}
 
-		if input.Channel != model.ChannelRedGreenBlue {
-			return model.NewAuthorizationError(
+		if input.Channel != util.ChannelRedGreenBlue {
+			return util.NewAuthorizationError(
 				ctx,
 				"encode: unauthorized users can't specify channel",
 			)
 		}
+
+		if input.EvenDistribution {
+			return util.NewAuthorizationError(
+				ctx,
+				"encode: unauthorized users can't use even distribution",
+			)
+		}
 	}
 
-	if !ValidateLSB(input.LsbUsed) {
-		return model.NewValidationError(
+	if !ValidateLSB(byte(input.LsbUsed)) {
+		return util.NewValidationError(
 			ctx,
 			fmt.Sprintf(
 				"encode: %d is not a valid number of least significant bits used",
@@ -55,86 +62,63 @@ func ValidateEncodeInput(
 
 // Encode encodes a message into the given graphql.Upload file based on input.
 // Returns the image data base64 encoded.
-func Encode(input generated.EncodeImageInput) (string, error) {
-	data, err := util.FileToImageData(input.Upload.File)
+func Encode(input gqlgen.EncodeImageInput) (string, error) {
+	imageData, err := util.FileToImageData(input.Upload.File)
 	if err != nil {
 		return "", fmt.Errorf("encode: %w", err)
 	}
 
-	encodeData, err := buildData(input, data)
+	encodeData, metadata, err := buildData(input, imageData)
 	if err != nil {
 		return "", err
 	}
 
-	bitChannel := make(chan byte)
-	go util.ByteArrToBits(encodeData, bitChannel)
+	SetNRGBAValues(
+		imageData,
+		encodeData,
+		pixelDataOffset,
+		byte(input.LsbUsed),
+		input.Channel,
+		metadata.GetDistributionDivisor(imageData),
+	)
 
-	pixelDataChannel := make(chan PixelData)
-	go NRGBAPixels(data, pixelDataOffset, input.Channel, pixelDataChannel)
-
-	lsbPosChannel := make(chan byte)
-	go LSBPositions(byte(input.LsbUsed), lsbPosChannel)
-
-pixelIterator:
-	for pixelData := range pixelDataChannel {
-		for _, pixelChannel := range pixelData.Channels {
-			dataBit, ok := <-bitChannel
-			// there are no more bits in the bit channel
-			if !ok {
-				break pixelIterator
-			}
-
-			lsbPos := <-lsbPosChannel
-
-			pixelData.SetChannelValue(pixelChannel, dataBit, lsbPos)
-		}
-
-		data.NRGBA.SetNRGBA(pixelData.Width, pixelData.Height, *pixelData.Color)
-	}
-
-	imgBuffer, err := util.EncodeNRGBA(data.NRGBA)
+	imgBuffer, err := util.EncodeNRGBA(imageData.NRGBA)
 	if err != nil {
 		return "", fmt.Errorf("encode: %w", err)
 	}
 
-	return base64.RawStdEncoding.EncodeToString(imgBuffer.Bytes()), nil
+	return base64.StdEncoding.EncodeToString(imgBuffer.Bytes()), nil
 }
 
 func buildData(
-	input generated.EncodeImageInput,
+	input gqlgen.EncodeImageInput,
 	imageData util.ImageData,
-) ([]byte, error) {
+) ([]byte, *Metadata, error) {
 	encryptedData, err := cryptography.Encrypt(
 		[]byte(input.Data),
 		input.EncryptionKey,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("encode: %w", err)
+		return nil, nil, fmt.Errorf("encode: %w", err)
 	}
 
-	encryptedLen := len(encryptedData)
+	encodedLen := base64.RawURLEncoding.EncodedLen(len(encryptedData))
+	encodeSlice := make([]byte, encodedLen)
+	metadata := MetadataFromEncodeInput(input, encodedLen)
+	available := imageData.PixelCount() - pixelDataOffset
+	needed := metadata.PixelsNeeded()
 
-	if max := maxBytesToEncode(
-		imageData,
-		input,
-	); metadataLength+encryptedLen >= max {
-		return nil, fmt.Errorf(
-			"encode: max data length is %d, got %d",
-			max,
-			encryptedLen,
+	if needed > available {
+		return nil, nil, fmt.Errorf(
+			"encode: need %d pixels, but only %d is available with current config",
+			needed,
+			available,
 		)
 	}
 
-	MetadataFromEncodeInput(input, encryptedLen).EncodeIntoImageData(imageData)
+	// encode everything only after we validate that we'll be able to proceed
+	metadata.EncodeIntoImageData(imageData)
+	base64.RawURLEncoding.Encode(encodeSlice, encryptedData)
 
-	return encryptedData, nil
-}
-
-// maxBytesToEncode calculates a maximum amount of bytes which can be encoded
-// based on the bounds of given image.NRGBA and generated.EncodeImageInput.
-func maxBytesToEncode(
-	data util.ImageData,
-	input generated.EncodeImageInput,
-) int {
-	return (data.Width * data.Height * input.Channel.Count() * input.LsbUsed) / bitLength
+	return encodeSlice, &metadata, nil
 }

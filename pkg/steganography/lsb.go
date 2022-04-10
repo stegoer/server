@@ -1,26 +1,22 @@
 package steganography
 
 const (
-	lsbMin = 1
-	lsbMax = 8
+	lsbMin byte = 1
+	lsbMax byte = 8
 )
 
-// LSBPositions infinitely sends the least significant bit positions.
-func LSBPositions(used byte, resultChan chan byte) {
-	var position byte
+// LSBSlice returns a slice with the lsbs based on the used byte.
+func LSBSlice(used byte) []byte {
+	var result []byte
 
-	for position = 0; position <= used; position++ {
-		resultChan <- position
-
-		if position == used {
-			position = 0
-		}
+	for position := lsbMin - 1; position < used; position++ {
+		result = append(result, position)
 	}
 
-	close(resultChan)
+	return result
 }
 
 // ValidateLSB validates that the number n is within the LSB range.
-func ValidateLSB(n int) bool {
+func ValidateLSB(n byte) bool {
 	return !(n > lsbMax || n < lsbMin)
 }

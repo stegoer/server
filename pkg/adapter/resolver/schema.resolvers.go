@@ -4,14 +4,14 @@ package resolver
 // will be copied through when generating and any unknown code will be moved to the end.
 
 import (
-	"github.com/stegoer/server/graph/generated"
+	"github.com/stegoer/server/gqlgen"
 )
 
-// Mutation returns generated.MutationResolver implementation.
-func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
+// Mutation returns gqlgen.MutationResolver implementation.
+func (r *Resolver) Mutation() gqlgen.MutationResolver { return &mutationResolver{r} }
 
-// Query returns generated.QueryResolver implementation.
-func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
+// Query returns gqlgen.QueryResolver implementation.
+func (r *Resolver) Query() gqlgen.QueryResolver { return &queryResolver{r} }
 
 type (
 	mutationResolver struct{ *Resolver }

@@ -1,19 +1,16 @@
+// some functions were inspired by https://stackoverflow.com/a/23192263
+
 package util
 
-const bitLen = 8
+const BitLength = 8
 
 // ByteArrToBits turns given byteArr into bits and sends it over a channel.
 func ByteArrToBits(byteArr []byte, resultChan chan byte) {
 	var position byte
 
 	for _, b := range byteArr {
-		for position = bitLen; position > 0; position-- {
-			// need to offset starting position by 1
-			if HasBit(b, position-1) {
-				resultChan <- 1
-			} else {
-				resultChan <- 0
-			}
+		for position = BitLength; position > 0; position-- {
+			resultChan <- BoolToBit(HasBit(b, position-1))
 		}
 	}
 
@@ -59,7 +56,7 @@ func BoolToBit(b bool) byte {
 	return 0
 }
 
-// BitToBool turns a bit inti bool
+// BitToBool turns a bit into a bool.
 func BitToBool(b byte) bool {
 	return b != 0
 }

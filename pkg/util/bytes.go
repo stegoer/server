@@ -4,7 +4,7 @@ import "encoding/binary"
 
 // Uint64ToBytes turns int to []byte representing uint64.
 func Uint64ToBytes(num uint64) []byte {
-	b := make([]byte, bitLen)
+	b := make([]byte, BitLength)
 	binary.LittleEndian.PutUint64(b, num)
 
 	return b
@@ -15,11 +15,7 @@ func BytesToUint64(bytes []byte) uint64 {
 	return binary.LittleEndian.Uint64(bytes)
 }
 
-// BytesToBool turns []byte to bool.
-func BytesToBool(bytes []byte) bool {
-	return BytesToUint64(bytes) != 0
-}
-
+// GetUpdatedByte updates value byte with newBit byte on lsbPos byte.
 func GetUpdatedByte(newBit byte, value byte, lsbPos byte) byte {
 	hasBit := HasBit(value, lsbPos)
 

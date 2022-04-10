@@ -1,4 +1,4 @@
-package model
+package util
 
 // Channel defines the type for the "channel" enum field.
 type Channel string
@@ -14,10 +14,12 @@ const (
 	ChannelRedGreenBlue Channel = "RED_GREEN_BLUE"
 )
 
+// String returns a string representation of the Channel.
 func (c Channel) String() string {
 	return string(c)
 }
 
+// IncludesRed returns whether the Channel includes Channel with red value.
 func (c Channel) IncludesRed() bool {
 	switch c {
 	case ChannelRed, ChannelRedGreen, ChannelRedBlue, ChannelRedGreenBlue:
@@ -27,15 +29,17 @@ func (c Channel) IncludesRed() bool {
 	}
 }
 
+// IncludesGreen returns whether the Channel includes Channel with green value.
 func (c Channel) IncludesGreen() bool {
 	switch c {
 	case ChannelGreen, ChannelRedGreen, ChannelGreenBlue, ChannelRedGreenBlue:
 		return true
 	default:
-		return true
+		return false
 	}
 }
 
+// IncludesBlue returns whether the Channel includes Channel with blue value.
 func (c Channel) IncludesBlue() bool {
 	switch c {
 	case ChannelBlue, ChannelRedBlue, ChannelGreenBlue, ChannelRedGreenBlue:
@@ -45,6 +49,7 @@ func (c Channel) IncludesBlue() bool {
 	}
 }
 
+// Count returns the number of color channels included in the Channel.
 func (c Channel) Count() int {
 	switch c {
 	case ChannelRed, ChannelGreen, ChannelBlue:

@@ -3,32 +3,32 @@ package controller
 import (
 	"context"
 
+	"github.com/stegoer/server/ent"
 	"github.com/stegoer/server/ent/schema/ulid"
-	"github.com/stegoer/server/graph/generated"
-	"github.com/stegoer/server/pkg/model"
+	"github.com/stegoer/server/gqlgen"
 )
 
-// User controller interface.
+// User Controller interface.
 type User interface {
 	GetByID(
 		ctx context.Context,
 		id ulid.ID,
-	) (*model.User, error)
+	) (*ent.User, error)
 	GetByEmail(
 		ctx context.Context,
 		email string,
-	) (*model.User, error)
+	) (*ent.User, error)
 	Create(
 		ctx context.Context,
-		input generated.NewUser,
-	) (*model.User, error)
+		input gqlgen.NewUser,
+	) (*ent.User, error)
 	Update(
 		ctx context.Context,
-		entUser model.User,
-		input generated.UpdateUser,
-	) (*model.User, error)
+		entUser ent.User,
+		input gqlgen.UpdateUser,
+	) (*ent.User, error)
 	SetLoggedIn(
 		ctx context.Context,
-		entUser model.User,
-	) (*model.User, error)
+		entUser ent.User,
+	) (*ent.User, error)
 }

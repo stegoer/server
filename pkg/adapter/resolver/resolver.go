@@ -9,7 +9,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 
 	"github.com/stegoer/server/ent"
-	"github.com/stegoer/server/graph/generated"
+	"github.com/stegoer/server/gqlgen"
 	"github.com/stegoer/server/pkg/adapter/controller"
 	"github.com/stegoer/server/pkg/infrastructure/env"
 	"github.com/stegoer/server/pkg/infrastructure/log"
@@ -30,7 +30,7 @@ func NewSchema( //nolint:ireturn
 	client *ent.Client,
 	controller controller.Controller,
 ) graphql.ExecutableSchema {
-	return generated.NewExecutableSchema(generated.Config{
+	return gqlgen.NewExecutableSchema(gqlgen.Config{
 		Resolvers:  getResolver(config, logger, client, controller),
 		Directives: getDirective(),
 		Complexity: getComplexity(),
@@ -51,10 +51,10 @@ func getResolver(
 	}
 }
 
-func getDirective() generated.DirectiveRoot {
-	return generated.DirectiveRoot{}
+func getDirective() gqlgen.DirectiveRoot {
+	return gqlgen.DirectiveRoot{}
 }
 
-func getComplexity() generated.ComplexityRoot {
-	return generated.ComplexityRoot{} //nolint:exhaustivestruct
+func getComplexity() gqlgen.ComplexityRoot {
+	return gqlgen.ComplexityRoot{} //nolint:exhaustivestruct
 }

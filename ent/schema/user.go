@@ -11,7 +11,6 @@ import (
 	entMixin "entgo.io/ent/schema/mixin"
 
 	"github.com/stegoer/server/ent/mixin"
-	"github.com/stegoer/server/pkg/const/globalid"
 )
 
 const nameMinLen = 5
@@ -60,7 +59,7 @@ func (User) Edges() []ent.Edge {
 // Mixin of the User.
 func (User) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.NewUlid(globalid.New().User.Prefix),
+		mixin.NewUlid("USR"),
 		UserMixin{}, //nolint:exhaustivestruct
 		mixin.NewDatetime(),
 	}

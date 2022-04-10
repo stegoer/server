@@ -2,12 +2,12 @@ package middleware
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/stegoer/server/ent"
-	"github.com/stegoer/server/pkg/adapter/repository"
+	"github.com/stegoer/server/pkg/adapter/controller"
 	"github.com/stegoer/server/pkg/infrastructure/log"
-	"github.com/stegoer/server/pkg/model"
 	"github.com/stegoer/server/pkg/util"
 )
 
@@ -20,7 +20,7 @@ type contextKey struct {
 // Jwt handles user authorization via JSON Web Tokens.
 func Jwt(
 	logger *log.Logger,
-	client *ent.Client,
+	controller controller.Controller,
 ) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(
@@ -38,10 +38,8 @@ func Jwt(
 					return
 				}
 
-				ctx := request.Context()
-
 				// validate jwt token
-				userID, err := util.ParseToken(ctx, header)
+				userID, err := util.ParseToken(header)
 				if err != nil {
 					logger.Debugf("invalid token: %v", err)
 
@@ -50,9 +48,9 @@ func Jwt(
 					return
 				}
 
-				entUser, err := repository.
-					NewUserRepository(client).
-					GetByID(ctx, userID)
+				ctx := request.Context()
+
+				entUser, err := controller.User.GetByID(ctx, userID)
 				if err != nil {
 					logger.Debugf("user not found: %v", err)
 
@@ -75,7 +73,7 @@ func Jwt(
 func JwtForContext(ctx context.Context) (*ent.User, error) {
 	entUser, ok := ctx.Value(userCtxKey).(*ent.User)
 	if !ok {
-		return nil, model.NewAuthorizationError(ctx, "invalid token")
+		return nil, errors.New("invalid token")
 	}
 
 	return entUser, nil

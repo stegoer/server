@@ -8,7 +8,6 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/stegoer/server/ent"
 	"github.com/stegoer/server/pkg/adapter/controller"
 	"github.com/stegoer/server/pkg/adapter/repository"
 	"github.com/stegoer/server/pkg/infrastructure/database"
@@ -20,9 +19,20 @@ import (
 )
 
 const (
+	maxBytes        = 50 * 1024 * 1024 // 50MB
 	timeOutDeadline = time.Second * 30
 	shutdownSignal  = 1
 )
+
+type maxBytesHandler struct {
+	handler http.Handler
+	n       int64
+}
+
+func (h *maxBytesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	r.Body = http.MaxBytesReader(w, r.Body, h.n)
+	h.handler.ServeHTTP(w, r)
+}
 
 // Run runs the server with the given env.Config configuration.
 func Run(config *env.Config, logger *log.Logger) {
@@ -33,21 +43,26 @@ func Run(config *env.Config, logger *log.Logger) {
 func create(config *env.Config, logger *log.Logger) *http.Server {
 	entClient := database.MustNew(config, logger)
 	redisClient := redis.MustNew(config, logger)
-	ctrl := newController(entClient)
+	ctrl := controller.Controller{
+		User:  repository.NewUserRepository(entClient),
+		Image: repository.NewImageRepository(entClient),
+	}
 
 	gqlSrv := graphql.NewServer(config, logger, entClient, redisClient, ctrl)
-	muxRouter := router.New(config, logger, gqlSrv, entClient)
+	muxRouter := router.New(config, logger, gqlSrv, ctrl)
 
 	return &http.Server{ //nolint:exhaustivestruct
 		Addr:         fmt.Sprintf(`0.0.0.0:%d`, config.Port),
 		WriteTimeout: timeOutDeadline,
 		ReadTimeout:  timeOutDeadline,
 		IdleTimeout:  timeOutDeadline,
-		Handler:      muxRouter,
+		Handler:      &maxBytesHandler{handler: muxRouter, n: maxBytes},
 	}
 }
 
 func run(logger *log.Logger, srv *http.Server) {
+	// inspired by https://github.com/gorilla/mux#graceful-shutdown
+
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {
 		logger.Infof("listening on %s", srv.Addr)
@@ -76,11 +91,4 @@ func run(logger *log.Logger, srv *http.Server) {
 	}
 
 	logger.Info("server shutdown")
-}
-
-func newController(client *ent.Client) controller.Controller {
-	return controller.Controller{
-		User:  repository.NewUserRepository(client),
-		Image: repository.NewImageRepository(client),
-	}
 }
