@@ -22,18 +22,34 @@ func (r *imageResolver) File(ctx context.Context, obj *ent.Image) (*generated.Fi
 }
 
 func (r *mutationResolver) EncodeImage(ctx context.Context, input generated.EncodeImageInput) (*generated.EncodeImagePayload, error) {
-	entUser, _ := middleware.JwtForContext(ctx)
+	entUser, err := middleware.JwtForContext(ctx)
+	if err != nil {
+		r.logger.Infow("encode: user not authenticated", "error", err.Error())
+	}
 
 	if err := steganography.ValidateEncodeInput(
 		ctx,
 		entUser,
 		input,
 	); err != nil {
+		r.logger.Errorw("encode: invalid input",
+			"error", err.Error(),
+			"input", input,
+			"user", entUser,
+		)
+
 		return nil, err
 	}
 
 	content, err := steganography.Encode(input)
 	if err != nil {
+		r.logger.Errorw(
+			"encode: failure",
+			"error", err.Error(),
+			"input", input,
+			"user", entUser,
+		)
+
 		return nil, model.NewValidationError(ctx, err.Error())
 	}
 
@@ -44,9 +60,17 @@ func (r *mutationResolver) EncodeImage(ctx context.Context, input generated.Enco
 			input.Upload.Filename,
 			content,
 		); err != nil {
-			return nil, err
+			r.logger.Errorw("encode: failed to create image",
+				"error", err.Error(),
+				"filename", input.Upload.Filename,
+				"user", entUser,
+			)
+
+			return nil, model.NewDBError(ctx, "failed to create image")
 		}
 	}
+
+	r.logger.Debugw("encode: success", "user", entUser)
 
 	return &generated.EncodeImagePayload{
 		File: &generated.FileType{
@@ -57,20 +81,38 @@ func (r *mutationResolver) EncodeImage(ctx context.Context, input generated.Enco
 }
 
 func (r *mutationResolver) DecodeImage(ctx context.Context, input generated.DecodeImageInput) (*generated.DecodeImagePayload, error) {
-	entUser, _ := middleware.JwtForContext(ctx)
+	entUser, err := middleware.JwtForContext(ctx)
+	if err != nil {
+		r.logger.Infow("decode: user not authenticated", "error", err.Error())
+	}
 
 	if err := steganography.ValidateDecodeInput(
 		ctx,
 		entUser,
 		input,
 	); err != nil {
+		r.logger.Errorw("decode: invalid input",
+			"error", err.Error(),
+			"input", input,
+			"user", entUser,
+		)
+
 		return nil, err
 	}
 
 	data, err := steganography.Decode(input)
 	if err != nil {
+		r.logger.Errorw(
+			"decode: failure",
+			"error", err.Error(),
+			"input", input,
+			"user", entUser,
+		)
+
 		return nil, model.NewValidationError(ctx, err.Error())
 	}
+
+	r.logger.Debugw("decode: success", "user", entUser)
 
 	return &generated.DecodeImagePayload{Data: data}, nil
 }
@@ -78,7 +120,12 @@ func (r *mutationResolver) DecodeImage(ctx context.Context, input generated.Deco
 func (r *queryResolver) Image(ctx context.Context, id ulid.ID) (*ent.Image, error) {
 	entUser, err := middleware.JwtForContext(ctx)
 	if err != nil {
-		return nil, err
+		r.logger.Errorw("image: unauthenticated user",
+			"error", err.Error(),
+			"image_id", id,
+		)
+
+		return nil, model.NewAuthorizationError(ctx, "user is not authenticated")
 	}
 
 	entImage, err := r.controller.Image.Get(
@@ -87,8 +134,17 @@ func (r *queryResolver) Image(ctx context.Context, id ulid.ID) (*ent.Image, erro
 		&id,
 	)
 	if err != nil {
-		return nil, err
+		r.logger.Errorw(
+			"image: not found",
+			"error", err.Error(),
+			"image_id", id,
+			"user_id", entUser.ID,
+		)
+
+		return nil, model.NewNotFoundError(ctx, "image not found")
 	}
+
+	r.logger.Debugw("image: found", "image_id", entImage.ID, "user_id", entUser.ID)
 
 	return entImage, nil
 }
@@ -96,7 +152,16 @@ func (r *queryResolver) Image(ctx context.Context, id ulid.ID) (*ent.Image, erro
 func (r *queryResolver) Images(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ImageWhereInput, orderBy *ent.ImageOrder) (*generated.ImagesConnection, error) {
 	entUser, err := middleware.JwtForContext(ctx)
 	if err != nil {
-		return nil, err
+		r.logger.Errorw("images: unauthenticated user", "error", err.Error())
+
+		return nil, model.NewAuthorizationError(ctx, "user is not authenticated")
+	}
+
+	if first == nil && last == nil {
+		return nil, model.NewValidationError(
+			ctx,
+			"query must specify first or last",
+		)
 	}
 
 	imageList, err := r.controller.Image.List(
@@ -110,8 +175,23 @@ func (r *queryResolver) Images(ctx context.Context, after *ent.Cursor, first *in
 		orderBy,
 	)
 	if err != nil {
-		return nil, err
+		r.logger.Errorw("images: failed to list",
+			"error", err.Error(),
+			"user_id", entUser.ID,
+			"after", after,
+			"before", before,
+			"last", last,
+			"where", where,
+			"orderBy", orderBy,
+		)
+
+		return nil, model.NewDBError(ctx, "failed to list images")
 	}
+
+	r.logger.Debugw(
+		"images: successfully listed",
+		"page_info", imageList.PageInfo,
+	)
 
 	return &generated.ImagesConnection{
 		TotalCount: imageList.TotalCount,

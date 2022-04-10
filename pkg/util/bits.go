@@ -1,13 +1,13 @@
 package util
 
-const bitLen = 8
+const BitLength = 8
 
 // ByteArrToBits turns given byteArr into bits and sends it over a channel.
 func ByteArrToBits(byteArr []byte, resultChan chan byte) {
 	var position byte
 
 	for _, b := range byteArr {
-		for position = bitLen; position > 0; position-- {
+		for position = BitLength; position > 0; position-- {
 			resultChan <- BoolToBit(HasBit(b, position-1))
 		}
 	}

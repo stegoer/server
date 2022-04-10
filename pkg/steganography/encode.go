@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"log"
 
 	"github.com/stegoer/server/ent"
 	"github.com/stegoer/server/graph/generated"
@@ -103,7 +102,7 @@ func buildData(
 		return nil, nil, fmt.Errorf("encode: %w", err)
 	}
 
-	encodedLen := base64.StdEncoding.EncodedLen(len(encryptedData))
+	encodedLen := base64.RawURLEncoding.EncodedLen(len(encryptedData))
 	encodeSlice := make([]byte, encodedLen)
 	metadata := MetadataFromEncodeInput(input, encodedLen)
 	available := imageData.PixelCount() - pixelDataOffset
@@ -118,11 +117,8 @@ func buildData(
 	}
 
 	// encode everything only after we validate that we'll be able to proceed
-	base64.StdEncoding.Encode(encodeSlice, encryptedData)
 	metadata.EncodeIntoImageData(imageData)
-
-	log.Println("raw: ", encryptedData)
-	log.Println("dec: ", encodeSlice)
+	base64.RawURLEncoding.Encode(encodeSlice, encryptedData)
 
 	return encodeSlice, &metadata, nil
 }

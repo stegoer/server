@@ -23,7 +23,7 @@ func BinaryBufferToBytes(binBuffer *bytes.Buffer) ([]byte, error) {
 		return nil, err
 	}
 
-	for i := 0; i < bufferLen; i += bitLen {
+	for i := 0; i < bufferLen; i += BitLength {
 		parsedInt, err := parseInt64(binBuffer)
 		if err != nil {
 			return nil, err
@@ -37,7 +37,7 @@ func BinaryBufferToBytes(binBuffer *bytes.Buffer) ([]byte, error) {
 }
 
 func parseInt64(binBuffer *bytes.Buffer) (int64, error) {
-	byteChunk, err := io.ReadAll(io.LimitReader(binBuffer, bitLen))
+	byteChunk, err := io.ReadAll(io.LimitReader(binBuffer, BitLength))
 	if err != nil {
 		return 0, fmt.Errorf("failed reading from buffer: %w", err)
 	}
@@ -55,7 +55,7 @@ func parseInt64(binBuffer *bytes.Buffer) (int64, error) {
 }
 
 func validateBufferLength(bufferLen int) error {
-	if (bufferLen % bitLen) != 0 {
+	if (bufferLen % BitLength) != 0 {
 		return errors.New("invalid buffer length")
 	}
 

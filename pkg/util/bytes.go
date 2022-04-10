@@ -4,7 +4,7 @@ import "encoding/binary"
 
 // Uint64ToBytes turns int to []byte representing uint64.
 func Uint64ToBytes(num uint64) []byte {
-	b := make([]byte, bitLen)
+	b := make([]byte, BitLength)
 	binary.LittleEndian.PutUint64(b, num)
 
 	return b

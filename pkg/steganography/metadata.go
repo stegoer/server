@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/stegoer/server/graph/generated"
 	"github.com/stegoer/server/pkg/model"
@@ -13,7 +12,7 @@ import (
 
 const (
 	metadataLength                   = 13
-	metadataBinaryLength             = metadataLength * bitLength
+	metadataBinaryLength             = metadataLength * util.BitLength
 	metadataPixelOffset              = 0
 	metadataLsbPos              byte = 1
 	metadataDistributionDivisor      = 1
@@ -30,7 +29,7 @@ type Metadata struct {
 }
 
 func (md Metadata) GetBinaryLength() uint64 {
-	return md.length * bitLength
+	return md.length * util.BitLength
 }
 
 func (md Metadata) GetChannel() model.Channel {
@@ -82,12 +81,7 @@ func (md Metadata) GetDistributionDivisor(imageData util.ImageData) int {
 	case true:
 		pixelsAvailable := imageData.PixelCount() - pixelDataOffset
 
-		log.Println("pix available: ", pixelsAvailable)
-		log.Println("needed: ", md.PixelsNeeded())
-
 		if divisor := int(pixelsAvailable / md.PixelsNeeded()); divisor > 0 {
-			log.Println("divisor", divisor)
-
 			return divisor
 		}
 

@@ -2,19 +2,19 @@ package util
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 
-	"github.com/stegoer/server/ent/schema/ulid"
 	"github.com/stegoer/server/graph/generated"
 	"github.com/stegoer/server/pkg/model"
 )
 
 const (
-	tokenExpiration       = time.Minute * 15
+	tokenExpiration       = time.Minute * 120
 	mapClaimsErrorMessage = "failed to convert token claims to standard claims"
 )
 
@@ -30,7 +30,7 @@ func GenerateAuth(
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return nil, model.NewInternalServerError(ctx, mapClaimsErrorMessage)
+		return nil, errors.New(mapClaimsErrorMessage)
 	}
 
 	claims["id"] = entUser.ID
@@ -48,11 +48,8 @@ func GenerateAuth(
 	}, nil
 }
 
-// ParseToken parses a jwt token and returns the username in its claims.
-func ParseToken(
-	ctx context.Context,
-	tokenStr string,
-) (ulid.ID, error) {
+// ParseToken parses a jwt token and returns the model.ID in its claims.
+func ParseToken(tokenStr string) (model.ID, error) {
 	token, err := jwt.Parse(
 		Trim(tokenStr, '"'),
 		func(_ *jwt.Token) (interface{}, error) {
@@ -60,12 +57,12 @@ func ParseToken(
 		},
 	)
 	if err != nil {
-		return "", model.NewAuthorizationError(ctx, err.Error())
+		return "", fmt.Errorf("parse_token: %w", err)
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return ulid.ID(fmt.Sprintf("%v", claims["id"])), nil
+		return model.ID(fmt.Sprintf("%v", claims["id"])), nil
 	}
 
-	return "", model.NewAuthorizationError(ctx, mapClaimsErrorMessage)
+	return "", errors.New(mapClaimsErrorMessage)
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 
-	"github.com/stegoer/server/ent"
+	"github.com/stegoer/server/pkg/adapter/controller"
 	"github.com/stegoer/server/pkg/infrastructure/env"
 	"github.com/stegoer/server/pkg/infrastructure/log"
 	"github.com/stegoer/server/pkg/infrastructure/middleware"
@@ -24,10 +24,10 @@ func New(
 	config *env.Config,
 	logger *log.Logger,
 	srv http.Handler,
-	client *ent.Client,
+	controller controller.Controller,
 ) http.Handler {
 	router := mux.NewRouter()
-	router.Use(middleware.Logging, middleware.Jwt(logger, client))
+	router.Use(middleware.Logging, middleware.Jwt(logger, controller))
 
 	router.Handle(queryPath, srv)
 
@@ -43,11 +43,19 @@ func New(
 		crossOrigin = cors.AllowAll()
 	case false:
 		crossOrigin = cors.New(cors.Options{ //nolint:exhaustivestruct
-			AllowedOrigins: []string{"*"},
-			AllowedHeaders: []string{"Authorization"},
+			AllowedOrigins: getAllowedOrigins(),
+			AllowedHeaders: getAllowedHeaders(),
 			Debug:          config.Debug,
 		})
 	}
 
 	return crossOrigin.Handler(router)
+}
+
+func getAllowedOrigins() []string {
+	return []string{"*"}
+}
+
+func getAllowedHeaders() []string {
+	return []string{"Authorization"}
 }

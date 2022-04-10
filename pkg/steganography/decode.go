@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"log"
 
 	"github.com/stegoer/server/ent"
 	"github.com/stegoer/server/graph/generated"
@@ -29,7 +28,7 @@ func ValidateDecodeInput(
 	return nil
 }
 
-// Decode decodes a message from the given generated.DecodeImageInput input.
+// Decode decodes the data from the given generated.DecodeImageInput input.
 func Decode(input generated.DecodeImageInput) (string, error) {
 	imageData, err := util.FileToImageData(input.Upload.File)
 	if err != nil {
@@ -47,7 +46,7 @@ func Decode(input generated.DecodeImageInput) (string, error) {
 		metadata.lsbUsed,
 		metadata.GetChannel(),
 		metadata.GetDistributionDivisor(imageData),
-		metadata.GetBinaryLength(),
+		int(metadata.GetBinaryLength()),
 	)
 	if err != nil {
 		return "", fmt.Errorf("decode: %w", err)
@@ -65,15 +64,12 @@ func decodeData(
 		return "", fmt.Errorf("decode: %w", err)
 	}
 
-	decodeSlice := make([]byte, base64.StdEncoding.EncodedLen(len(byteSlice)))
+	decodeSlice := make([]byte, base64.RawURLEncoding.DecodedLen(len(byteSlice)))
 
-	bytesWritten, err := base64.StdEncoding.Decode(decodeSlice, byteSlice)
+	bytesWritten, err := base64.RawURLEncoding.Decode(decodeSlice, byteSlice)
 	if err != nil {
 		return "", fmt.Errorf("decode: %w", err)
 	}
-
-	log.Println("raw: ", byteSlice)
-	log.Println("dec: ", decodeSlice[:bytesWritten])
 
 	data, err := cryptography.Decrypt(decodeSlice[:bytesWritten], encryptionKey)
 	if err != nil {

@@ -195,7 +195,7 @@ func GetNRGBAValues(
 	lsbUsed byte,
 	channel model.Channel,
 	distributionDivisor int,
-	bufferLength uint64,
+	bufferLength int,
 ) (*bytes.Buffer, error) {
 	var binaryBuffer bytes.Buffer
 
@@ -220,7 +220,7 @@ func GetNRGBAValues(
 
 				binaryBuffer.WriteRune(util.BoolToRune(hasBit))
 
-				if uint64(binaryBuffer.Len()) == bufferLength {
+				if binaryBuffer.Len() == bufferLength {
 					return &binaryBuffer, nil
 				}
 			}

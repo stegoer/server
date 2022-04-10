@@ -36,7 +36,7 @@ func create(config *env.Config, logger *log.Logger) *http.Server {
 	ctrl := newController(entClient)
 
 	gqlSrv := graphql.NewServer(config, logger, entClient, redisClient, ctrl)
-	muxRouter := router.New(config, logger, gqlSrv, entClient)
+	muxRouter := router.New(config, logger, gqlSrv, ctrl)
 
 	return &http.Server{ //nolint:exhaustivestruct
 		Addr:         fmt.Sprintf(`0.0.0.0:%d`, config.Port),

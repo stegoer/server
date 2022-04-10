@@ -3,7 +3,6 @@ package controller
 import (
 	"context"
 
-	"github.com/stegoer/server/ent/schema/ulid"
 	"github.com/stegoer/server/graph/generated"
 	"github.com/stegoer/server/pkg/model"
 )
@@ -12,7 +11,7 @@ import (
 type User interface {
 	GetByID(
 		ctx context.Context,
-		id ulid.ID,
+		id model.ID,
 	) (*model.User, error)
 	GetByEmail(
 		ctx context.Context,
