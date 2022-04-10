@@ -19,9 +19,20 @@ import (
 )
 
 const (
+	maxBytes        = 50 * 1024 * 1024 // 50MB
 	timeOutDeadline = time.Second * 30
 	shutdownSignal  = 1
 )
+
+type maxBytesHandler struct {
+	handler http.Handler
+	n       int64
+}
+
+func (h *maxBytesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	r.Body = http.MaxBytesReader(w, r.Body, h.n)
+	h.handler.ServeHTTP(w, r)
+}
 
 // Run runs the server with the given env.Config configuration.
 func Run(config *env.Config, logger *log.Logger) {
@@ -45,7 +56,7 @@ func create(config *env.Config, logger *log.Logger) *http.Server {
 		WriteTimeout: timeOutDeadline,
 		ReadTimeout:  timeOutDeadline,
 		IdleTimeout:  timeOutDeadline,
-		Handler:      muxRouter,
+		Handler:      &maxBytesHandler{handler: muxRouter, n: maxBytes},
 	}
 }
 

@@ -35,7 +35,6 @@ func (r *mutationResolver) EncodeImage(ctx context.Context, input gqlgen.EncodeI
 	); err != nil {
 		r.logger.Errorw("encode: invalid input",
 			"error", err.Error(),
-			"input", input,
 			"user", entUser,
 		)
 
@@ -47,15 +46,15 @@ func (r *mutationResolver) EncodeImage(ctx context.Context, input gqlgen.EncodeI
 		r.logger.Errorw(
 			"encode: failure",
 			"error", err.Error(),
-			"input", input,
 			"user", entUser,
 		)
 
 		return nil, util.NewValidationError(
 			ctx,
 			fmt.Sprintf(
-				"could not encode data into image file %s",
+				"could not encode data into image file %s: %v",
 				input.Upload.Filename,
+				err,
 			),
 		)
 	}
@@ -151,13 +150,13 @@ func (r *queryResolver) Image(ctx context.Context, id ulid.ID) (*ent.Image, erro
 			"image: not found",
 			"error", err.Error(),
 			"image_id", id,
-			"user_id", entUser.ID,
+			"user", entUser,
 		)
 
 		return nil, util.NewNotFoundError(ctx, "image not found")
 	}
 
-	r.logger.Debugw("image: found", "image_id", entImage.ID, "user_id", entUser.ID)
+	r.logger.Debugw("image: found", "image_id", entImage.ID, "user", entUser)
 
 	return entImage, nil
 }
