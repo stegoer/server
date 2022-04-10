@@ -8,6 +8,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
+	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/go-redis/redis/v8"
 	"github.com/vektah/gqlparser/v2/gqlerror"
@@ -21,7 +22,12 @@ import (
 	"github.com/stegoer/server/pkg/util"
 )
 
-const complexityLimit = 1000
+const (
+	lruQueryCacheSize = 1000
+	maxUploadSize     = 2e+7 // 20MB
+	maxMemory         = 1e+8 // 100MB
+	complexityLimit   = 1000
+)
 
 // NewServer generates a new handler.Server.
 func NewServer(
@@ -31,11 +37,14 @@ func NewServer(
 	redisClient *redis.Client,
 	controller controller.Controller,
 ) *handler.Server {
-	srv := handler.NewDefaultServer(
-		resolver.NewSchema(config, logger, client, controller),
-	)
+	srv := handler.New(resolver.NewSchema(config, logger, client, controller))
 	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})
+	srv.AddTransport(transport.MultipartForm{
+		MaxUploadSize: maxUploadSize,
+		MaxMemory:     maxMemory,
+	})
+	srv.SetQueryCache(lru.New(lruQueryCacheSize))
 	srv.Use(entgql.Transactioner{TxOpener: client})
 	srv.Use(extension.Introspection{})
 	srv.Use(extension.FixedComplexityLimit(complexityLimit))
