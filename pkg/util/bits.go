@@ -54,7 +54,7 @@ func BoolToBit(b bool) byte {
 	return 0
 }
 
-// BitToBool turns a bit inti bool.
+// BitToBool turns a bit into a bool.
 func BitToBool(b byte) bool {
 	return b != 0
 }
