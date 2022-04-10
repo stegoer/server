@@ -16,7 +16,7 @@ func ValidateEncodeInput(
 	ctx context.Context,
 	user *ent.User,
 	input gqlgen.EncodeImageInput,
-) *util.Error {
+) error {
 	if user == nil {
 		if input.EncryptionKey != nil {
 			return util.NewAuthorizationError(

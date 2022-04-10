@@ -1,3 +1,5 @@
+// inspired by https://github.com/manakuro/golang-clean-architecture-ent-gqlgen/blob/main/pkg/entity/model/error.go
+
 package util
 
 import (
@@ -11,88 +13,69 @@ import (
 type ErrorCode string
 
 const (
-	// DBError is error code of database.
-	DBError ErrorCode = "DB_ERROR"
-	// GraphQLError is error code of graphql.
-	GraphQLError ErrorCode = "GRAPHQL_ERROR"
-	// AuthorizationError is error code of authorization error.
-	AuthorizationError ErrorCode = "AUTHORIZATION_ERROR"
-	// NotFoundError is error code of not found.
-	NotFoundError ErrorCode = "NOT_FOUND_ERROR"
-	// ValidationError is error code of validation.
-	ValidationError ErrorCode = "VALIDATION_ERROR"
-	// BadRequestError is error code of request.
-	BadRequestError ErrorCode = "BAD_REQUEST_ERROR"
-	// InternalServerError is error code of server error.
-	InternalServerError ErrorCode = "INTERNAL_SERVER_ERROR"
+	// authorization represents ErrorCode related to authorization Error.
+	authorization ErrorCode = "AUTHORIZATION_ERROR"
+
+	// db represents ErrorCode related to database Error.
+	db ErrorCode = "DB_ERROR"
+
+	// internalServer represents ErrorCode related to internal server Error.
+	internalServer ErrorCode = "INTERNAL_SERVER_ERROR"
+
+	// notFound represents ErrorCode related to not found Error.
+	notFound ErrorCode = "NOT_FOUND_ERROR"
+
+	// validation represents ErrorCode related validation Error.
+	validation ErrorCode = "VALIDATION_ERROR"
 )
 
-// Error represents global error type.
-type Error = gqlerror.Error
-
-// NewDBError returns error related to database.
-func NewDBError(
-	ctx context.Context,
-	message string,
-) *Error {
-	return newError(ctx, message, DBError)
-}
-
-// NewGraphQLError returns error related to graphql.
-func NewGraphQLError(
-	ctx context.Context,
-	message string,
-) *Error {
-	return newError(ctx, message, GraphQLError)
-}
-
-// NewAuthorizationError returns error related to authorization.
+// NewAuthorizationError returns a new gqlerror.Error with authorization ErrorCode.
 func NewAuthorizationError(
 	ctx context.Context,
 	message string,
-) *Error {
-	return newError(ctx, message, AuthorizationError)
+) *gqlerror.Error {
+	return newError(ctx, message, authorization)
 }
 
-// NewNotFoundError returns error related to not found.
-func NewNotFoundError(
+// NewDBError returns a new gqlerror.Error with db ErrorCode.
+func NewDBError(
 	ctx context.Context,
 	message string,
-) *Error {
-	return newError(ctx, message, NotFoundError)
+) *gqlerror.Error {
+	return newError(ctx, message, db)
 }
 
-// NewBadRequestError returns error related to bad request.
-func NewBadRequestError(
-	ctx context.Context,
-	message string,
-) *Error {
-	return newError(ctx, message, BadRequestError)
-}
-
-// NewValidationError returns error related to validation.
-func NewValidationError(
-	ctx context.Context,
-	message string,
-) *Error {
-	return newError(ctx, message, ValidationError)
-}
-
-// NewInternalServerError returns error related to internal server error.
+// NewInternalServerError returns a new gqlerror.Error with internalServer ErrorCode.
 func NewInternalServerError(
 	ctx context.Context,
 	message string,
-) *Error {
-	return newError(ctx, message, InternalServerError)
+) *gqlerror.Error {
+	return newError(ctx, message, internalServer)
 }
 
-// newError creates a new Error.
+// NewNotFoundError returns a new gqlerror.Error with notFound ErrorCode.
+func NewNotFoundError(
+	ctx context.Context,
+	message string,
+) *gqlerror.Error {
+	return newError(ctx, message, notFound)
+}
+
+// NewValidationError returns a new gqlerror.Error with validation ErrorCode.
+func NewValidationError(
+	ctx context.Context,
+	message string,
+) *gqlerror.Error {
+	return newError(ctx, message, validation)
+}
+
+// newError creates and returns a new gqlerror.Error.
 func newError(
 	ctx context.Context,
 	message string,
 	code ErrorCode,
-) *Error {
-	return &Error{ //nolint:exhaustivestruct
+) *gqlerror.Error {
+	return &gqlerror.Error{ //nolint:exhaustivestruct
 		Message:    message,
 		Path:       graphql.GetPath(ctx),
 		Extensions: map[string]interface{}{"code": code},
