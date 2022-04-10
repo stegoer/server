@@ -38,6 +38,7 @@ func NewServer(
 	controller controller.Controller,
 ) *handler.Server {
 	srv := handler.New(resolver.NewSchema(config, logger, client, controller))
+	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})
 	srv.AddTransport(transport.MultipartForm{
