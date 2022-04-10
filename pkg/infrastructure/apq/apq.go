@@ -1,3 +1,7 @@
+// inspired by https://gqlgen.com/reference/apq/#usage
+
+// Package apq implement the graphql.Cache interface which is used
+// for automatic persisted queries.
 package apq
 
 import (
@@ -14,13 +18,13 @@ type Cache struct {
 }
 
 const (
-	KeyPrefix = "apq:"
-	TTL       = time.Hour * 24
+	keyPrefix = "apq:"
+	ttl       = time.Hour * 24
 )
 
 // NewCache returns a new Cache instance for APQ.
 func NewCache(client redis.Client) *Cache {
-	return &Cache{client: client, ttl: TTL}
+	return &Cache{client: client, ttl: ttl}
 }
 
 // Add adds a value to the cache.
@@ -39,5 +43,5 @@ func (c *Cache) Get(ctx context.Context, key string) (interface{}, bool) {
 }
 
 func getKey(key string) string {
-	return KeyPrefix + key
+	return keyPrefix + key
 }

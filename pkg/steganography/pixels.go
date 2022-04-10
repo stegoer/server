@@ -9,8 +9,10 @@ import (
 	"github.com/stegoer/server/pkg/util"
 )
 
+// ChannelType represents a pixel color channel.
 type ChannelType byte
 
+// PixelData represents data of one particular pixel of an image.
 type PixelData struct {
 	Width    int
 	Height   int
@@ -19,37 +21,47 @@ type PixelData struct {
 }
 
 const (
+	// RedChannel represents the red ChannelType.
 	RedChannel ChannelType = iota
+	// GreenChannel represents the red ChannelType.
 	GreenChannel
+	// BlueChannel represents the red ChannelType.
 	BlueChannel
 
 	channelTypeSliceCapacity = 3
 )
 
+// IsRed returns whether the ChannelType represents a RedChannel.
 func (ct ChannelType) IsRed() bool {
 	return ct == RedChannel
 }
 
+// IsGreen returns whether the ChannelType represents a GreenChannel.
 func (ct ChannelType) IsGreen() bool {
 	return ct == GreenChannel
 }
 
+// IsBlue returns whether the ChannelType represents a BlueChannel.
 func (ct ChannelType) IsBlue() bool {
 	return ct == BlueChannel
 }
 
+// GetRed returns the underlying value of the RedChannel of the PixelData.
 func (pd PixelData) GetRed() byte {
 	return pd.Color.R
 }
 
+// GetGreen returns the underlying value of the GreenChannel of the PixelData.
 func (pd PixelData) GetGreen() byte {
 	return pd.Color.G
 }
 
+// GetBlue returns the underlying value of the BlueChannel of the PixelData.
 func (pd PixelData) GetBlue() byte {
 	return pd.Color.B
 }
 
+// GetChannelValue returns the value of the ChannelType of the PixelData.
 func (pd PixelData) GetChannelValue(channel ChannelType) byte {
 	switch {
 	case channel.IsRed():
@@ -64,18 +76,22 @@ func (pd PixelData) GetChannelValue(channel ChannelType) byte {
 	}
 }
 
+// SetRed sets the RedChannel of the PixelData.
 func (pd *PixelData) SetRed(value byte) {
 	pd.Color.R = value
 }
 
+// SetGreen sets the GreenChannel of the PixelData.
 func (pd *PixelData) SetGreen(value byte) {
 	pd.Color.G = value
 }
 
+// SetBlue sets the BlueChannel of the PixelData.
 func (pd *PixelData) SetBlue(value byte) {
 	pd.Color.B = value
 }
 
+// SetChannelValue sets the value of ChannelType of the PixelData on lsbPos.
 func (pd PixelData) SetChannelValue(
 	channel ChannelType,
 	value byte,
@@ -91,6 +107,7 @@ func (pd PixelData) SetChannelValue(
 	}
 }
 
+// NRGBAPixels sends PixelData of util.ImageData based on given parameters.
 func NRGBAPixels(
 	data util.ImageData,
 	pixelOffset int,
@@ -139,6 +156,7 @@ func NRGBAPixels(
 	close(resultChan)
 }
 
+// SetNRGBAValues sets ChannelType values into util.ImageData based on params.
 func SetNRGBAValues(
 	imageData util.ImageData,
 	encodeData []byte,
@@ -164,20 +182,17 @@ func SetNRGBAValues(
 	hasBits := true
 
 	for pixelData := range pixelDataChannel {
+	channelIterator:
 		for _, pixelChannel := range pixelData.Channels {
 			for _, lsbPos := range lsbSlice {
 				dataBit, ok := <-bitChannel
 				if !ok {
 					hasBits = false
 
-					break
+					break channelIterator
 				}
 
 				pixelData.SetChannelValue(pixelChannel, dataBit, lsbPos)
-			}
-
-			if !hasBits {
-				break
 			}
 		}
 
@@ -189,6 +204,7 @@ func SetNRGBAValues(
 	}
 }
 
+// GetNRGBAValues returns bytes.Buffer with ChannelType values.
 func GetNRGBAValues(
 	imageData util.ImageData,
 	pixelOffset int,
@@ -227,5 +243,5 @@ func GetNRGBAValues(
 		}
 	}
 
-	return nil, errors.New("requested NRGBA values not found")
+	return nil, errors.New("requested binary values not found")
 }

@@ -48,6 +48,8 @@ func create(config *env.Config, logger *log.Logger) *http.Server {
 }
 
 func run(logger *log.Logger, srv *http.Server) {
+	// inspired by https://github.com/gorilla/mux#graceful-shutdown
+
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {
 		logger.Infof("listening on %s", srv.Addr)

@@ -1,5 +1,6 @@
 package util
 
+// Trim trims src string with toTrim uint8.
 func Trim(src string, toTrim uint8) string {
 	if src[0] == toTrim {
 		src = src[1:]

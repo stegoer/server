@@ -14,6 +14,7 @@ const (
 	ChannelRedGreenBlue Channel = "RED_GREEN_BLUE"
 )
 
+// String returns a string representation of the Channel.
 func (c Channel) String() string {
 	return string(c)
 }

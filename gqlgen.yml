@@ -64,3 +64,6 @@ models:
   Channel:
     model:
       - github.com/stegoer/server/pkg/model.Channel
+  User:
+    model:
+      - github.com/stegoer/server/pkg/model.User

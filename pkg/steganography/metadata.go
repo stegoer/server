@@ -28,10 +28,12 @@ type Metadata struct {
 	evenDistribution bool
 }
 
+// GetBinaryLength returns the expected binary length of the data represented.
 func (md Metadata) GetBinaryLength() uint64 {
 	return md.length * util.BitLength
 }
 
+// GetChannel returns the model.Channel represented by the Metadata.
 func (md Metadata) GetChannel() model.Channel {
 	switch {
 	case md.red && md.green && md.blue:
@@ -60,6 +62,7 @@ func (md Metadata) PixelsNeeded() uint64 {
 		md.lsbUsed) / uint64(md.GetChannel().Count())
 }
 
+// ToByteArr turns the Metadata into an array of bytes.
 func (md Metadata) ToByteArr() []byte {
 	result := util.Uint64ToBytes(md.length)
 	result = append(result, md.lsbUsed)
@@ -76,6 +79,7 @@ func (md Metadata) ToByteArr() []byte {
 	return result
 }
 
+// GetDistributionDivisor calculates the distribution divisor represented.
 func (md Metadata) GetDistributionDivisor(imageData util.ImageData) int {
 	switch md.evenDistribution {
 	case true:
@@ -91,6 +95,7 @@ func (md Metadata) GetDistributionDivisor(imageData util.ImageData) int {
 	}
 }
 
+// EncodeIntoImageData encodes the data represented into util.ImageData.
 func (md Metadata) EncodeIntoImageData(imageData util.ImageData) {
 	SetNRGBAValues(
 		imageData,
@@ -102,6 +107,7 @@ func (md Metadata) EncodeIntoImageData(imageData util.ImageData) {
 	)
 }
 
+// MetadataFromEncodeInput creates Metadata from generated.EncodeImageInput.
 func MetadataFromEncodeInput(
 	input generated.EncodeImageInput,
 	messageLength int,
@@ -116,6 +122,7 @@ func MetadataFromEncodeInput(
 	}
 }
 
+// MetadataFromBinaryBuffer creates a new Metadata from bytes.Buffer.
 func MetadataFromBinaryBuffer(binaryBuffer *bytes.Buffer) (*Metadata, error) {
 	byteSlice, err := util.BinaryBufferToBytes(binaryBuffer)
 	if err != nil {
@@ -138,6 +145,7 @@ func MetadataFromBinaryBuffer(binaryBuffer *bytes.Buffer) (*Metadata, error) {
 	}, nil
 }
 
+// MetadataFromImageData creates a new Metadata from util.ImageData.
 func MetadataFromImageData(imageData util.ImageData) (*Metadata, error) {
 	binaryBuffer, err := GetNRGBAValues(
 		imageData,

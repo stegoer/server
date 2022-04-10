@@ -5,16 +5,16 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/stegoer/server/ent"
 	"github.com/stegoer/server/graph/generated"
 	"github.com/stegoer/server/pkg/cryptography"
 	"github.com/stegoer/server/pkg/model"
 	"github.com/stegoer/server/pkg/util"
 )
 
+// ValidateEncodeInput validates the generated.EncodeImageInput.
 func ValidateEncodeInput(
 	ctx context.Context,
-	user *ent.User,
+	user *model.User,
 	input generated.EncodeImageInput,
 ) *model.Error {
 	if user == nil {

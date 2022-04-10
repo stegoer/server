@@ -29,10 +29,12 @@ const (
 	production  environment = "PRODUCTION"
 )
 
+// IsDevelopment returns whether the Config represents a development environment.
 func (c *Config) IsDevelopment() bool {
 	return c.Env == development
 }
 
+// IsProduction returns whether the Config represents a production environment.
 func (c *Config) IsProduction() bool {
 	return c.Env == production
 }
