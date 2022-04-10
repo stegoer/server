@@ -5,6 +5,7 @@ package resolver
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/stegoer/server/ent"
 	"github.com/stegoer/server/ent/schema/ulid"
@@ -50,7 +51,13 @@ func (r *mutationResolver) EncodeImage(ctx context.Context, input generated.Enco
 			"user", entUser,
 		)
 
-		return nil, model.NewValidationError(ctx, err.Error())
+		return nil, model.NewValidationError(
+			ctx,
+			fmt.Sprintf(
+				"could not encode data into image file %s",
+				input.Upload.Filename,
+			),
+		)
 	}
 
 	if entUser != nil {
@@ -66,7 +73,7 @@ func (r *mutationResolver) EncodeImage(ctx context.Context, input generated.Enco
 				"user", entUser,
 			)
 
-			return nil, model.NewDBError(ctx, "failed to create image")
+			return nil, model.NewDBError(ctx, "failed to create image record")
 		}
 	}
 
@@ -109,7 +116,13 @@ func (r *mutationResolver) DecodeImage(ctx context.Context, input generated.Deco
 			"user", entUser,
 		)
 
-		return nil, model.NewValidationError(ctx, err.Error())
+		return nil, model.NewValidationError(
+			ctx,
+			fmt.Sprintf(
+				"no encoded data found in the image file %s",
+				input.Upload.Filename,
+			),
+		)
 	}
 
 	r.logger.Debugw("decode: success", "user", entUser)

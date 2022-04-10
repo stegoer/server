@@ -243,5 +243,5 @@ func GetNRGBAValues(
 		}
 	}
 
-	return nil, errors.New("requested binary values not found")
+	return nil, errors.New("malformed image data")
 }
