@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/stegoer/server/ent"
+	"github.com/stegoer/server/ent/schema/ulid"
 	"github.com/stegoer/server/ent/user"
-	"github.com/stegoer/server/graph/generated"
+	"github.com/stegoer/server/gqlgen"
 	"github.com/stegoer/server/pkg/adapter/controller"
 	"github.com/stegoer/server/pkg/cryptography"
-	"github.com/stegoer/server/pkg/model"
 )
 
 // NewUserRepository returns implementation of the controller.User interface.
@@ -24,8 +24,8 @@ type userRepository struct {
 
 func (r *userRepository) GetByID(
 	ctx context.Context,
-	id model.ID,
-) (*model.User, error) {
+	id ulid.ID,
+) (*ent.User, error) {
 	entUser, err := r.client.User.Query().Where(user.IDEQ(id)).Only(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("getByID: %w", err)
@@ -37,7 +37,7 @@ func (r *userRepository) GetByID(
 func (r *userRepository) GetByEmail(
 	ctx context.Context,
 	email string,
-) (*model.User, error) {
+) (*ent.User, error) {
 	entUser, err := r.client.User.Query().Where(user.EmailEQ(email)).Only(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("getByEmail: %w", err)
@@ -48,8 +48,8 @@ func (r *userRepository) GetByEmail(
 
 func (r *userRepository) Create(
 	ctx context.Context,
-	input generated.NewUser,
-) (*model.User, error) {
+	input gqlgen.NewUser,
+) (*ent.User, error) {
 	hashedPassword, err := cryptography.HashPassword(input.Password)
 	if err != nil {
 		return nil, fmt.Errorf("create: %w", err)
@@ -70,9 +70,9 @@ func (r *userRepository) Create(
 
 func (r *userRepository) Update(
 	ctx context.Context,
-	entUser model.User,
-	input generated.UpdateUser,
-) (*model.User, error) {
+	entUser ent.User,
+	input gqlgen.UpdateUser,
+) (*ent.User, error) {
 	update := entUser.Update()
 
 	if input.Username != nil {
@@ -102,8 +102,8 @@ func (r *userRepository) Update(
 
 func (r *userRepository) SetLoggedIn(
 	ctx context.Context,
-	entUser model.User,
-) (*model.User, error) {
+	entUser ent.User,
+) (*ent.User, error) {
 	updatedEntUser, err := entUser.Update().SetLastLogin(time.Now()).Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("setLoggedIn: %w", err)

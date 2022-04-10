@@ -8,7 +8,6 @@ import (
 	entMixin "entgo.io/ent/schema/mixin"
 
 	"github.com/stegoer/server/ent/mixin"
-	"github.com/stegoer/server/pkg/const/globalid"
 )
 
 // Image holds the schema definition for the Image entity.
@@ -47,7 +46,7 @@ func (Image) Edges() []ent.Edge {
 // Mixin of the Image.
 func (Image) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.NewUlid(globalid.New().Image.Prefix),
+		mixin.NewUlid("IMG"),
 		ImageMixin{}, //nolint:exhaustivestruct
 		mixin.NewDatetime(),
 	}

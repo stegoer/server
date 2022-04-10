@@ -5,7 +5,6 @@ import (
 	"errors"
 	"image/color"
 
-	"github.com/stegoer/server/pkg/model"
 	"github.com/stegoer/server/pkg/util"
 )
 
@@ -111,7 +110,7 @@ func (pd PixelData) SetChannelValue(
 func NRGBAPixels(
 	data util.ImageData,
 	pixelOffset int,
-	channel model.Channel,
+	channel util.Channel,
 	distributionDivisor int,
 	resultChan chan PixelData,
 ) {
@@ -162,7 +161,7 @@ func SetNRGBAValues(
 	encodeData []byte,
 	pixelOffset int,
 	lsbUsed byte,
-	channel model.Channel,
+	channel util.Channel,
 	distributionDivisor int,
 ) {
 	bitChannel := make(chan byte)
@@ -209,7 +208,7 @@ func GetNRGBAValues(
 	imageData util.ImageData,
 	pixelOffset int,
 	lsbUsed byte,
-	channel model.Channel,
+	channel util.Channel,
 	distributionDivisor int,
 	bufferLength int,
 ) (*bytes.Buffer, error) {

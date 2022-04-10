@@ -5,9 +5,9 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/stegoer/server/ent"
 	"github.com/stegoer/server/pkg/adapter/controller"
 	"github.com/stegoer/server/pkg/infrastructure/log"
-	"github.com/stegoer/server/pkg/model"
 	"github.com/stegoer/server/pkg/util"
 )
 
@@ -70,8 +70,8 @@ func Jwt(
 }
 
 // JwtForContext finds user from context. Requires Jwt to have run.
-func JwtForContext(ctx context.Context) (*model.User, error) {
-	entUser, ok := ctx.Value(userCtxKey).(*model.User)
+func JwtForContext(ctx context.Context) (*ent.User, error) {
+	entUser, ok := ctx.Value(userCtxKey).(*ent.User)
 	if !ok {
 		return nil, errors.New("invalid token")
 	}

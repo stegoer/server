@@ -18,7 +18,7 @@ import (
 	"github.com/stegoer/server/pkg/infrastructure/apq"
 	"github.com/stegoer/server/pkg/infrastructure/env"
 	"github.com/stegoer/server/pkg/infrastructure/log"
-	"github.com/stegoer/server/pkg/model"
+	"github.com/stegoer/server/pkg/util"
 )
 
 const complexityLimit = 1000
@@ -53,7 +53,7 @@ func NewServer(
 		return err
 	})
 	srv.SetRecoverFunc(func(ctx context.Context, err interface{}) error {
-		return model.NewInternalServerError(ctx, fmt.Sprintf(`%v`, err))
+		return util.NewInternalServerError(ctx, fmt.Sprintf(`%v`, err))
 	})
 
 	return srv

@@ -1,3 +1,5 @@
+// some functions were inspired by https://stackoverflow.com/a/23192263
+
 package util
 
 const BitLength = 8

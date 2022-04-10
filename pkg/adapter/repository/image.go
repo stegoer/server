@@ -6,8 +6,8 @@ import (
 
 	"github.com/stegoer/server/ent"
 	"github.com/stegoer/server/ent/image"
+	"github.com/stegoer/server/ent/schema/ulid"
 	"github.com/stegoer/server/pkg/adapter/controller"
-	"github.com/stegoer/server/pkg/model"
 )
 
 // NewImageRepository returns implementation of the controller.Image interface.
@@ -21,9 +21,9 @@ type imageRepository struct {
 
 func (r *imageRepository) Get(
 	ctx context.Context,
-	entUser model.User,
-	id *model.ID,
-) (*model.Image, error) {
+	entUser ent.User,
+	id *ulid.ID,
+) (*ent.Image, error) {
 	entImage, err := entUser.
 		QueryImages().
 		Where(image.ID(*id)).
@@ -36,14 +36,14 @@ func (r *imageRepository) Get(
 }
 
 func (r *imageRepository) List(ctx context.Context,
-	entUser model.User,
-	after *model.Cursor,
+	entUser ent.User,
+	after *ent.Cursor,
 	first *int,
-	before *model.Cursor,
+	before *ent.Cursor,
 	last *int,
-	where *model.ImageWhereInput,
-	orderBy *model.ImageOrderInput,
-) (*model.ImageConnection, error) {
+	where *ent.ImageWhereInput,
+	orderBy *ent.ImageOrder,
+) (*ent.ImageConnection, error) {
 	connection, err := entUser.QueryImages().
 		Paginate(ctx, after, first, before, last,
 			ent.WithImageFilter(where.Filter),
@@ -58,10 +58,10 @@ func (r *imageRepository) List(ctx context.Context,
 
 func (r *imageRepository) Create(
 	ctx context.Context,
-	entUser model.User,
+	entUser ent.User,
 	filename string,
 	content string,
-) (*model.Image, error) {
+) (*ent.Image, error) {
 	entImage, err := r.client.
 		Image.
 		Create().
@@ -78,7 +78,7 @@ func (r *imageRepository) Create(
 
 func (r *imageRepository) Count(
 	ctx context.Context,
-	entUser model.User,
+	entUser ent.User,
 ) (int, error) {
 	count, err := entUser.QueryImages().Count(ctx)
 	if err != nil {

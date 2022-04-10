@@ -7,53 +7,55 @@ import (
 	"context"
 
 	"github.com/stegoer/server/ent"
-	"github.com/stegoer/server/graph/generated"
+	"github.com/stegoer/server/gqlgen"
 	"github.com/stegoer/server/pkg/cryptography"
 	"github.com/stegoer/server/pkg/infrastructure/middleware"
-	"github.com/stegoer/server/pkg/model"
 	"github.com/stegoer/server/pkg/util"
 )
 
-func (r *mutationResolver) CreateUser(ctx context.Context, input generated.NewUser) (*generated.CreateUserPayload, error) {
+func (r *mutationResolver) CreateUser(ctx context.Context, input gqlgen.NewUser) (*gqlgen.CreateUserPayload, error) {
 	entUser, err := r.controller.User.Create(ctx, input)
 	if err != nil {
 		r.logger.Errorw("create_user: failed to create",
 			"error", err.Error(),
 		)
 
-		return nil, model.NewDBError(ctx, "failed to create user")
+		return nil, util.NewDBError(ctx, "failed to create user")
 	}
 
-	auth, err := util.GenerateAuth(ctx, *entUser)
+	token, exp, err := util.GenerateToken(ctx, *entUser)
 	if err != nil {
-		r.logger.Errorw("create_user: failed to generate auth",
+		r.logger.Errorw("create_user: failed to generate token",
 			"error", err.Error(),
 			"user_id", entUser.ID,
 		)
 
-		return nil, model.NewInternalServerError(
+		return nil, util.NewInternalServerError(
 			ctx,
-			"failed to generate authentication",
+			"failed to generate token",
 		)
 	}
 
 	r.logger.Debugw("create_user: success",
 		"user_id", entUser.ID,
-		"expires", auth.Expires,
+		"expires", exp,
 	)
 
-	return &generated.CreateUserPayload{
+	return &gqlgen.CreateUserPayload{
 		User: entUser,
-		Auth: auth,
+		Auth: &gqlgen.Auth{
+			Token:   token,
+			Expires: *exp,
+		},
 	}, nil
 }
 
-func (r *mutationResolver) UpdateUser(ctx context.Context, input generated.UpdateUser) (*generated.UpdateUserPayload, error) {
+func (r *mutationResolver) UpdateUser(ctx context.Context, input gqlgen.UpdateUser) (*gqlgen.UpdateUserPayload, error) {
 	entUser, err := middleware.JwtForContext(ctx)
 	if err != nil {
 		r.logger.Infow("update_user: user not authenticated", "error", err.Error())
 
-		return nil, model.NewAuthorizationError(ctx, "user is not authenticated")
+		return nil, util.NewAuthorizationError(ctx, "user is not authenticated")
 	}
 
 	entUser, err = r.controller.User.Update(ctx, *entUser, input)
@@ -63,17 +65,17 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input generated.Updat
 			"user_id", entUser.ID,
 		)
 
-		return nil, model.NewDBError(ctx, "failed to update user")
+		return nil, util.NewDBError(ctx, "failed to update user")
 	}
 
 	r.logger.Debugw("update_user: success",
 		"user_id", entUser.ID,
 	)
 
-	return &generated.UpdateUserPayload{User: entUser}, nil
+	return &gqlgen.UpdateUserPayload{User: entUser}, nil
 }
 
-func (r *mutationResolver) Login(ctx context.Context, input generated.Login) (*generated.LoginPayload, error) {
+func (r *mutationResolver) Login(ctx context.Context, input gqlgen.Login) (*gqlgen.LoginPayload, error) {
 	entUser, err := r.controller.User.GetByEmail(ctx, input.Email)
 	if err != nil {
 		r.logger.Infow("login: user not found", "error", err.Error())
@@ -85,7 +87,7 @@ func (r *mutationResolver) Login(ctx context.Context, input generated.Login) (*g
 	) {
 		r.logger.Infow("login: invalid credentials")
 
-		return nil, model.NewNotFoundError(ctx, "email or password is incorrect")
+		return nil, util.NewNotFoundError(ctx, "email or password is incorrect")
 	}
 
 	entUser, err = r.controller.User.SetLoggedIn(ctx, *entUser)
@@ -95,34 +97,37 @@ func (r *mutationResolver) Login(ctx context.Context, input generated.Login) (*g
 			"user_id", entUser.ID,
 		)
 
-		return nil, model.NewDBError(ctx, "failed to set last login date")
+		return nil, util.NewDBError(ctx, "failed to set last login date")
 	}
 
-	auth, err := util.GenerateAuth(ctx, *entUser)
+	token, exp, err := util.GenerateToken(ctx, *entUser)
 	if err != nil {
-		r.logger.Errorw("login: failed to generate auth",
+		r.logger.Errorw("login: failed to generate token",
 			"error", err.Error(),
 			"user_id", entUser.ID,
 		)
 
-		return nil, model.NewInternalServerError(
+		return nil, util.NewInternalServerError(
 			ctx,
-			"failed to generate authentication",
+			"failed to generate token",
 		)
 	}
 
 	r.logger.Debugw("login: success",
 		"user_id", entUser.ID,
-		"expires", auth.Expires,
+		"expires", exp,
 	)
 
-	return &generated.LoginPayload{
+	return &gqlgen.LoginPayload{
 		User: entUser,
-		Auth: auth,
+		Auth: &gqlgen.Auth{
+			Token:   token,
+			Expires: *exp,
+		},
 	}, nil
 }
 
-func (r *mutationResolver) RefreshToken(ctx context.Context, input generated.RefreshTokenInput) (*generated.RefreshTokenPayload, error) {
+func (r *mutationResolver) RefreshToken(ctx context.Context, input gqlgen.RefreshTokenInput) (*gqlgen.RefreshTokenPayload, error) {
 	userID, err := util.ParseToken(input.Token)
 	if err != nil {
 		r.logger.Errorw("refresh_token: failed to parse token",
@@ -130,7 +135,7 @@ func (r *mutationResolver) RefreshToken(ctx context.Context, input generated.Ref
 			"token", input.Token,
 		)
 
-		return nil, model.NewAuthorizationError(ctx, "invalid token to refresh")
+		return nil, util.NewAuthorizationError(ctx, "invalid token to refresh")
 	}
 
 	entUser, err := r.controller.User.GetByID(ctx, userID)
@@ -141,51 +146,54 @@ func (r *mutationResolver) RefreshToken(ctx context.Context, input generated.Ref
 			"token", input.Token,
 		)
 
-		return nil, model.NewNotFoundError(ctx, "user not found")
+		return nil, util.NewNotFoundError(ctx, "user not found")
 	}
 
-	auth, err := util.GenerateAuth(ctx, *entUser)
+	token, exp, err := util.GenerateToken(ctx, *entUser)
 	if err != nil {
-		r.logger.Errorw("refresh_token: failed to generate auth",
+		r.logger.Errorw("refresh_token: failed to generate token",
 			"error", err.Error(),
 			"user_id", entUser.ID,
 		)
 
-		return nil, model.NewInternalServerError(
+		return nil, util.NewInternalServerError(
 			ctx,
-			"failed to generate authentication",
+			"failed to generate token",
 		)
 	}
 
 	r.logger.Debugw("refresh_token: success",
 		"user_id", entUser.ID,
-		"expires", auth.Expires,
+		"expires", exp,
 	)
 
-	return &generated.RefreshTokenPayload{
+	return &gqlgen.RefreshTokenPayload{
 		User: entUser,
-		Auth: auth,
+		Auth: &gqlgen.Auth{
+			Token:   token,
+			Expires: *exp,
+		},
 	}, nil
 }
 
-func (r *queryResolver) Overview(ctx context.Context) (*generated.OverviewPayload, error) {
+func (r *queryResolver) Overview(ctx context.Context) (*gqlgen.OverviewPayload, error) {
 	entUser, err := middleware.JwtForContext(ctx)
 	if err != nil {
 		r.logger.Infow("overview: user not authenticated", "error", err.Error())
 
-		return nil, model.NewAuthorizationError(ctx, "user is not authenticated")
+		return nil, util.NewAuthorizationError(ctx, "user is not authenticated")
 	}
 
 	r.logger.Debugw("overview: success", "user", entUser)
 
-	return &generated.OverviewPayload{User: entUser}, nil
+	return &gqlgen.OverviewPayload{User: entUser}, nil
 }
 
 func (r *userResolver) Username(ctx context.Context, obj *ent.User) (string, error) {
 	return obj.Name, nil
 }
 
-// User returns generated.UserResolver implementation.
-func (r *Resolver) User() generated.UserResolver { return &userResolver{r} }
+// User returns gqlgen.UserResolver implementation.
+func (r *Resolver) User() gqlgen.UserResolver { return &userResolver{r} }
 
 type userResolver struct{ *Resolver }

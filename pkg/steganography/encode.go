@@ -5,42 +5,42 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/stegoer/server/graph/generated"
+	"github.com/stegoer/server/ent"
+	"github.com/stegoer/server/gqlgen"
 	"github.com/stegoer/server/pkg/cryptography"
-	"github.com/stegoer/server/pkg/model"
 	"github.com/stegoer/server/pkg/util"
 )
 
 // ValidateEncodeInput validates the generated.EncodeImageInput.
 func ValidateEncodeInput(
 	ctx context.Context,
-	user *model.User,
-	input generated.EncodeImageInput,
-) *model.Error {
+	user *ent.User,
+	input gqlgen.EncodeImageInput,
+) *util.Error {
 	if user == nil {
 		if input.EncryptionKey != nil {
-			return model.NewAuthorizationError(
+			return util.NewAuthorizationError(
 				ctx,
 				"encode: unauthorized users can't specify encryption key",
 			)
 		}
 
 		if input.LsbUsed != 1 {
-			return model.NewAuthorizationError(
+			return util.NewAuthorizationError(
 				ctx,
 				"encode: unauthorized users can't specify least significant bits",
 			)
 		}
 
-		if input.Channel != model.ChannelRedGreenBlue {
-			return model.NewAuthorizationError(
+		if input.Channel != util.ChannelRedGreenBlue {
+			return util.NewAuthorizationError(
 				ctx,
 				"encode: unauthorized users can't specify channel",
 			)
 		}
 
 		if input.EvenDistribution {
-			return model.NewAuthorizationError(
+			return util.NewAuthorizationError(
 				ctx,
 				"encode: unauthorized users can't use even distribution",
 			)
@@ -48,7 +48,7 @@ func ValidateEncodeInput(
 	}
 
 	if !ValidateLSB(byte(input.LsbUsed)) {
-		return model.NewValidationError(
+		return util.NewValidationError(
 			ctx,
 			fmt.Sprintf(
 				"encode: %d is not a valid number of least significant bits used",
@@ -62,7 +62,7 @@ func ValidateEncodeInput(
 
 // Encode encodes a message into the given graphql.Upload file based on input.
 // Returns the image data base64 encoded.
-func Encode(input generated.EncodeImageInput) (string, error) {
+func Encode(input gqlgen.EncodeImageInput) (string, error) {
 	imageData, err := util.FileToImageData(input.Upload.File)
 	if err != nil {
 		return "", fmt.Errorf("encode: %w", err)
@@ -91,7 +91,7 @@ func Encode(input generated.EncodeImageInput) (string, error) {
 }
 
 func buildData(
-	input generated.EncodeImageInput,
+	input gqlgen.EncodeImageInput,
 	imageData util.ImageData,
 ) ([]byte, *Metadata, error) {
 	encryptedData, err := cryptography.Encrypt(

@@ -5,8 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/stegoer/server/graph/generated"
-	"github.com/stegoer/server/pkg/model"
+	"github.com/stegoer/server/gqlgen"
 	"github.com/stegoer/server/pkg/util"
 )
 
@@ -34,25 +33,25 @@ func (md Metadata) GetBinaryLength() uint64 {
 }
 
 // GetChannel returns the model.Channel represented by the Metadata.
-func (md Metadata) GetChannel() model.Channel {
+func (md Metadata) GetChannel() util.Channel {
 	switch {
 	case md.red && md.green && md.blue:
-		return model.ChannelRedGreenBlue
+		return util.ChannelRedGreenBlue
 	case md.red && md.green && !md.blue:
-		return model.ChannelRedGreen
+		return util.ChannelRedGreen
 	case md.red && !md.green && md.blue:
-		return model.ChannelRedBlue
+		return util.ChannelRedBlue
 	case md.red && !md.green && !md.blue:
-		return model.ChannelRed
+		return util.ChannelRed
 	case !md.red && md.green && md.blue:
-		return model.ChannelGreenBlue
+		return util.ChannelGreenBlue
 	case !md.red && md.green && !md.blue:
-		return model.ChannelGreen
+		return util.ChannelGreen
 	case !md.red && !md.green && md.blue:
-		return model.ChannelBlue
+		return util.ChannelBlue
 	default:
 		// should be unreachable
-		return model.ChannelRedGreenBlue
+		return util.ChannelRedGreenBlue
 	}
 }
 
@@ -102,14 +101,14 @@ func (md Metadata) EncodeIntoImageData(imageData util.ImageData) {
 		md.ToByteArr(),
 		metadataPixelOffset,
 		metadataLsbPos,
-		model.ChannelRedGreenBlue,
+		util.ChannelRedGreenBlue,
 		metadataDistributionDivisor,
 	)
 }
 
 // MetadataFromEncodeInput creates Metadata from generated.EncodeImageInput.
 func MetadataFromEncodeInput(
-	input generated.EncodeImageInput,
+	input gqlgen.EncodeImageInput,
 	messageLength int,
 ) Metadata {
 	return Metadata{
@@ -151,7 +150,7 @@ func MetadataFromImageData(imageData util.ImageData) (*Metadata, error) {
 		imageData,
 		metadataPixelOffset,
 		metadataLsbPos,
-		model.ChannelRedGreenBlue,
+		util.ChannelRedGreenBlue,
 		metadataDistributionDivisor,
 		metadataBinaryLength,
 	)

@@ -6,20 +6,20 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/stegoer/server/graph/generated"
+	"github.com/stegoer/server/ent"
+	"github.com/stegoer/server/gqlgen"
 	"github.com/stegoer/server/pkg/cryptography"
-	"github.com/stegoer/server/pkg/model"
 	"github.com/stegoer/server/pkg/util"
 )
 
 // ValidateDecodeInput validates the generated.DecodeImageInput.
 func ValidateDecodeInput(
 	ctx context.Context,
-	user *model.User,
-	input generated.DecodeImageInput,
-) *model.Error {
+	user *ent.User,
+	input gqlgen.DecodeImageInput,
+) *util.Error {
 	if user == nil && input.EncryptionKey != nil {
-		return model.NewAuthorizationError(
+		return util.NewAuthorizationError(
 			ctx,
 			"decode: unauthorized users can't specify encryption key",
 		)
@@ -29,7 +29,7 @@ func ValidateDecodeInput(
 }
 
 // Decode decodes the data from the given generated.DecodeImageInput input.
-func Decode(input generated.DecodeImageInput) (string, error) {
+func Decode(input gqlgen.DecodeImageInput) (string, error) {
 	imageData, err := util.FileToImageData(input.Upload.File)
 	if err != nil {
 		return "", fmt.Errorf("decode: %w", err)

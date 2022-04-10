@@ -8,7 +8,6 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/stegoer/server/ent"
 	"github.com/stegoer/server/pkg/adapter/controller"
 	"github.com/stegoer/server/pkg/adapter/repository"
 	"github.com/stegoer/server/pkg/infrastructure/database"
@@ -33,7 +32,10 @@ func Run(config *env.Config, logger *log.Logger) {
 func create(config *env.Config, logger *log.Logger) *http.Server {
 	entClient := database.MustNew(config, logger)
 	redisClient := redis.MustNew(config, logger)
-	ctrl := newController(entClient)
+	ctrl := controller.Controller{
+		User:  repository.NewUserRepository(entClient),
+		Image: repository.NewImageRepository(entClient),
+	}
 
 	gqlSrv := graphql.NewServer(config, logger, entClient, redisClient, ctrl)
 	muxRouter := router.New(config, logger, gqlSrv, ctrl)
@@ -78,11 +80,4 @@ func run(logger *log.Logger, srv *http.Server) {
 	}
 
 	logger.Info("server shutdown")
-}
-
-func newController(client *ent.Client) controller.Controller {
-	return controller.Controller{
-		User:  repository.NewUserRepository(client),
-		Image: repository.NewImageRepository(client),
-	}
 }

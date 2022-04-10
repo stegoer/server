@@ -9,20 +9,20 @@ import (
 
 	"github.com/stegoer/server/ent"
 	"github.com/stegoer/server/ent/schema/ulid"
-	"github.com/stegoer/server/graph/generated"
+	"github.com/stegoer/server/gqlgen"
 	"github.com/stegoer/server/pkg/infrastructure/middleware"
-	"github.com/stegoer/server/pkg/model"
 	"github.com/stegoer/server/pkg/steganography"
+	"github.com/stegoer/server/pkg/util"
 )
 
-func (r *imageResolver) File(ctx context.Context, obj *ent.Image) (*generated.FileType, error) {
-	return &generated.FileType{
+func (r *imageResolver) File(ctx context.Context, obj *ent.Image) (*gqlgen.FileType, error) {
+	return &gqlgen.FileType{
 		Name:    obj.FileName,
 		Content: obj.Content,
 	}, nil
 }
 
-func (r *mutationResolver) EncodeImage(ctx context.Context, input generated.EncodeImageInput) (*generated.EncodeImagePayload, error) {
+func (r *mutationResolver) EncodeImage(ctx context.Context, input gqlgen.EncodeImageInput) (*gqlgen.EncodeImagePayload, error) {
 	entUser, err := middleware.JwtForContext(ctx)
 	if err != nil {
 		r.logger.Infow("encode: user not authenticated", "error", err.Error())
@@ -51,7 +51,7 @@ func (r *mutationResolver) EncodeImage(ctx context.Context, input generated.Enco
 			"user", entUser,
 		)
 
-		return nil, model.NewValidationError(
+		return nil, util.NewValidationError(
 			ctx,
 			fmt.Sprintf(
 				"could not encode data into image file %s",
@@ -73,21 +73,21 @@ func (r *mutationResolver) EncodeImage(ctx context.Context, input generated.Enco
 				"user", entUser,
 			)
 
-			return nil, model.NewDBError(ctx, "failed to create image record")
+			return nil, util.NewDBError(ctx, "failed to create image record")
 		}
 	}
 
 	r.logger.Debugw("encode: success", "user", entUser)
 
-	return &generated.EncodeImagePayload{
-		File: &generated.FileType{
+	return &gqlgen.EncodeImagePayload{
+		File: &gqlgen.FileType{
 			Name:    input.Upload.Filename,
 			Content: content,
 		},
 	}, nil
 }
 
-func (r *mutationResolver) DecodeImage(ctx context.Context, input generated.DecodeImageInput) (*generated.DecodeImagePayload, error) {
+func (r *mutationResolver) DecodeImage(ctx context.Context, input gqlgen.DecodeImageInput) (*gqlgen.DecodeImagePayload, error) {
 	entUser, err := middleware.JwtForContext(ctx)
 	if err != nil {
 		r.logger.Infow("decode: user not authenticated", "error", err.Error())
@@ -116,7 +116,7 @@ func (r *mutationResolver) DecodeImage(ctx context.Context, input generated.Deco
 			"user", entUser,
 		)
 
-		return nil, model.NewValidationError(
+		return nil, util.NewValidationError(
 			ctx,
 			fmt.Sprintf(
 				"no encoded data found in the image file %s",
@@ -127,7 +127,7 @@ func (r *mutationResolver) DecodeImage(ctx context.Context, input generated.Deco
 
 	r.logger.Debugw("decode: success", "user", entUser)
 
-	return &generated.DecodeImagePayload{Data: data}, nil
+	return &gqlgen.DecodeImagePayload{Data: data}, nil
 }
 
 func (r *queryResolver) Image(ctx context.Context, id ulid.ID) (*ent.Image, error) {
@@ -138,7 +138,7 @@ func (r *queryResolver) Image(ctx context.Context, id ulid.ID) (*ent.Image, erro
 			"image_id", id,
 		)
 
-		return nil, model.NewAuthorizationError(ctx, "user is not authenticated")
+		return nil, util.NewAuthorizationError(ctx, "user is not authenticated")
 	}
 
 	entImage, err := r.controller.Image.Get(
@@ -154,7 +154,7 @@ func (r *queryResolver) Image(ctx context.Context, id ulid.ID) (*ent.Image, erro
 			"user_id", entUser.ID,
 		)
 
-		return nil, model.NewNotFoundError(ctx, "image not found")
+		return nil, util.NewNotFoundError(ctx, "image not found")
 	}
 
 	r.logger.Debugw("image: found", "image_id", entImage.ID, "user_id", entUser.ID)
@@ -162,16 +162,16 @@ func (r *queryResolver) Image(ctx context.Context, id ulid.ID) (*ent.Image, erro
 	return entImage, nil
 }
 
-func (r *queryResolver) Images(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ImageWhereInput, orderBy *ent.ImageOrder) (*generated.ImagesConnection, error) {
+func (r *queryResolver) Images(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ImageWhereInput, orderBy *ent.ImageOrder) (*gqlgen.ImagesConnection, error) {
 	entUser, err := middleware.JwtForContext(ctx)
 	if err != nil {
 		r.logger.Errorw("images: unauthenticated user", "error", err.Error())
 
-		return nil, model.NewAuthorizationError(ctx, "user is not authenticated")
+		return nil, util.NewAuthorizationError(ctx, "user is not authenticated")
 	}
 
 	if first == nil && last == nil {
-		return nil, model.NewValidationError(
+		return nil, util.NewValidationError(
 			ctx,
 			"query must specify first or last",
 		)
@@ -198,7 +198,7 @@ func (r *queryResolver) Images(ctx context.Context, after *ent.Cursor, first *in
 			"orderBy", orderBy,
 		)
 
-		return nil, model.NewDBError(ctx, "failed to list images")
+		return nil, util.NewDBError(ctx, "failed to list images")
 	}
 
 	r.logger.Debugw(
@@ -206,14 +206,14 @@ func (r *queryResolver) Images(ctx context.Context, after *ent.Cursor, first *in
 		"page_info", imageList.PageInfo,
 	)
 
-	return &generated.ImagesConnection{
+	return &gqlgen.ImagesConnection{
 		TotalCount: imageList.TotalCount,
 		PageInfo:   &imageList.PageInfo,
 		Edges:      imageList.Edges,
 	}, nil
 }
 
-// Image returns generated.ImageResolver implementation.
-func (r *Resolver) Image() generated.ImageResolver { return &imageResolver{r} }
+// Image returns gqlgen.ImageResolver implementation.
+func (r *Resolver) Image() gqlgen.ImageResolver { return &imageResolver{r} }
 
 type imageResolver struct{ *Resolver }
