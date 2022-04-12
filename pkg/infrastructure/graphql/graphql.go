@@ -24,8 +24,8 @@ import (
 
 const (
 	lruQueryCacheSize = 1000
-	maxUploadSize     = 50 * 1024 * 1024 // 50MB
-	maxMemory         = 50 * 1024 * 1024 // 50MB
+	maxUploadSize     = 10 * 1024 * 1024 // 10MB
+	maxMemory         = 10 * 1024 * 1024 // 10MB
 	complexityLimit   = 1000
 )
 
