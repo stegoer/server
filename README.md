@@ -12,13 +12,28 @@ Server is using Go, Postgres, GraphQL and Redis.
 
 Server endpoint: https://stegoer-server.herokuapp.com/
 
+Development documentation: https://github.com/stegoer/server/blob/main/README.md
+
+Reference documentation: https://stegoer.github.io/client
+
 Source code: https://github.com/stegoer/server
 
 ---
 
 ## Installation
 
-### Install dependencies
+### Install instructions
+
+1. Install Go https://go.dev/doc/install
+2. Install PostgreSQL https://www.postgresql.org/download/
+3. Install Redis https://redis.io/docs/getting-started/
+4. Clone this repository
+
+```sh
+git clone git@github.com:stegoer/server.git
+```
+
+5. Install dependencies
 
 ```sh
 go get ./...
