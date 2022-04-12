@@ -130,8 +130,24 @@ func MetadataFromBinaryBuffer(binaryBuffer *bytes.Buffer) (*Metadata, error) {
 
 	if len(byteSlice) != metadataLength {
 		return nil, errors.New(
-			"buffer length does not match expected metadata length",
+			"metadata: buffer length does not match expected metadata length",
 		)
+	}
+
+	if !ValidateLSB(byteSlice[8]) {
+		return nil, fmt.Errorf(
+			"metadata: invalid number of least significant bits: %d",
+			byteSlice[8],
+		)
+	}
+
+	for _, idx := range getBoolIndices() {
+		if !zeroOrOne(byteSlice[idx]) {
+			return nil, fmt.Errorf(
+				"metadata: invalid boolean byte: %d",
+				byteSlice[idx],
+			)
+		}
 	}
 
 	return &Metadata{
@@ -159,4 +175,12 @@ func MetadataFromImageData(imageData util.ImageData) (*Metadata, error) {
 	}
 
 	return MetadataFromBinaryBuffer(binaryBuffer)
+}
+
+func getBoolIndices() []byte {
+	return []byte{9, 10, 11, 12}
+}
+
+func zeroOrOne(b byte) bool {
+	return b == 0 || b == 1
 }
