@@ -14,7 +14,7 @@ Server endpoint: https://stegoer-server.herokuapp.com/
 
 Development documentation: https://github.com/stegoer/server/blob/main/README.md
 
-Reference documentation: https://stegoer.github.io/client
+Reference documentation: https://pkg.go.dev/github.com/stegoer/server
 
 Source code: https://github.com/stegoer/server
 
@@ -72,6 +72,26 @@ redis-server
 ```sh
 make help
 ```
+
+### Ent
+
+[ent](https://entgo.io/) is used as an ORM in combination with the repository pattern.
+Schemas can be found in the folder `ent/schema`.
+
+### GraphQL
+
+GraphQL schemas are located in the folder `graphql`.
+GraphQL server code is generated via [gqlgen](https://gqlgen.com/).
+Its output and resolvers can be found in the `gqlgen` folder.
+
+### Migrations
+
+Database migrations are located in the folder `migrations`.
+Migrations are managed with `Makefile`.
+
+### Tools
+
+Tools is a small Go module which contains CLI tooling which is used mainly via `Makefile` commands.
 
 ## Contributing
 
