@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	maxBytes        = 50 * 1024 * 1024 // 50MB
+	maxBytes        = 30 * 1024 * 1024 // 30MB
 	timeOutDeadline = time.Second * 30
 	shutdownSignal  = 1
 )
