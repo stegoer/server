@@ -16,7 +16,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/joho/godotenv v1.4.0
-	github.com/lib/pq v1.10.5
+	github.com/lib/pq v1.10.6
 	github.com/oklog/ulid/v2 v2.0.2
 	github.com/rs/cors v1.8.2
 	github.com/spf13/viper v1.10.1
