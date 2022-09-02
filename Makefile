@@ -5,6 +5,9 @@ endif
 GOBIN ?= $(shell pwd)/bin
 export
 
+DIRS=$(GOBIN)
+$(info $(shell mkdir -p $(DIRS)))
+
 AIR = $(GOBIN)/air
 ENT = $(GOBIN)/ent
 GQLGEN = $(GOBIN)/gqlgen

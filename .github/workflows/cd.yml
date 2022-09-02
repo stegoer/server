@@ -48,14 +48,14 @@ jobs:
         uses: appleboy/ssh-action@v0.1.3
         env:
           DEPLOY_DATABASE_URL: ${{ secrets.DEPLOY_DATABASE_URL }}
-          DEPLOY_ENCRYPTION_KEY: ${{ secrets.DEPLOY_ENCRYPTION_KEY}
+          DEPLOY_ENCRYPTION_KEY: ${{ secrets.DEPLOY_ENCRYPTION_KEY }}
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
           DEPLOY_REDIS_URL: ${{ secrets.DEPLOY_REDIS_URL }}
-          DEPLOY_SECRET_KEY: ${{ deploy.DEPLOY_SECRET_KEY}}
+          DEPLOY_SECRET_KEY: ${{ secrets.DEPLOY_SECRET_KEY}}
           DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
           DIGITALOCEAN_REGISTRY_NAME: ${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}
-          IMAGE_NAME: ${{ secrets.IMAGE_NAME}}
+          IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
           SHA: ${{ github.sha }}
         with:
           host: ${{ secrets.DEPLOY_HOST }}
@@ -63,17 +63,20 @@ jobs:
           key: ${{ secrets.DEPLOY_SSHKEY }}
           passphrase: ${{ secrets.DEPLOY_PASSPHRASE }}
           envs: DEPLOY_DATABASE_URL,DEPLOY_ENCRYPTION_KEY,DEPLOY_HOST,DEPLOY_PORT,DEPLOY_REDIS_URL,DEPLOY_SECRET_KEY,DIGITALOCEAN_ACCESS_TOKEN,DIGITALOCEAN_REGISTRY_NAME,IMAGE_NAME,SHA,GITHUB_REPOSITORY
+          script_stop: true
           script: |
             # Clone repo
-            git clone https://github.com/$GITHUB_REPOSITORY && cd server
+            rm -rf server && git clone https://github.com/$GITHUB_REPOSITORY && cd server && mkdir bin
             # Login to registry
-            docker login -u $DIGITALOCEAN_ACCESS_TOKEN -p $DIGITALOCEAN_ACCESS_TOKEN registry.digitalocean.com
+            docker login -u $DIGITALOCEAN_ACCESS_TOKEN -p $DIGITALOCEAN_ACCESS_TOKEN registry.digitalocean.com/stegoer
             # Stop running container
-            docker stop $IMAGE_NAME
+            docker stop $IMAGE_NAME 2> /dev/null || true
             # Remove old container
-            docker rm $IMAGE_NAME
+            docker rm -f $IMAGE_NAME 2> /dev/null || true
             # Run database migrations
-            export DATABASE_URL=$DEPLOY_DATABASE_URL && make migrate
+            export DATABASE_URL=$DEPLOY_DATABASE_URL && make migrate-all
+            # Pull image to deploy
+            docker pull $DIGITALOCEAN_REGISTRY_NAME/$IMAGE_NAME:sha-$SHA
             # Run a new container from a new image
             docker run \
             --detach \
