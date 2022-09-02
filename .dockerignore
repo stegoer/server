@@ -11,4 +11,3 @@ tools
 dump.rdb
 gqlgen.yml
 Makefile
-Procfile
