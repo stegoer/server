@@ -68,7 +68,7 @@ jobs:
             # Clone repo
             rm -rf server && git clone https://github.com/$GITHUB_REPOSITORY && cd server && mkdir bin
             # Login to registry
-            docker login -u $DIGITALOCEAN_ACCESS_TOKEN -p $DIGITALOCEAN_ACCESS_TOKEN registry.digitalocean.com/stegoer
+            docker login -u $DIGITALOCEAN_ACCESS_TOKEN -p $DIGITALOCEAN_ACCESS_TOKEN $DIGITALOCEAN_REGISTRY_NAME
             # Stop running container
             docker stop $IMAGE_NAME 2> /dev/null || true
             # Remove old container
