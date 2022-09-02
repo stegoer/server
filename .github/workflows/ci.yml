@@ -3,28 +3,52 @@ name: Continuous Integration
 on: [push]
 
 jobs:
-  server:
-    name: server
-    runs-on: ubuntu-latest
+  format:
+    name: format
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        go: [1.17]
 
     steps:
       - name: Git Checkout
         uses: actions/checkout@v3
 
-      - name: Setup Go
+      - name: Setup Go ${{ matrix.go }}
         uses: actions/setup-go@v3
         with:
-          go-version: "1.17.5"
+          go-version: ${{ matrix.go }}
 
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
-        with:
-          version: latest
-
-      - name: Make fmt
+      - name: Format Go files
         run: make fmt
 
       - name: Exit If Git Diff
         run: |
           chmod +x ./scripts/exit_if_diff.sh
           ./scripts/exit_if_diff.sh
+
+  lint:
+    name: lint
+    runs-on: ${{ matrix.os }}
+    needs: [format]
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        go: [1.17]
+
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup ${{ matrix.go }}
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Lint ${{ matrix.workdir }}
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
