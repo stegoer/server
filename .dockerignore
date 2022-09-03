@@ -4,6 +4,7 @@ graphql
 scripts
 tools
 .air.toml
+.env
 .env.example
 .gitignore
 .golangci-lint.yml
