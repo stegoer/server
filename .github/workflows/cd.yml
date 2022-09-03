@@ -1,0 +1,95 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    name: build
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v3
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry
+        run: doctl registry login --expiry-seconds 180
+
+      - name: Build and Push to DigitalOcean Container Registry
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/${{ secrets.IMAGE_NAME }}:latest
+            ${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/${{ secrets.IMAGE_NAME }}:sha-${{ github.sha }}
+
+  deploy:
+    name: deploy
+    runs-on: ${{ matrix.os }}
+    needs: [build]
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - name: Deploy to Digital Ocean droplet via SSH action
+        uses: appleboy/ssh-action@v0.1.3
+        env:
+          DEPLOY_DATABASE_URL: ${{ secrets.DEPLOY_DATABASE_URL }}
+          DEPLOY_ENCRYPTION_KEY: ${{ secrets.DEPLOY_ENCRYPTION_KEY }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_REDIS_URL: ${{ secrets.DEPLOY_REDIS_URL }}
+          DEPLOY_SECRET_KEY: ${{ secrets.DEPLOY_SECRET_KEY}}
+          DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+          DIGITALOCEAN_REGISTRY_NAME: ${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}
+          IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
+          SHA: ${{ github.sha }}
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USERNAME }}
+          key: ${{ secrets.DEPLOY_SSHKEY }}
+          passphrase: ${{ secrets.DEPLOY_PASSPHRASE }}
+          envs: DEPLOY_DATABASE_URL,DEPLOY_ENCRYPTION_KEY,DEPLOY_HOST,DEPLOY_PORT,DEPLOY_REDIS_URL,DEPLOY_SECRET_KEY,DIGITALOCEAN_ACCESS_TOKEN,DIGITALOCEAN_REGISTRY_NAME,IMAGE_NAME,SHA,GITHUB_REPOSITORY
+          script_stop: true
+          script: |
+            # Clone repo
+            rm -rf server && git clone https://github.com/$GITHUB_REPOSITORY && cd server && mkdir bin
+            # Login to registry
+            docker login -u $DIGITALOCEAN_ACCESS_TOKEN -p $DIGITALOCEAN_ACCESS_TOKEN $DIGITALOCEAN_REGISTRY_NAME
+            # Stop running container
+            docker stop $IMAGE_NAME 2> /dev/null || true
+            # Remove old container
+            docker rm -f $IMAGE_NAME 2> /dev/null || true
+            # Run database migrations
+            export DATABASE_URL=$DEPLOY_DATABASE_URL && make migrate-all
+            # Pull image to deploy
+            docker pull $DIGITALOCEAN_REGISTRY_NAME/$IMAGE_NAME:sha-$SHA
+            # Run a new container from a new image
+            docker run \
+            --detach \
+            --restart always \
+            --network=host \
+            --env DATABASE_URL=$DEPLOY_DATABASE_URL \
+            --env REDIS_URL=$DEPLOY_REDIS_URL \
+            --env ENCRYPTION_KEY=$DEPLOY_ENCRYPTION_KEY \
+            --env SECRET_KEY=$DEPLOY_SECRET_KEY \
+            --env PORT=$DEPLOY_PORT \
+            --env DEBUG=false \
+            --env ENV=PRODUCTION \
+            --name $IMAGE_NAME \
+            $DIGITALOCEAN_REGISTRY_NAME/$IMAGE_NAME:sha-$SHA
+            # Remove cloned repository
+            cd .. && rm -rf server

@@ -1,0 +1,14 @@
+.github
+bin
+graphql
+scripts
+tools
+.air.toml
+.env
+.env.example
+.gitignore
+.golangci-lint.yml
+.pre-commit-config.yaml
+dump.rdb
+gqlgen.yml
+Makefile

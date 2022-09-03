@@ -1,6 +1,3 @@
-// +heroku goVersion go1.17
-// +heroku install ./cmd/server
-
 module github.com/stegoer/server
 
 go 1.17
