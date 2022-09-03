@@ -31,8 +31,8 @@ jobs:
           context: .
           push: true
           tags: |
-            registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/${{ secrets.IMAGE_NAME }}:latest
-            registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/${{ secrets.IMAGE_NAME }}:sha-${{ github.sha }}
+            ${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/${{ secrets.IMAGE_NAME }}:latest
+            ${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/${{ secrets.IMAGE_NAME }}:sha-${{ github.sha }}
 
   deploy:
     name: deploy
