@@ -2,7 +2,7 @@ name: Continuous Deployment
 
 on:
   push:
-    branches: [main, feat/digital-ocean-droplet]
+    branches: [main]
 
 jobs:
   build:
