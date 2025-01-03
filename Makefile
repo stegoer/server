@@ -2,7 +2,7 @@ ifneq (,$(wildcard ./.env))
 	include .env
 endif
 
-GOBIN ?= $(shell pwd)/bin
+GOBIN := $(shell pwd)/bin
 export
 
 DIRS=$(GOBIN)
@@ -26,7 +26,7 @@ GO_FILES := $(shell \
 	-o -name '*.go' -print | cut -b3-)
 
 $(AIR):
-	cd tools && go install github.com/cosmtrek/air@latest
+	cd tools && go install github.com/cosmtrek/air@v1.41.0
 
 $(ENT):
 	cd tools && go install entgo.io/ent/cmd/ent

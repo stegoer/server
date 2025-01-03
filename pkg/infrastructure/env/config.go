@@ -20,6 +20,7 @@ type Config struct {
 	EncryptionKey string      `mapstructure:"ENCRYPTION_KEY"`
 	DatabaseURL   string      `mapstructure:"DATABASE_URL"`
 	RedisURL      string      `mapstructure:"REDIS_URL"`
+	DisableAPQ    bool        `mapstructure:"DISABLE_APQ"`
 }
 
 const (
@@ -110,5 +111,6 @@ func getEnvDefaultKeys() []string {
 		"ENCRYPTION_KEY",
 		"DATABASE_URL",
 		"REDIS_URL",
+		"DISABLE_APQ",
 	}
 }

@@ -42,7 +42,11 @@ func Run(config *env.Config, logger *log.Logger) {
 
 func create(config *env.Config, logger *log.Logger) *http.Server {
 	entClient := database.MustNew(config, logger)
-	redisClient := redis.MustNew(config, logger)
+	redisClient, err := redis.New(config)
+	if err != nil {
+		logger.Warnf("failed to create redis client: %v", err)
+	}
+
 	ctrl := controller.Controller{
 		User:  repository.NewUserRepository(entClient),
 		Image: repository.NewImageRepository(entClient),

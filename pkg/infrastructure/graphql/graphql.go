@@ -49,7 +49,12 @@ func NewServer(
 	srv.Use(entgql.Transactioner{TxOpener: client})
 	srv.Use(extension.Introspection{})
 	srv.Use(extension.FixedComplexityLimit(complexityLimit))
-	srv.Use(extension.AutomaticPersistedQuery{Cache: apq.NewCache(*redisClient)})
+	if !config.DisableAPQ {
+		if redisClient == nil {
+			logger.Panic("redis client is not provided")
+		}
+		srv.Use(extension.AutomaticPersistedQuery{Cache: apq.NewCache(*redisClient)})
+	}
 	srv.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
 		err := graphql.DefaultErrorPresenter(ctx, e)
 		logger.Debugw("graphql request failed",
